@@ -3,7 +3,7 @@
 // the product card grid, and the mobile floating cart button. Owns its own
 // search/category/filter state; reads the menu/inventory slices it needs.
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { Plus, ChevronRight, Search } from 'lucide-react';
+import { Plus, ChevronRight, Search, Utensils, Wallet } from 'lucide-react';
 import { useStore } from '@/hooks/useStore';
 import ProductPlaceholder from '@/components/ui/ProductPlaceholder';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
@@ -16,10 +16,22 @@ import PosVariantPicker from './PosVariantPicker';
 type Props = {
   total: number;
   onOpenMobileCart: () => void;
+  onOpenTableModal?: () => void;
+  onOpenShiftModal?: () => void;
+  openBillsCount?: number;
+  selectedTable?: string;
   toast: { showToast: (m: string, t?: 'success' | 'error' | 'warning' | 'info') => void };
 };
 
-export default function PosProductGrid({ total, onOpenMobileCart, toast }: Props) {
+export default function PosProductGrid({
+  total,
+  onOpenMobileCart,
+  onOpenTableModal,
+  onOpenShiftModal,
+  openBillsCount = 0,
+  selectedTable = '',
+  toast,
+}: Props) {
   const menu = useStore((s) => s.menu);
   const inventory = useStore((s) => s.inventory);
   const unitConversions = useStore((s) => s.unitConversions);
@@ -130,13 +142,40 @@ export default function PosProductGrid({ total, onOpenMobileCart, toast }: Props
             )}
           </div>
 
-          {/* Online / Offline badge */}
-          <button type="button" onClick={() => { if (!isOnline) window.location.reload(); }}
-            className={`flex shrink-0 items-center gap-2 px-3.5 py-2 rounded-full border cursor-pointer active:scale-95 transition-all duration-200 ${isOnline?'bg-emerald-50 border-emerald-100 text-emerald-700':'bg-rose-500 border-rose-600 text-white animate-bounce shadow-[0_6px_20px_rgba(239,68,68,0.45)]'}`}
-            aria-label={isOnline ? 'Status koneksi terhubung' : 'Muat ulang karena offline'}>
-            <div className={`size-1.5 rounded-full ${isOnline?'bg-emerald-500 animate-pulse':'bg-white animate-ping'}`} />
-            <span className="text-[10px] font-black uppercase tracking-widest">{isOnline?'Terhubung':'OFFLINE!'}</span>
-          </button>
+          <div className="flex shrink-0 items-center gap-2">
+            {onOpenTableModal && (
+              <button
+                type="button"
+                onClick={onOpenTableModal}
+                className="flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-2 text-[11px] font-black text-stone-700 shadow-sm transition-colors hover:border-[#FF6A00] hover:text-[#FF6A00]"
+              >
+                <Utensils size={13} className="text-[#FF6A00]" />
+                <span>{selectedTable ? `Meja ${selectedTable}` : 'Meja & Bill'}</span>
+                {openBillsCount > 0 && (
+                  <span className="ml-0.5 rounded-full bg-[#FF6A00] px-1.5 py-0.5 text-[9px] font-black text-white">
+                    {openBillsCount}
+                  </span>
+                )}
+              </button>
+            )}
+            {onOpenShiftModal && (
+              <button
+                type="button"
+                onClick={onOpenShiftModal}
+                className="flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-2 text-[11px] font-black text-stone-700 shadow-sm transition-colors hover:border-[#FF6A00] hover:text-[#FF6A00]"
+              >
+                <Wallet size={13} className="text-[#FF6A00]" />
+                <span className="hidden sm:inline">Shift & Laci</span>
+              </button>
+            )}
+            {/* Online / Offline badge */}
+            <button type="button" onClick={() => { if (!isOnline) window.location.reload(); }}
+              className={`flex shrink-0 items-center gap-2 px-3.5 py-2 rounded-full border cursor-pointer active:scale-95 transition-transform duration-200 ${isOnline?'bg-emerald-50 border-emerald-100 text-emerald-700':'bg-rose-500 border-rose-600 text-white animate-bounce shadow-[0_6px_20px_rgba(239,68,68,0.45)]'}`}
+              aria-label={isOnline ? 'Status koneksi terhubung' : 'Muat ulang karena offline'}>
+              <div className={`size-1.5 rounded-full ${isOnline?'bg-emerald-500 animate-pulse':'bg-white animate-ping'}`} />
+              <span className="text-[10px] font-black uppercase tracking-widest">{isOnline?'Terhubung':'OFFLINE!'}</span>
+            </button>
+          </div>
         </div>
 
         {/* Search bar — rounded-full, warm focus ring */}

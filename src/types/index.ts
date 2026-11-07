@@ -77,14 +77,97 @@ export interface StockUnitConversion {
   created_at?: string | undefined;
   updated_at?: string | undefined;
 }
+export type OrderType = 'dine_in' | 'takeaway' | 'gofood' | 'grabfood' | 'shopeefood';
+
+export interface OpenBillItem {
+  id?: string;
+  name: string;
+  qty: number;
+  price: number;
+  menu_item_id?: string | null;
+  note?: string | null;
+  station?: KitchenStation | null;
+  variant?: string | null;
+  category?: string | null;
+}
+
+export interface OpenBill {
+  id: string;
+  store_id: string;
+  table_number?: string | null;
+  order_type: OrderType;
+  customer_name?: string | null;
+  pax: number;
+  items: OpenBillItem[];
+  subtotal: number;
+  discount: number;
+  discount_label?: string | null;
+  tax: number;
+  service_charge?: number;
+  total: number;
+  note?: string | null;
+  cashier?: string | null;
+  status: 'open' | 'paid' | 'cancelled' | 'merged';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PurchaseOrderItem {
+  inventory_id: string;
+  name: string;
+  qty: number;
+  unit: string;
+  cost_per_unit: number;
+}
+
+export interface PurchaseOrder {
+  id: string;
+  store_id: string;
+  po_number: string;
+  supplier_name: string;
+  status: 'draft' | 'ordered' | 'received' | 'cancelled';
+  items: PurchaseOrderItem[];
+  total_amount: number;
+  notes?: string | null;
+  ordered_at: string;
+  received_at?: string | null;
+  created_by?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ShiftClosing {
+  id: string;
+  store_id: string;
+  cashier_id?: string | null;
+  cashier_name: string;
+  opened_at: string;
+  closed_at: string;
+  opening_cash: number;
+  expected_cash: number;
+  actual_cash: number;
+  variance: number;
+  total_sales: number;
+  total_non_cash: number;
+  cash_in: number;
+  cash_out: number;
+  transactions_count: number;
+  notes?: string | null;
+  created_at: string;
+}
+
 export interface Transaction {
   id: string; store_id: string; date: string;
   items: TransactionItem[]; subtotal: number;
   discount: number; discount_label?: string|null;
-  tax: number; total: number; cogs?: number;
+  tax: number; service_charge?: number; total: number; cogs?: number;
   paid: number; change: number; method: 'Tunai'|'Transfer'|'QRIS';
   customer_name?: string|null;   // Nama pelanggan (optional)
   cashier?: string; note?: string|null;
+  order_type?: OrderType;
+  table_number?: string|null;
+  pax?: number;
+  open_bill_id?: string|null;
   is_void: boolean; void_reason?: string|null;
   void_at?: string|null; void_by?: string|null;
   sync_status?: 'synced' | 'pending' | 'syncing' | 'failed' | 'conflicted';

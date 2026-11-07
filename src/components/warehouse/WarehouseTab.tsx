@@ -3,9 +3,10 @@
  
  
  
-import { memo, useState, useMemo, useRef } from 'react';
-import { Plus, Archive, X, AlertTriangle, Search, RefreshCw, ChefHat, Calculator, Upload, CheckCircle2, FileSpreadsheet } from 'lucide-react';
+import { memo, useState, useMemo, useRef, useEffect } from 'react';
+import { Plus, Archive, X, AlertTriangle, Search, RefreshCw, ChefHat, Calculator, Upload, CheckCircle2, FileSpreadsheet, Truck } from 'lucide-react';
 import { useStore } from '@/hooks/useStore';
+import { createPurchaseOrder, getPurchaseOrders, receivePurchaseOrder } from '@/lib/backendApi';
 import DeleteConfirmSheet from '@/components/ui/DeleteConfirmSheet';
 import { InventoryRow } from '@/components/warehouse/InventoryRow';
 import type { BulkImportMode } from '@/lib/stockEngine';
@@ -18,7 +19,7 @@ import {
 } from '@/lib/stockEngine';
 import { getRecipeSaveErrorMessage, normalizeUserFacingError } from '@/lib/errorMessages';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
-import type { InventoryItem, InventoryItemUpdate, MenuItem } from '@/types';
+import type { InventoryItem, InventoryItemUpdate, MenuItem, PurchaseOrder } from '@/types';
 
 const fRp = (n: number) => new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',minimumFractionDigits:0}).format(n||0);
 const WarehouseSkeleton = memo(function WarehouseSkeleton() {
@@ -38,6 +39,7 @@ interface WarehouseForm {
 const WAREHOUSE_SECTION_ITEMS = [
   { id: 'summary', label: 'Ringkasan Stok', icon: Archive },
   { id: 'ingredients', label: 'Bahan Baku', icon: Plus },
+  { id: 'po', label: 'Purchase Order (PO)', icon: Truck },
   { id: 'conversions', label: 'Konversi Satuan', icon: RefreshCw },
   { id: 'recipes', label: 'Resep / Porsi', icon: ChefHat },
   { id: 'hpp', label: 'HPP & Margin', icon: Calculator },
@@ -49,6 +51,7 @@ type ToastApi = { showToast: (message: string, type?: ToastType) => void };
 
 export default function WarehouseTab({ toast }: { toast: ToastApi }) {
   const {
+    storeId,
     inventory,
     menu,
     unitConversions,
@@ -59,8 +62,21 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
     deleteStockUnitConversion,
     saveMenuItem,
     commitStockBulkImportRows,
+    loadAll,
   } = useStore();
-  const [section, setSection] = useState<'summary'|'ingredients'|'conversions'|'recipes'|'hpp'|'import'>('summary');
+  const [section, setSection] = useState<'summary'|'ingredients'|'po'|'conversions'|'recipes'|'hpp'|'import'>('summary');
+  const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
+  const [poSupplier, setPoSupplier] = useState('');
+  const [poIngredientId, setPoIngredientId] = useState('');
+  const [poQty, setPoQty] = useState('');
+  const [poTotalCost, setPoTotalCost] = useState('');
+  const [poNotes, setPoNotes] = useState('');
+  const [poSaving, setPoSaving] = useState(false);
+
+  useEffect(() => {
+    if (!storeId) return;
+    void getPurchaseOrders(storeId).then((res) => setPurchaseOrders(res.items));
+  }, [storeId]);
   const [showModal,    setShowModal]    = useState(false);
   const [form,         setForm]         = useState<WarehouseForm>({ id:'', name:'', qty:'', cost:'', unit:'gr', minStock:'5', type:'new' });
   const [search,       setSearch]       = useState('');
@@ -274,6 +290,79 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
     }
   };
 
+  const handleCreatePo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!storeId) return;
+    const ing = inventory.find((i) => i.id === poIngredientId);
+    const qtyNum = Number(poQty);
+    const totalCostNum = Number(poTotalCost);
+    if (!poSupplier.trim() || !ing || qtyNum <= 0 || totalCostNum < 0) {
+      toast.showToast('Isi nama supplier, bahan baku, dan jumlah pesanan PO.', 'warning');
+      return;
+    }
+    try {
+      setPoSaving(true);
+      const poNumber = `PO-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${String(purchaseOrders.length + 1).padStart(3, '0')}`;
+      const unitCost = Math.round(totalCostNum / qtyNum);
+      const created = await createPurchaseOrder({
+        store_id: storeId,
+        po_number: poNumber,
+        supplier_name: poSupplier.trim(),
+        status: 'ordered',
+        items: [
+          {
+            inventory_id: ing.id,
+            name: ing.name,
+            qty: qtyNum,
+            unit: ing.unit,
+            cost_per_unit: unitCost,
+          },
+        ],
+        total_amount: totalCostNum,
+        notes: poNotes.trim() || null,
+      });
+      setPurchaseOrders((prev) => [created, ...prev]);
+      setPoSupplier('');
+      setPoIngredientId('');
+      setPoQty('');
+      setPoTotalCost('');
+      setPoNotes('');
+      toast.showToast(`Purchase Order ${poNumber} berhasil dibuat.`, 'success');
+    } catch (error) {
+      toast.showToast(normalizeUserFacingError(error, 'Gagal membuat Purchase Order.'), 'error');
+    } finally {
+      setPoSaving(false);
+    }
+  };
+
+  const handleReceivePo = async (po: PurchaseOrder) => {
+    if (!storeId) return;
+    try {
+      setPoSaving(true);
+      const updated = await receivePurchaseOrder(po.id, storeId);
+      setPurchaseOrders((prev) => prev.map((item) => (item.id === po.id ? updated : item)));
+      for (const line of po.items) {
+        const ing = inventory.find((i) => i.id === line.inventory_id);
+        if (ing) {
+          await saveInventoryItem({
+            type: 'restock',
+            id: ing.id,
+            name: ing.name,
+            qty: line.qty,
+            cost: line.qty * line.cost_per_unit,
+            unit: ing.unit,
+          }).catch(() => {});
+        }
+      }
+      await loadAll(storeId).catch(() => {});
+      toast.showToast(`Barang PO ${po.po_number} diterima & stok gudang otomatis bertambah.`, 'success');
+    } catch (error) {
+      toast.showToast(normalizeUserFacingError(error, 'Gagal menerima barang PO.'), 'error');
+    } finally {
+      setPoSaving(false);
+    }
+  };
+
   return (
     <div className="kaffe-responsive-surface flex-1 flex flex-col overflow-hidden bg-white lg:bg-slate-50/50">
       <div className="bg-white border-b border-slate-100 px-4 sm:px-6 pt-6 pb-4 z-10">
@@ -410,6 +499,115 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
             })}
           </div>
         ))}
+
+        {section === 'po' && (
+          <div className="grid grid-cols-1 xl:grid-cols-[380px_1fr] gap-5">
+            <form onSubmit={handleCreatePo} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-soft space-y-3 h-fit">
+              <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">Buat Purchase Order (PO Supplier)</p>
+              <input
+                aria-label="Nama Supplier"
+                value={poSupplier}
+                onChange={(e) => setPoSupplier(e.target.value)}
+                placeholder="Nama Supplier (contoh: PT Kopi Nusantara)"
+                className="w-full h-11 border border-slate-200 rounded-2xl px-3 text-sm font-bold"
+              />
+              <select
+                aria-label="Bahan Baku PO"
+                value={poIngredientId}
+                onChange={(e) => setPoIngredientId(e.target.value)}
+                className="w-full h-11 border border-slate-200 rounded-2xl px-3 text-sm font-bold"
+              >
+                <option value="">Pilih bahan baku yang dipesan</option>
+                {inventory.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name} (Stok: {item.stock} {item.unit})
+                  </option>
+                ))}
+              </select>
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  aria-label="Jumlah Order PO"
+                  type="number"
+                  step="0.01"
+                  value={poQty}
+                  onChange={(e) => setPoQty(e.target.value)}
+                  placeholder="Qty Order"
+                  className="h-11 border border-slate-200 rounded-2xl px-3 text-sm font-bold"
+                />
+                <input
+                  aria-label="Total Tagihan Supplier (Rp)"
+                  type="number"
+                  value={poTotalCost}
+                  onChange={(e) => setPoTotalCost(e.target.value)}
+                  placeholder="Total Harga (Rp)"
+                  className="h-11 border border-slate-200 rounded-2xl px-3 text-sm font-bold"
+                />
+              </div>
+              <input
+                aria-label="Catatan PO"
+                value={poNotes}
+                onChange={(e) => setPoNotes(e.target.value)}
+                placeholder="Catatan pengiriman / termin pembayaran"
+                className="w-full h-11 border border-slate-200 rounded-2xl px-3 text-sm font-bold"
+              />
+              <button
+                type="submit"
+                disabled={poSaving}
+                className="w-full h-11 rounded-2xl bg-[#FF6A00] text-white font-black text-[12px] uppercase tracking-widest disabled:opacity-50"
+              >
+                {poSaving ? 'Menyimpan...' : 'Terbitkan PO Supplier'}
+              </button>
+            </form>
+
+            <div className="space-y-3">
+              {purchaseOrders.length === 0 ? (
+                <div className="bg-white border border-slate-100 rounded-2xl p-8 text-center text-slate-400 font-semibold text-xs">
+                  Belum ada Purchase Order (PO) ke supplier. Buat PO di sebelah kiri untuk memantau pesanan bahan baku dan menambah stok otomatis saat barang datang.
+                </div>
+              ) : (
+                purchaseOrders.map((po) => (
+                  <div key={po.id} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-soft flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs font-black text-[#FF6A00]">{po.po_number}</span>
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase ${
+                            po.status === 'received'
+                              ? 'bg-emerald-50 text-emerald-700'
+                              : 'bg-amber-50 text-amber-700'
+                          }`}
+                        >
+                          {po.status === 'received' ? 'Barang Diterima' : 'Menunggu Pengiriman'}
+                        </span>
+                      </div>
+                      <p className="mt-1 font-black text-slate-900">{po.supplier_name}</p>
+                      <p className="mt-0.5 text-xs font-bold text-slate-500">
+                        {po.items.map((it) => `${it.name}: ${it.qty} ${it.unit}`).join(', ')}
+                      </p>
+                      {po.notes && <p className="mt-1 text-[11px] font-semibold text-slate-400">Catatan: {po.notes}</p>}
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <p className="text-[10px] font-black uppercase text-slate-400">Nilai PO</p>
+                        <p className="font-mono text-base font-black text-slate-900">{fRp(po.total_amount)}</p>
+                      </div>
+                      {po.status !== 'received' && (
+                        <button
+                          type="button"
+                          onClick={() => void handleReceivePo(po)}
+                          disabled={poSaving}
+                          className="h-10 rounded-xl bg-emerald-600 px-4 text-xs font-black uppercase tracking-wider text-white hover:bg-emerald-700 disabled:opacity-50"
+                        >
+                          Terima Barang
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
 
         {section === 'conversions' && (
           <div className="grid grid-cols-1 xl:grid-cols-[360px_1fr] gap-5">

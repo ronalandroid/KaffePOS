@@ -12,7 +12,9 @@ import PosCartPanel from '@/components/pos/PosCartPanel';
 import PosPaymentModal from '@/components/pos/PosPaymentModal';
 import PosReceiptModal from '@/components/pos/PosReceiptModal';
 import PosVoucherModal from '@/components/pos/PosVoucherModal';
-import type { Profile, Transaction } from '@/types';
+import PosTableAndBillModal from '@/components/pos/PosTableAndBillModal';
+import PosShiftModal from '@/components/pos/PosShiftModal';
+import type { OpenBill, OrderType, Profile, Transaction } from '@/types';
 import type { SubscriptionAccess } from '@/lib/subscriptionAccess';
 import { canProcessPosPaymentOffline, getOfflinePaymentBlockedMessage } from '@/lib/offlinePolicy';
 import { buildStockDeductionPlan, calculateProductHpp } from '@/lib/stockEngine';
@@ -21,9 +23,12 @@ import {
   addLoyaltyStamp,
   createPayment,
   getLoyaltyOverview,
+  getOpenBills,
   getPaymentOrderStatus,
   redeemLoyaltyReward,
   searchLoyaltyPassports,
+  updateOpenBill,
+  upsertOpenBill,
   type SecurePaymentCreateResponse,
   type SecurePaymentOrderStatus,
 } from '@/lib/backendApi';
@@ -42,7 +47,7 @@ import {
 import { useModalBehavior } from '@/hooks/useModalBehavior';
 import { trackAnalyticsEvent } from '@/lib/analytics';
 import { trackOpsEvent } from '@/lib/opsMetrics';
-import { fRp, getPaymentMessage, makeIdempotencyKey, type PaymentPhase } from './posHelpers';
+import { ORDER_TYPE_META, fRp, getPaymentMessage, makeIdempotencyKey, type PaymentPhase } from './posHelpers';
 
 interface Props {
   toast:   { showToast: (m: string, t?: 'success' | 'error' | 'warning' | 'info') => void };
@@ -63,6 +68,10 @@ export default function POSTab({ toast, profile, subscriptionAccess }: Props) {
   const transactions = useStore((s) => s.transactions);
   const isOnline = useStore((s) => s.isOnline);
   const clearCart = useStore((s) => s.clearCart);
+  const addToCart = useStore((s) => s.addToCart);
+  const updateQty = useStore((s) => s.updateQty);
+  const setCartItemNote = useStore((s) => s.setCartItemNote);
+  const removeFromCart = useStore((s) => s.removeFromCart);
   const setDiscount = useStore((s) => s.setDiscount);
   const saveTransaction = useStore((s) => s.saveTransaction);
   const storeSettings = useStore((s) => s.storeSettings);
@@ -72,6 +81,14 @@ export default function POSTab({ toast, profile, subscriptionAccess }: Props) {
   const [showPay,    setShowPay]    = useState(false);
   const [showMobileCart, setShowMobileCart] = useState(false);
   const [showVouchers, setShowVouchers] = useState(false);
+  const [showTableModal, setShowTableModal] = useState(false);
+  const [showShiftModal, setShowShiftModal] = useState(false);
+  const [orderType, setOrderType] = useState<OrderType>('dine_in');
+  const [tableNumber, setTableNumber] = useState('');
+  const [pax, setPax] = useState(2);
+  const [openBills, setOpenBills] = useState<OpenBill[]>([]);
+  const [activeOpenBillId, setActiveOpenBillId] = useState<string | null>(null);
+  const [savingOpenBill, setSavingOpenBill] = useState(false);
   const [method,     setMethod]     = useState<'Tunai'|'Transfer'|'QRIS'>('Tunai');
   const [cash,       setCash]       = useState('');
   const [showRcpt,   setShowRcpt]   = useState(false);
@@ -119,6 +136,170 @@ export default function POSTab({ toast, profile, subscriptionAccess }: Props) {
     if (!lastTx) return null;
     return kitchenOrders.find((order) => order.transaction_id === lastTx.id) || lastTx.kitchen_order || null;
   }, [kitchenOrders, lastTx]);
+
+  useEffect(() => {
+    if (!storeId) return;
+    void getOpenBills(storeId).then((res) => setOpenBills(res.items));
+  }, [storeId]);
+
+  const handleSaveOpenBill = useCallback(async () => {
+    if (!storeId || !cart.length) return;
+    try {
+      setSavingOpenBill(true);
+      const saved = await upsertOpenBill({
+        ...(activeOpenBillId ? { id: activeOpenBillId } : {}),
+        store_id: storeId,
+        table_number: orderType === 'dine_in' ? (tableNumber || null) : null,
+        order_type: orderType,
+        customer_name: custName.trim() || (tableNumber ? `Tamu Meja ${tableNumber}` : null),
+        pax,
+        items: cart.map((c) => ({
+          id: c.id,
+          name: c.name,
+          qty: c.qty,
+          price: c.price,
+          menu_item_id: c._baseId || c.id,
+          note: c.note?.trim() || null,
+          category: c.category,
+        })),
+        subtotal,
+        discount: discAmt,
+        discount_label: discount || null,
+        tax: taxAmt,
+        service_charge: 0,
+        total,
+        cashier: profile?.display_name || profile?.username || 'Kasir',
+      });
+      setOpenBills((prev) => [saved, ...prev.filter((b) => b.id !== saved.id)]);
+      clearCart();
+      setActiveOpenBillId(null);
+      setCustName('');
+      setShowMobileCart(false);
+      toast.showToast(
+        saved.table_number
+          ? `Open Bill Meja ${saved.table_number} (${fRp(saved.total)}) tersimpan.`
+          : `Open Bill (${fRp(saved.total)}) berhasil disimpan.`,
+        'success',
+      );
+    } catch (error) {
+      toast.showToast(normalizeUserFacingError(error, 'Gagal menyimpan Open Bill.'), 'warning');
+    } finally {
+      setSavingOpenBill(false);
+    }
+  }, [activeOpenBillId, cart, clearCart, custName, discAmt, discount, orderType, pax, profile, storeId, subtotal, tableNumber, taxAmt, toast, total]);
+
+  const handleRecallOpenBill = useCallback((bill: OpenBill) => {
+    clearCart();
+    for (const item of bill.items) {
+      const baseMenu =
+        menu.find((m) => m.id === item.menu_item_id) ||
+        menu.find((m) => m.name === item.name);
+      const syntheticItem = baseMenu
+        ? { ...baseMenu, price: item.price, name: item.name }
+        : {
+            id: item.menu_item_id || item.id || crypto.randomUUID(),
+            store_id: bill.store_id,
+            name: item.name,
+            price: item.price,
+            category: item.category || 'Menu',
+            is_available: true,
+          };
+      addToCart(syntheticItem);
+      if (item.qty > 1) {
+        updateQty(syntheticItem.id, item.qty);
+      }
+      if (item.note) {
+        setCartItemNote(syntheticItem.id, item.note);
+      }
+    }
+    setOrderType(bill.order_type || 'dine_in');
+    setTableNumber(bill.table_number || '');
+    setPax(bill.pax || 2);
+    setCustName(bill.customer_name || '');
+    setDiscount(bill.discount_label || (bill.discount > 0 ? String(bill.discount) : ''));
+    setActiveOpenBillId(bill.id);
+    toast.showToast(
+      `Open Bill ${bill.table_number ? `Meja ${bill.table_number}` : bill.customer_name || ''} dimuat ke kasir.`,
+      'info',
+    );
+  }, [addToCart, clearCart, menu, setCartItemNote, setDiscount, toast, updateQty]);
+
+  const handleMoveTable = useCallback(async (billId: string, newTableNumber: string) => {
+    if (!storeId) return;
+    const updated = await updateOpenBill(billId, {
+      store_id: storeId,
+      table_number: newTableNumber,
+    });
+    setOpenBills((prev) => prev.map((b) => (b.id === billId ? updated : b)));
+    if (activeOpenBillId === billId) {
+      setTableNumber(newTableNumber);
+    }
+    toast.showToast(`Tagihan berhasil dipindahkan ke Meja ${newTableNumber}.`, 'success');
+  }, [activeOpenBillId, storeId, toast]);
+
+  const handleMergeBills = useCallback(async (sourceBillId: string, targetBillId: string) => {
+    if (!storeId) return;
+    const source = openBills.find((b) => b.id === sourceBillId);
+    const target = openBills.find((b) => b.id === targetBillId);
+    if (!source || !target) return;
+
+    const mergedItems = [...target.items];
+    for (const sItem of source.items) {
+      const existingIdx = mergedItems.findIndex(
+        (tItem) => tItem.name === sItem.name && tItem.price === sItem.price,
+      );
+      if (existingIdx >= 0 && mergedItems[existingIdx]) {
+        mergedItems[existingIdx] = {
+          ...mergedItems[existingIdx],
+          qty: mergedItems[existingIdx].qty + sItem.qty,
+        };
+      } else {
+        mergedItems.push(sItem);
+      }
+    }
+
+    const mergedSubtotal = mergedItems.reduce((sum, it) => sum + it.price * it.qty, 0);
+    const mergedDiscount = target.discount + source.discount;
+    const mergedTax = Math.round(Math.max(0, mergedSubtotal - mergedDiscount) * taxPct / 100);
+    const mergedTotal = Math.max(0, mergedSubtotal - mergedDiscount) + mergedTax;
+
+    const updatedTarget = await updateOpenBill(target.id, {
+      store_id: storeId,
+      pax: target.pax + source.pax,
+      items: mergedItems,
+      subtotal: mergedSubtotal,
+      discount: mergedDiscount,
+      tax: mergedTax,
+      total: mergedTotal,
+    });
+    await updateOpenBill(source.id, {
+      store_id: storeId,
+      status: 'merged',
+    });
+
+    setOpenBills((prev) =>
+      prev
+        .filter((b) => b.id !== source.id)
+        .map((b) => (b.id === target.id ? updatedTarget : b)),
+    );
+    toast.showToast(
+      `Tagihan Meja ${source.table_number || ''} berhasil digabung ke Meja ${target.table_number || ''}.`,
+      'success',
+    );
+  }, [openBills, storeId, taxPct, toast]);
+
+  const handleCancelOpenBill = useCallback(async (billId: string) => {
+    if (!storeId) return;
+    await updateOpenBill(billId, {
+      store_id: storeId,
+      status: 'cancelled',
+    });
+    setOpenBills((prev) => prev.filter((b) => b.id !== billId));
+    if (activeOpenBillId === billId) {
+      setActiveOpenBillId(null);
+    }
+    toast.showToast('Open Bill dibatalkan.', 'info');
+  }, [activeOpenBillId, storeId, toast]);
 
   useEffect(() => {
     if (!showPay || !storeId) return;
@@ -283,18 +464,29 @@ export default function POSTab({ toast, profile, subscriptionAccess }: Props) {
     return latest;
   }, [finishPaidPayment, toast]);
 
-  const handleCheckout = useCallback(async () => {
+  const handleCheckout = useCallback(async (splitItemIds?: string[]) => {
     if (checkoutInFlight.current) return;
     if (!cart.length) return;
     if (!storeId) {
       toast.showToast('Toko belum siap. Sinkronkan ulang data toko dulu.', 'warning');
       return;
     }
+    const isPartialSplit = Array.isArray(splitItemIds) && splitItemIds.length > 0 && splitItemIds.length < cart.length;
+    const checkoutCart = isPartialSplit
+      ? cart.filter((c) => splitItemIds.includes(c.id))
+      : cart;
+    const checkoutSubtotal = checkoutCart.reduce((s, c) => s + c.price * c.qty, 0);
+    const checkoutDiscAmt = isPartialSplit ? 0 : discAmt;
+    const checkoutTaxAmt = Math.round(Math.max(0, checkoutSubtotal - checkoutDiscAmt) * taxPct / 100);
+    const checkoutTotal = Math.max(0, checkoutSubtotal - checkoutDiscAmt) + checkoutTaxAmt;
+    const checkoutPaid = method === 'Tunai' ? parseInt(cash) || 0 : checkoutTotal;
+    const checkoutChange = Math.max(0, checkoutPaid - checkoutTotal);
+
     if (!isOnline && !canProcessPosPaymentOffline(method)) {
       toast.showToast(getOfflinePaymentBlockedMessage(method), 'warning');
       return;
     }
-    if (method === 'Tunai' && paid < total) {
+    if (method === 'Tunai' && checkoutPaid < checkoutTotal) {
       toast.showToast('Uang bayar kurang', 'warning');
       return;
     }
@@ -316,7 +508,7 @@ export default function POSTab({ toast, profile, subscriptionAccess }: Props) {
       });
       return;
     }
-    const stockPlan = buildStockDeductionPlan(cart.map((cartItem) => ({
+    const stockPlan = buildStockDeductionPlan(checkoutCart.map((cartItem) => ({
       id: cartItem.id,
       ...(cartItem._baseId ? { _baseId: cartItem._baseId } : {}),
       name: cartItem.name,
@@ -328,7 +520,7 @@ export default function POSTab({ toast, profile, subscriptionAccess }: Props) {
       return;
     }
 
-    const cogs = cart.reduce((s, c) => {
+    const cogs = checkoutCart.reduce((s, c) => {
       const base = menu.find(m => m.id === (c._baseId || c.id));
       if (!base) return s;
       return s + calculateProductHpp(base, inventory, unitConversions).totalCost * c.qty;
@@ -347,7 +539,7 @@ export default function POSTab({ toast, profile, subscriptionAccess }: Props) {
       id: orderId,
       store_id: storeId || 'temp',
       date:        new Date().toISOString(),
-      items:       cart.map(c => ({
+      items:       checkoutCart.map(c => ({
         name: c.name,
         qty: c.qty,
         price: c.price,
@@ -355,12 +547,23 @@ export default function POSTab({ toast, profile, subscriptionAccess }: Props) {
         menu_item_id: c._baseId || c.id,
         note: c.note?.trim() || null,
       })),
-      subtotal, discount: discAmt, discount_label: loyaltyReward ? `Loyalty: ${loyaltyReward.name}` : (discount || null),
-      tax: taxAmt, total, cogs: Math.round(cogs),
-      paid, change, method,
-      customer_name: custName.trim() || null,   // ← Simpan nama pelanggan
+      subtotal: checkoutSubtotal,
+      discount: checkoutDiscAmt,
+      discount_label: loyaltyReward ? `Loyalty: ${loyaltyReward.name}` : (discount || null),
+      tax: checkoutTaxAmt,
+      total: checkoutTotal,
+      cogs: Math.round(cogs),
+      paid: checkoutPaid,
+      change: checkoutChange,
+      method,
+      customer_name: custName.trim() || (tableNumber ? `Meja ${tableNumber}` : null),
       cashier:     profile?.display_name || profile?.username || 'Kasir',
-      note: null, is_void: false, void_reason: null, void_at: null, void_by: null,
+      note: `${ORDER_TYPE_META[orderType]?.shortLabel || 'Dine-In'}${tableNumber ? ` • Meja ${tableNumber}` : ''}${isPartialSplit ? ' (Split Bill)' : ''}`,
+      order_type: orderType,
+      table_number: orderType === 'dine_in' ? (tableNumber || null) : null,
+      pax,
+      open_bill_id: !isPartialSplit ? activeOpenBillId : null,
+      is_void: false, void_reason: null, void_at: null, void_by: null,
       created_at:  new Date().toISOString(),
     };
 
@@ -490,8 +693,22 @@ export default function POSTab({ toast, profile, subscriptionAccess }: Props) {
         }
       }
       setLastTx(savedTx);
-      clearCart();
-      setCustName('');
+      if (isPartialSplit && splitItemIds) {
+        for (const id of splitItemIds) {
+          removeFromCart(id);
+        }
+        setCash('');
+      } else {
+        if (activeOpenBillId && storeId) {
+          void updateOpenBill(activeOpenBillId, { store_id: storeId, status: 'paid' }).catch(() => {});
+          setOpenBills((prev) => prev.filter((b) => b.id !== activeOpenBillId));
+          setActiveOpenBillId(null);
+        }
+        clearCart();
+        setCustName('');
+        setTableNumber('');
+        setCash('');
+      }
       setLoyaltyPhone('');
       setLoyaltyPassport(null);
       setLoyaltyReward(null);
@@ -501,7 +718,9 @@ export default function POSTab({ toast, profile, subscriptionAccess }: Props) {
       toast.showToast(
         savedTx.sync_status === 'pending'
           ? 'Transaksi tersimpan offline dan akan disinkronkan otomatis.'
-          : 'Transaksi berhasil',
+          : isPartialSplit
+            ? 'Split Bill sebagian berhasil dibayar. Sisa item masih di keranjang.'
+            : 'Transaksi berhasil',
         'success',
       );
     } catch (e:any) {
@@ -513,7 +732,7 @@ export default function POSTab({ toast, profile, subscriptionAccess }: Props) {
         checkoutInFlight.current = false;
       }
     }
-  }, [cart, change, clearCart, currentMonthTransactionCount, custName, discAmt, discount, inventory, isOnline, loyaltyPassport, loyaltyPhone, loyaltyReward, menu, method, paid, pollPaymentOrder, profile, saveTransaction, storeId, subscriptionAccess.transactionLimit, subtotal, taxAmt, toast, total, transactions, unitConversions]);
+  }, [activeOpenBillId, cart, cash, clearCart, currentMonthTransactionCount, custName, discAmt, discount, inventory, isOnline, loyaltyPassport, loyaltyPhone, loyaltyReward, menu, method, orderType, pax, pollPaymentOrder, profile, removeFromCart, saveTransaction, storeId, subscriptionAccess.transactionLimit, subtotal, tableNumber, taxPct, toast, total, transactions, unitConversions]);
 
   const closePaymentModal = useCallback(() => {
     pollCancelledRef.current = true;
@@ -556,6 +775,10 @@ export default function POSTab({ toast, profile, subscriptionAccess }: Props) {
       <PosProductGrid
         total={total}
         onOpenMobileCart={() => setShowMobileCart(true)}
+        onOpenTableModal={() => setShowTableModal(true)}
+        onOpenShiftModal={() => setShowShiftModal(true)}
+        openBillsCount={openBills.length}
+        selectedTable={tableNumber}
         toast={toast}
       />
 
@@ -569,6 +792,15 @@ export default function POSTab({ toast, profile, subscriptionAccess }: Props) {
         showMobileCart={showMobileCart}
         onCloseMobileCart={() => setShowMobileCart(false)}
         onOpenPay={() => setShowPay(true)}
+        orderType={orderType}
+        onChangeOrderType={setOrderType}
+        tableNumber={tableNumber}
+        pax={pax}
+        openBillsCount={openBills.length}
+        activeOpenBillId={activeOpenBillId}
+        onOpenTableModal={() => setShowTableModal(true)}
+        onSaveOpenBill={handleSaveOpenBill}
+        savingOpenBill={savingOpenBill}
       />
 
       {/* ── UNIFIED PAYMENT MODAL ── */}
@@ -604,8 +836,38 @@ export default function POSTab({ toast, profile, subscriptionAccess }: Props) {
           loyaltyReward={loyaltyReward}
           onApplyLoyaltyReward={handleApplyLoyaltyReward}
           onClearLoyaltyReward={handleClearLoyaltyReward}
+          orderType={orderType}
+          tableNumber={tableNumber}
+          pax={pax}
         />
       )}
+
+      {/* ── MAJOO TABLE & OPEN BILL MODAL ── */}
+      <PosTableAndBillModal
+        open={showTableModal}
+        onClose={() => setShowTableModal(false)}
+        selectedTable={tableNumber}
+        selectedPax={pax}
+        onSelectTableAndPax={(table, nextPax) => {
+          setTableNumber(table);
+          setPax(nextPax);
+          if (table) setOrderType('dine_in');
+        }}
+        openBills={openBills}
+        activeOpenBillId={activeOpenBillId}
+        onRecallOpenBill={handleRecallOpenBill}
+        onMoveTable={handleMoveTable}
+        onMergeBills={handleMergeBills}
+        onCancelOpenBill={handleCancelOpenBill}
+      />
+
+      {/* ── MAJOO SHIFT KASIR & LACI UANG MODAL ── */}
+      <PosShiftModal
+        open={showShiftModal}
+        onClose={() => setShowShiftModal(false)}
+        profile={profile}
+        toast={toast}
+      />
 
       {/* ── RECEIPT MODAL ── */}
       {showRcpt && lastTx && (

@@ -27,6 +27,7 @@ export { ApiError, apiFetch, buildApiUrl, resolveApiBaseUrl } from './api/client
 export * from './api/loyalty';
 export * from './api/kitchen';
 export * from './api/affiliate';
+export * from './api/fnb';
 
 
 export type SystemStatusResponse = {

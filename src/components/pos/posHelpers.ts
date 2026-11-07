@@ -2,6 +2,54 @@
 // constants, and payment-phase helpers for the POS surface. Extracted from
 // POSTab.tsx so the catalog grid, cart panel, and modals can share them.
 import type { useModalBehavior } from '@/hooks/useModalBehavior';
+import type { OrderType } from '@/types';
+
+export const DEFAULT_FLOOR_TABLES = [
+  { id: '01', label: 'Meja 01', zone: 'Indoor', capacity: 2 },
+  { id: '02', label: 'Meja 02', zone: 'Indoor', capacity: 2 },
+  { id: '03', label: 'Meja 03', zone: 'Indoor', capacity: 4 },
+  { id: '04', label: 'Meja 04', zone: 'Indoor', capacity: 4 },
+  { id: '05', label: 'Meja 05', zone: 'Indoor', capacity: 4 },
+  { id: '06', label: 'Meja 06', zone: 'Indoor', capacity: 6 },
+  { id: '07', label: 'Meja 07', zone: 'Indoor', capacity: 6 },
+  { id: '08', label: 'Meja 08', zone: 'Indoor', capacity: 4 },
+  { id: '09', label: 'Meja 09', zone: 'Outdoor', capacity: 2 },
+  { id: '10', label: 'Meja 10', zone: 'Outdoor', capacity: 4 },
+  { id: '11', label: 'Meja 11', zone: 'Outdoor', capacity: 4 },
+  { id: '12', label: 'Meja 12', zone: 'Outdoor', capacity: 6 },
+  { id: 'VIP-1', label: 'VIP 01', zone: 'VIP & Bar', capacity: 8 },
+  { id: 'VIP-2', label: 'VIP 02', zone: 'VIP & Bar', capacity: 8 },
+  { id: 'BAR-1', label: 'Bar 01', zone: 'VIP & Bar', capacity: 2 },
+  { id: 'BAR-2', label: 'Bar 02', zone: 'VIP & Bar', capacity: 2 },
+] as const;
+
+export const ORDER_TYPE_META: Record<OrderType, { label: string; shortLabel: string; badgeClass: string }> = {
+  dine_in: {
+    label: 'Makan di Tempat (Dine-In)',
+    shortLabel: 'Dine-In',
+    badgeClass: 'bg-orange-50 text-[#FF6A00] border-orange-200',
+  },
+  takeaway: {
+    label: 'Bungkus (Takeaway)',
+    shortLabel: 'Takeaway',
+    badgeClass: 'bg-stone-100 text-stone-700 border-stone-300',
+  },
+  gofood: {
+    label: 'GoFood Delivery',
+    shortLabel: 'GoFood',
+    badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  },
+  grabfood: {
+    label: 'GrabFood Delivery',
+    shortLabel: 'GrabFood',
+    badgeClass: 'bg-green-50 text-green-700 border-green-200',
+  },
+  shopeefood: {
+    label: 'ShopeeFood Delivery',
+    shortLabel: 'ShopeeFood',
+    badgeClass: 'bg-amber-50 text-amber-700 border-amber-200',
+  },
+};
 
 const IDR_FORMATTER = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
 

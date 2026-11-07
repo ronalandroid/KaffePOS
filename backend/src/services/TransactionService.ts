@@ -312,9 +312,14 @@ export class TransactionService {
       const safeSubtotal = Math.max(0, Math.round(payload.subtotal));
       const safeDiscount = Math.min(Math.max(0, Math.round(payload.discount)), safeSubtotal);
       const safeTax = Math.max(0, Math.round(payload.tax));
-      const safeTotal = Math.max(0, safeSubtotal - safeDiscount) + safeTax;
+      const safeServiceCharge = Math.max(0, Math.round(payload.service_charge ?? 0));
+      const safeTotal = Math.max(0, safeSubtotal - safeDiscount) + safeTax + safeServiceCharge;
       const safePaid = Math.max(0, Math.round(payload.paid));
       const safeChange = Math.max(0, safePaid - safeTotal);
+      const safeOrderType = ['dine_in', 'takeaway', 'gofood', 'grabfood', 'shopeefood'].includes(String(payload.order_type))
+        ? String(payload.order_type)
+        : 'dine_in';
+      const safePax = Math.max(1, Math.round(Number(payload.pax ?? 1)));
 
       let computedCogs = 0;
       const conversionResult = await client.query(
@@ -435,6 +440,7 @@ export class TransactionService {
             discount,
             discount_label,
             tax,
+            service_charge,
             total,
             cogs,
             paid,
@@ -443,10 +449,13 @@ export class TransactionService {
             customer_name,
             cashier,
             note,
+            order_type,
+            table_number,
+            pax,
             is_void,
             created_at
           ) values (
-            $1, $2, $3::timestamptz, $4::jsonb, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, false, now()
+            $1, $2, $3::timestamptz, $4::jsonb, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, false, now()
           )
           returning ${transactionColumns}
         `,
@@ -459,6 +468,7 @@ export class TransactionService {
           safeDiscount,
           payload.discount_label ?? null,
           safeTax,
+          safeServiceCharge,
           safeTotal,
           Math.max(Math.round(payload.cogs ?? Math.round(computedCogs)), Math.round(computedCogs)),
           safePaid,
@@ -467,8 +477,22 @@ export class TransactionService {
           payload.customer_name ?? null,
           payload.cashier,
           payload.note ?? null,
+          safeOrderType,
+          payload.table_number ?? null,
+          safePax,
         ],
       );
+
+      if (payload.open_bill_id) {
+        await client.query(
+          `
+            update public.open_bills
+            set status = 'paid', updated_at = now()
+            where id = $1 and store_id = $2
+          `,
+          [payload.open_bill_id, payload.store_id],
+        ).catch(() => {});
+      }
 
       const kitchenOrder = await createKitchenOrderFromTransaction(client, payload, authUser);
       await checkChallengeCompletionForUser(client, {

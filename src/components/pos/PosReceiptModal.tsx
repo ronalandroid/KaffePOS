@@ -6,7 +6,7 @@
 import { useState, useEffect } from 'react';
 import { Printer, Share2 } from 'lucide-react';
 import type { KitchenOrder, Transaction } from '@/types';
-import { fRp, type PosModalBehavior } from './posHelpers';
+import { ORDER_TYPE_META, fRp, type PosModalBehavior } from './posHelpers';
 
 type Props = {
   receiptModal: PosModalBehavior;
@@ -51,7 +51,23 @@ export default function PosReceiptModal({
           </div>
           <h3 id="pos-receipt-title" className="font-display font-black text-2xl text-stone-800 tracking-tight">Lunas!</h3>
           <p className="text-stone-400 text-xs font-medium mt-1">#{lastTx.id}</p>
-          {lastTx.sync_status === 'pending' && <p className="mx-auto mt-2 inline-flex rounded-full bg-amber-100 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-amber-700">Menunggu Sync</p>}
+          <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5">
+            {lastTx.order_type && (
+              <span className="rounded-full bg-orange-50 px-3 py-0.5 text-[10px] font-black uppercase tracking-wider text-[#FF6A00] border border-orange-200">
+                {ORDER_TYPE_META[lastTx.order_type]?.shortLabel || lastTx.order_type}
+              </span>
+            )}
+            {lastTx.table_number && (
+              <span className="rounded-full bg-stone-900 px-3 py-0.5 text-[10px] font-black uppercase tracking-wider text-white">
+                Meja {lastTx.table_number}{lastTx.pax ? ` • ${lastTx.pax} Pax` : ''}
+              </span>
+            )}
+            {lastTx.sync_status === 'pending' && (
+              <span className="rounded-full bg-amber-100 px-3 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-700">
+                Menunggu Sync
+              </span>
+            )}
+          </div>
         </div>
 
         {lastTx.customer_name && (

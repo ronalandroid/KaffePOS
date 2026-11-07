@@ -4,9 +4,10 @@
 // footer. Owns its own clear-confirm + kitchen-strip state; totals are derived
 // once by the parent and passed in.
 import { useState, useCallback, useMemo } from 'react';
-import { Plus, Minus, X, ChevronRight, ChefHat } from 'lucide-react';
+import { Plus, Minus, X, ChevronRight, ChefHat, Utensils, BookmarkCheck } from 'lucide-react';
 import { useStore } from '@/hooks/useStore';
-import { fRp } from './posHelpers';
+import type { OrderType } from '@/types';
+import { ORDER_TYPE_META, fRp } from './posHelpers';
 import { CoffeeCupIcon } from './PosIcons';
 
 type Props = {
@@ -18,7 +19,81 @@ type Props = {
   showMobileCart: boolean;
   onCloseMobileCart: () => void;
   onOpenPay: () => void;
+  orderType?: OrderType;
+  onChangeOrderType?: (type: OrderType) => void;
+  tableNumber?: string;
+  pax?: number;
+  openBillsCount?: number;
+  activeOpenBillId?: string | null;
+  onOpenTableModal?: () => void;
+  onSaveOpenBill?: () => void;
+  savingOpenBill?: boolean;
 };
+
+function PosOrderTypeAndTableBar({
+  orderType,
+  onChangeOrderType,
+  tableNumber,
+  pax,
+  openBillsCount,
+  onOpenTableModal,
+}: {
+  orderType: OrderType;
+  onChangeOrderType?: ((type: OrderType) => void) | undefined;
+  tableNumber: string;
+  pax: number;
+  openBillsCount: number;
+  onOpenTableModal?: (() => void) | undefined;
+}) {
+  return (
+    <div className="border-b border-stone-200/60 bg-white px-4 py-3 space-y-2.5">
+      <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-0.5">
+        {(['dine_in', 'takeaway', 'gofood', 'grabfood', 'shopeefood'] as const).map((type) => {
+          const meta = ORDER_TYPE_META[type];
+          const isActive = orderType === type;
+          return (
+            <button
+              key={type}
+              type="button"
+              onClick={() => onChangeOrderType?.(type)}
+              className={`shrink-0 rounded-xl px-2.5 py-1.5 text-[11px] font-black uppercase tracking-wider border transition-colors ${
+                isActive
+                  ? 'border-[#FF6A00] bg-[#FF6A00] text-white shadow-sm'
+                  : 'border-stone-200 bg-stone-50 text-stone-600 hover:border-stone-300'
+              }`}
+            >
+              {meta.shortLabel}
+            </button>
+          );
+        })}
+      </div>
+
+      {onOpenTableModal && (
+        <div className="flex items-center justify-between gap-2">
+          <button
+            type="button"
+            onClick={onOpenTableModal}
+            className="flex flex-1 items-center justify-between rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-bold text-stone-700 transition-colors hover:border-[#FF6A00] hover:bg-orange-50/40"
+          >
+            <span className="flex items-center gap-1.5 truncate">
+              <Utensils size={13} className="text-[#FF6A00] shrink-0" />
+              {tableNumber ? (
+                <span className="font-black text-stone-900">
+                  Meja {tableNumber} • {pax} Pax
+                </span>
+              ) : (
+                <span className="text-stone-500">Pilih Meja / Denah</span>
+              )}
+            </span>
+            <span className="ml-2 rounded-lg bg-white px-2 py-0.5 text-[10px] font-black uppercase text-[#FF6A00] border border-orange-200">
+              {openBillsCount > 0 ? `${openBillsCount} Open Bill` : 'Denah'}
+            </span>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function PosCartPanel({
   subtotal,
@@ -29,6 +104,15 @@ export default function PosCartPanel({
   showMobileCart,
   onCloseMobileCart,
   onOpenPay,
+  orderType = 'dine_in',
+  onChangeOrderType,
+  tableNumber = '',
+  pax = 1,
+  openBillsCount = 0,
+  activeOpenBillId = null,
+  onOpenTableModal,
+  onSaveOpenBill,
+  savingOpenBill = false,
 }: Props) {
   const cart = useStore((s) => s.cart);
   const updateQty = useStore((s) => s.updateQty);
@@ -79,6 +163,16 @@ export default function PosCartPanel({
           </button>
         )}
       </div>
+
+      {/* Majoo Order Type & Table Management Bar */}
+      <PosOrderTypeAndTableBar
+        orderType={orderType}
+        onChangeOrderType={onChangeOrderType}
+        tableNumber={tableNumber}
+        pax={pax}
+        openBillsCount={openBillsCount}
+        onOpenTableModal={onOpenTableModal}
+      />
 
       {/* Kitchen orders strip */}
       {activeKitchenOrders.length > 0 && (
@@ -182,18 +276,29 @@ export default function PosCartPanel({
             </div>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex gap-2.5">
             <button
               type="button"
               onClick={handleClearCart}
-              className="flex-1 h-14 rounded-2xl border border-stone-200 text-stone-400 font-bold hover:bg-stone-50 hover:border-stone-300 transition-all"
+              className="h-14 px-4 rounded-2xl border border-stone-200 text-stone-400 text-xs font-bold hover:bg-stone-50 hover:border-stone-300 transition-colors"
             >
               Batal
             </button>
+            {onSaveOpenBill && (
+              <button
+                type="button"
+                onClick={onSaveOpenBill}
+                disabled={savingOpenBill}
+                className="flex-1 h-14 rounded-2xl border-2 border-[#FF6A00]/30 bg-orange-50/80 px-3 text-xs font-black uppercase tracking-wider text-[#FF6A00] hover:bg-orange-100/80 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+              >
+                <BookmarkCheck size={16} />
+                <span>{activeOpenBillId ? 'Update Bill' : 'Simpan Bill'}</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={onOpenPay}
-              className="flex-[2] h-14 rounded-2xl bg-gradient-to-r from-[#FF6A00] to-[#FF8A1C] text-white font-black uppercase tracking-wider shadow-[0_8px_24px_rgba(255,106,0,0.35)] hover:shadow-[0_12px_32px_rgba(255,106,0,0.45)] hover:scale-[1.02] active:scale-100 transition-all flex items-center justify-center gap-2"
+              className="flex-[1.5] h-14 rounded-2xl bg-gradient-to-r from-[#FF6A00] to-[#FF8A1C] text-white font-black uppercase tracking-wider shadow-[0_8px_24px_rgba(255,106,0,0.35)] hover:shadow-[0_12px_32px_rgba(255,106,0,0.45)] hover:scale-[1.02] active:scale-100 transition-transform flex items-center justify-center gap-2"
             >
               BAYAR <ChevronRight size={20} />
             </button>

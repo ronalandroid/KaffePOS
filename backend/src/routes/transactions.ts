@@ -36,6 +36,7 @@ const checkoutSchema = z.object({
   discount: z.number().nonnegative(),
   discount_label: z.string().trim().optional().nullable(),
   tax: z.number().nonnegative(),
+  service_charge: z.number().nonnegative().optional(),
   total: z.number().nonnegative(),
   cogs: z.number().nonnegative().optional(),
   paid: z.number().nonnegative(),
@@ -45,7 +46,10 @@ const checkoutSchema = z.object({
   cashier: z.string().trim(),
   note: z.string().trim().optional().nullable(),
   source: z.enum(['cashier', 'waiter', 'web', 'app']).optional(),
+  order_type: z.enum(['dine_in', 'takeaway', 'gofood', 'grabfood', 'shopeefood']).optional(),
   table_number: z.string().trim().optional().nullable(),
+  pax: z.number().int().positive().optional(),
+  open_bill_id: z.string().uuid().optional().nullable(),
 });
 
 router.get('/api/transactions', requirePermission('can_view_transaction_history'), async (req, res, next) => {

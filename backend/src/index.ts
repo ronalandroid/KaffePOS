@@ -8,6 +8,7 @@ import inventoryRouter from './routes/inventory';
 import financeRouter from './routes/finance';
 import kitchenRouter from './routes/kitchen';
 import transactionsRouter from './routes/transactions';
+import fnbRouter from './routes/fnb';
 import loyaltyRouter from './routes/loyalty';
 import challengesRouter from './routes/challenges';
 import subscriptionsRouter from './routes/subscriptions';
@@ -268,6 +269,7 @@ app.use(
   financeRouter,
   kitchenRouter,
   transactionsRouter,
+  fnbRouter,
   loyaltyRouter,
   challengesRouter,
   subscriptionsRouter,
@@ -287,6 +289,7 @@ app.use(inventoryRouter);
 app.use(financeRouter);
 app.use(kitchenRouter);
 app.use(transactionsRouter);
+app.use(fnbRouter);
 app.use(loyaltyRouter);
 app.use(challengesRouter);
 app.use(subscriptionsRouter);

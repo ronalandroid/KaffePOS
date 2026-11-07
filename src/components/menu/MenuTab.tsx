@@ -101,6 +101,24 @@ export default function MenuTab({ toast }:any) {
   const { visibleItems, hasMore, remaining, loadMore } = usePagination(filtered, { pageSize: PAGE_SIZE, resetKeys: [cat, dSearch] });
 
   const openNew  = () => { setForm({ ...EMPTY, recipe: [], variants: [], modifiers: [] }); setShowModal(true); };
+  const openNewCombo = () => {
+    setForm({
+      ...EMPTY,
+      name: 'Paket Kombo Hemat ',
+      category: 'Paket Kombo',
+      description: 'Bundling minuman + pastry/snack hemat',
+      recipe: inventory.slice(0, 2).map((ing) => ({ matId: ing.id, qty: 1 })),
+      variants: [
+        { name: 'Regular Combo', price: 0 },
+        { name: 'Upsize Large Combo', price: 5000 },
+      ],
+      modifiers: [
+        { name: 'Extra Espresso Shot', price: 6000 },
+        { name: 'Ganti Oat Milk', price: 8000 },
+      ],
+    });
+    setShowModal(true);
+  };
   const openEdit = (item: MenuItem) => { setForm({ ...item, recipe: item.recipe ? [...item.recipe] : [], variants: item.variants ? [...item.variants] : [], modifiers: item.modifiers ? [...item.modifiers] : [] }); setShowModal(true); };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -184,10 +202,16 @@ export default function MenuTab({ toast }:any) {
             <h2 className="font-display text-xl font-extrabold text-slate-900 tracking-tight">Produk</h2>
             <p className="text-slate-500 font-semibold text-[12px] mt-1">Manajemen produk, kategori, harga, dan resep.</p>
           </div>
-          <button type="button" onClick={openNew}
-            className="kaffe-gradient-button flex items-center justify-center gap-2 h-11 px-5 rounded-lg text-[13px] font-bold active:scale-95 transition-all shrink-0">
-            <Plus size={16}/>Tambah Produk
-          </button>
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <button type="button" onClick={openNewCombo}
+              className="flex items-center justify-center gap-1.5 h-11 px-4 rounded-lg border border-orange-200 bg-orange-50 text-[#FF6A00] text-[12px] font-black active:scale-95 transition-colors">
+              <Plus size={15}/>Paket Kombo
+            </button>
+            <button type="button" onClick={openNew}
+              className="kaffe-gradient-button flex items-center justify-center gap-2 h-11 px-5 rounded-lg text-[13px] font-bold active:scale-95 transition-all shrink-0">
+              <Plus size={16}/>Tambah Produk
+            </button>
+          </div>
         </div>
 
         {/* Search */}

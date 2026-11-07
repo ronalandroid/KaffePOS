@@ -680,6 +680,81 @@ export async function bootstrapAiInsightsSchema() {
   `);
 }
 
+export async function bootstrapMajooFnbSchema() {
+  await pool.query('create extension if not exists pgcrypto');
+
+  await pool.query(`
+    alter table public.transactions
+      add column if not exists order_type varchar(32) default 'dine_in',
+      add column if not exists table_number varchar(32),
+      add column if not exists pax integer default 1,
+      add column if not exists service_charge numeric default 0;
+
+    create table if not exists public.open_bills (
+      id uuid primary key default gen_random_uuid(),
+      store_id uuid not null references public.stores(id) on delete cascade,
+      bill_number varchar(64) not null,
+      order_type varchar(32) not null default 'dine_in',
+      table_number varchar(32),
+      pax integer not null default 1,
+      customer_name varchar(120),
+      cashier varchar(120),
+      items jsonb not null default '[]'::jsonb,
+      subtotal numeric not null default 0,
+      discount numeric not null default 0,
+      tax numeric not null default 0,
+      total numeric not null default 0,
+      note text,
+      status varchar(24) not null default 'open',
+      created_at timestamptz not null default now(),
+      updated_at timestamptz not null default now()
+    );
+
+    create index if not exists idx_open_bills_store_status
+      on public.open_bills (store_id, status, updated_at desc);
+
+    create table if not exists public.purchase_orders (
+      id uuid primary key default gen_random_uuid(),
+      store_id uuid not null references public.stores(id) on delete cascade,
+      po_number varchar(64) not null,
+      supplier_name varchar(160) not null,
+      supplier_phone varchar(64),
+      status varchar(24) not null default 'ordered',
+      items jsonb not null default '[]'::jsonb,
+      total_cost numeric not null default 0,
+      note text,
+      created_by varchar(120),
+      received_at timestamptz,
+      created_at timestamptz not null default now(),
+      updated_at timestamptz not null default now()
+    );
+
+    create index if not exists idx_purchase_orders_store_created
+      on public.purchase_orders (store_id, created_at desc);
+
+    create table if not exists public.shift_closings (
+      id uuid primary key default gen_random_uuid(),
+      store_id uuid not null references public.stores(id) on delete cascade,
+      cashier_name varchar(120) not null,
+      opened_at timestamptz,
+      closed_at timestamptz not null default now(),
+      opening_cash numeric not null default 0,
+      cash_sales numeric not null default 0,
+      non_cash_sales numeric not null default 0,
+      cash_in numeric not null default 0,
+      cash_out numeric not null default 0,
+      expected_cash numeric not null default 0,
+      actual_cash numeric not null default 0,
+      variance numeric not null default 0,
+      note text,
+      created_at timestamptz not null default now()
+    );
+
+    create index if not exists idx_shift_closings_store_closed
+      on public.shift_closings (store_id, closed_at desc);
+  `);
+}
+
 /** Run every schema bootstrap in dependency order (called once at startup). */
 export async function bootstrapAllSchemas() {
   await bootstrapAuthSchema();
@@ -689,4 +764,5 @@ export async function bootstrapAllSchemas() {
   await bootstrapChallengeSchema();
   await bootstrapSubscriptionPromptSchema();
   await bootstrapAiInsightsSchema();
+  await bootstrapMajooFnbSchema();
 }
