@@ -1,4 +1,4 @@
-export type PaymentProviderName = 'doku' | 'disabled';
+export type PaymentProviderName = 'mayar' | 'doku' | 'disabled';
 export type InternalPaymentStatus = 'pending' | 'paid' | 'failed' | 'expired' | 'cancelled' | 'refunded' | 'unknown';
 
 export type CreatePaymentInput = {
@@ -9,6 +9,7 @@ export type CreatePaymentInput = {
   customerEmail?: string | null;
   customerPhone?: string | null;
   paymentMethod?: string | null;
+  returnUrl?: string | null;
   itemDetails?: Array<{ name: string; price: number; quantity: number }>;
   customerDetail?: Record<string, unknown>;
   metadata?: Record<string, unknown>;
@@ -49,6 +50,6 @@ export interface PaymentProvider {
   // HTTP header over the raw payload (e.g. DOKU). Body-signature providers may
   // ignore them.
   verifyCallback(input: { body: Record<string, unknown>; headers?: Record<string, string | string[] | undefined>; rawBody?: string }): Promise<VerifiedPaymentCallback>;
-  checkTransactionStatus(input: { merchantOrderId: string; amount?: number | null }): Promise<PaymentStatusResult>;
+  checkTransactionStatus(input: { merchantOrderId: string; providerReference?: string | null; amount?: number | null }): Promise<PaymentStatusResult>;
   mapProviderStatus(rawStatus: unknown): InternalPaymentStatus;
 }

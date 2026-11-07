@@ -123,7 +123,9 @@ try {
       DB_SSL_REJECT_UNAUTHORIZED: 'true',
       NODE_ENV: 'development',
       PORT: String(PORT),
-      PAYMENT_INTEGRATION_ENABLED: 'false',
+      PAYMENT_GATEWAY_PROVIDER: 'mayar',
+      PAYMENT_INTEGRATION_ENABLED: 'true',
+      MAYAR_ENVIRONMENT: 'sandbox',
       CORS_ORIGIN: 'http://localhost:5173',
       WEB_BASE_URL: 'http://localhost:5173',
       API_BASE_URL: BASE,
@@ -163,15 +165,24 @@ try {
     throw new Error('Backend failed to boot against InsForge PostgreSQL');
   }
 
-  // 3. System Status check
+  // 3. System Status + Mayar Webhook check
   const sysStatus = await api('/system-status');
   check(
-    '/system-status syncMatrix is healthy on InsForge',
+    '/system-status syncMatrix & Mayar payment provider are healthy on InsForge',
     sysStatus.status === 200 &&
       sysStatus.body?.ok === true &&
       sysStatus.body?.checks?.database?.provider === 'insforge' &&
+      sysStatus.body?.checks?.payment?.provider === 'mayar' &&
       sysStatus.body?.syncMatrix?.stores === true &&
       sysStatus.body?.syncMatrix?.transactions === true,
+    `paymentProvider=${sysStatus.body?.checks?.payment?.provider}`,
+  );
+
+  const mayarHook = await api('/api/webhooks/mayar');
+  check(
+    'GET /api/webhooks/mayar endpoint is active',
+    mayarHook.status === 200 && mayarHook.body?.ok === true && mayarHook.body?.provider === 'mayar',
+    `provider=${mayarHook.body?.provider}`,
   );
 
   // 4. End-to-End Auth + Store + Inventory + POS Transaction Sync

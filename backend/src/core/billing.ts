@@ -7,44 +7,78 @@ import { ApiError } from './errors';
 import type { PoolClient } from './db';
 import { syncProfileSubscriptionState, insertNotification } from './helpers';
 
-export type SubscriptionPaymentMode = 'manual' | 'disabled' | 'doku_sandbox' | 'doku_production';
+export type SubscriptionPaymentMode =
+  | 'manual'
+  | 'disabled'
+  | 'mayar_sandbox'
+  | 'mayar_production'
+  | 'doku_sandbox'
+  | 'doku_production';
+
+export function isMayarConfigured() {
+  return Boolean(env.MAYAR_API_KEY);
+}
 
 export function isDokuConfigured() {
   return Boolean(env.DOKU_CLIENT_ID && env.DOKU_SECRET_KEY && env.DOKU_CALLBACK_URL);
 }
 
+export function isActivePaymentGatewayConfigured() {
+  const provider = env.PAYMENT_INTEGRATION_ENABLED === 'false' ? 'disabled' : env.PAYMENT_GATEWAY_PROVIDER;
+  if (provider === 'mayar') return isMayarConfigured();
+  if (provider === 'doku') return isDokuConfigured();
+  return false;
+}
+
 export function resolveSubscriptionPaymentConfig() {
   const provider = env.PAYMENT_INTEGRATION_ENABLED === 'false' ? 'disabled' : env.PAYMENT_GATEWAY_PROVIDER;
+  const mayarConfigured = provider === 'mayar' && isMayarConfigured();
   const dokuConfigured = provider === 'doku' && isDokuConfigured();
+  const gatewayConfigured = mayarConfigured || dokuConfigured;
   const requestedMode = env.SUBSCRIPTION_PAYMENT_MODE;
-  const productionDoku = env.DOKU_ENVIRONMENT === 'production';
+  const gatewayEnvironment = provider === 'doku' ? env.DOKU_ENVIRONMENT : env.MAYAR_ENVIRONMENT;
+  const isProductionGateway = gatewayEnvironment === 'production';
+  const prodMode: SubscriptionPaymentMode = provider === 'doku' ? 'doku_production' : 'mayar_production';
+  const sandboxMode: SubscriptionPaymentMode = provider === 'doku' ? 'doku_sandbox' : 'mayar_sandbox';
   let mode: SubscriptionPaymentMode;
 
   if (provider === 'disabled' || requestedMode === 'disabled') {
     mode = 'disabled';
   } else if (requestedMode === 'auto') {
-    mode = dokuConfigured ? (productionDoku ? 'doku_production' : 'doku_sandbox') : 'manual';
-  } else if (requestedMode === 'doku_production' && !productionDoku) {
+    mode = gatewayConfigured ? (isProductionGateway ? prodMode : sandboxMode) : 'manual';
+  } else if ((requestedMode === 'mayar_production' || requestedMode === 'doku_production') && !isProductionGateway) {
     mode = 'manual';
-  } else if (requestedMode === 'doku_sandbox' && productionDoku) {
+  } else if ((requestedMode === 'mayar_sandbox' || requestedMode === 'doku_sandbox') && isProductionGateway) {
     mode = 'manual';
+  } else if (provider === 'mayar' && requestedMode === 'doku_sandbox') {
+    mode = gatewayConfigured && !isProductionGateway ? 'mayar_sandbox' : 'manual';
+  } else if (provider === 'mayar' && requestedMode === 'doku_production') {
+    mode = gatewayConfigured && isProductionGateway ? 'mayar_production' : 'manual';
   } else {
     mode = requestedMode as SubscriptionPaymentMode;
   }
 
-  const onlinePaymentAvailable = dokuConfigured && ((mode === 'doku_production' && productionDoku) || (mode === 'doku_sandbox' && !productionDoku));
-  const commerciallyReady = onlinePaymentAvailable && mode === 'doku_production' && productionDoku;
+  const isProdMode = mode === 'mayar_production' || mode === 'doku_production';
+  const isSandboxMode = mode === 'mayar_sandbox' || mode === 'doku_sandbox';
+  const onlinePaymentAvailable =
+    gatewayConfigured && ((isProdMode && isProductionGateway) || (isSandboxMode && !isProductionGateway));
+  const commerciallyReady = onlinePaymentAvailable && isProdMode && isProductionGateway;
   const manualActivationAvailable = mode === 'manual' || !onlinePaymentAvailable;
+  const providerLabel = provider === 'doku' ? 'DOKU' : 'Mayar';
 
   return {
     mode,
     provider,
-    dokuEnvironment: env.DOKU_ENVIRONMENT,
+    environment: gatewayEnvironment,
+    mayarEnvironment: env.MAYAR_ENVIRONMENT,
+    dokuEnvironment: gatewayEnvironment,
     onlinePaymentAvailable,
     manualActivationAvailable,
     commerciallyReady,
     message: onlinePaymentAvailable
-      ? mode === 'doku_production' ? 'Pembayaran online DOKU production aktif.' : 'Pembayaran online DOKU sandbox aktif untuk QA internal.'
+      ? isProdMode
+        ? `Pembayaran online ${providerLabel} production aktif.`
+        : `Pembayaran online ${providerLabel} sandbox aktif untuk QA internal.`
       : 'Pembayaran online belum dibuka. Aktivasi langganan dilakukan manual oleh admin sampai payment gateway aktif.',
     recommendedAction: onlinePaymentAvailable
       ? 'Selesaikan pembayaran via checkout online.'

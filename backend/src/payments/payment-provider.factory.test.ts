@@ -3,7 +3,17 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 // Mutable mock env so each test can flip the gateway flags.
 const ENV = vi.hoisted(() => ({
   PAYMENT_INTEGRATION_ENABLED: 'true',
-  PAYMENT_GATEWAY_PROVIDER: 'doku',
+  PAYMENT_GATEWAY_PROVIDER: 'mayar',
+  MAYAR_ENVIRONMENT: 'sandbox',
+  MAYAR_API_KEY: 'mayar-test-key',
+  MAYAR_WEBHOOK_TOKEN: 'mayar-webhook-token',
+  MAYAR_SANDBOX_BASE_URL: 'https://api.mayar.club',
+  MAYAR_PRODUCTION_BASE_URL: 'https://api.mayar.id',
+  MAYAR_CREATE_PAYMENT_PATH: '/hl/v2/payments/create',
+  MAYAR_STATUS_PATH_PREFIX: '/hl/v2/payments',
+  MAYAR_WEBHOOK_PATH: '/api/webhooks/mayar',
+  MAYAR_REDIRECT_URL: 'https://kaffepos.my.id/settings?billing=mayar-return',
+  MAYAR_PAYMENT_DUE_MINUTES: 60,
   DOKU_ENVIRONMENT: 'sandbox',
   DOKU_CLIENT_ID: 'BRN-0001-1234567890',
   DOKU_SECRET_KEY: 'SK-test-secret',
@@ -26,13 +36,18 @@ vi.mock('../core', () => ({
 }));
 
 import { createPaymentProvider, getActivePaymentProviderName } from './payment-provider.factory';
+import { MayarPaymentProvider } from './providers/mayar.provider';
 import { DokuPaymentProvider } from './providers/doku.provider';
 import { DisabledPaymentProvider } from './providers/disabled.provider';
 
 describe('payment-provider factory', () => {
   beforeEach(() => {
     ENV.PAYMENT_INTEGRATION_ENABLED = 'true';
-    ENV.PAYMENT_GATEWAY_PROVIDER = 'doku';
+    ENV.PAYMENT_GATEWAY_PROVIDER = 'mayar';
+  });
+
+  it('builds the Mayar provider for the mayar name', () => {
+    expect(createPaymentProvider('mayar')).toBeInstanceOf(MayarPaymentProvider);
   });
 
   it('builds the DOKU provider for the doku name', () => {
@@ -49,7 +64,14 @@ describe('payment-provider factory', () => {
     expect(createPaymentProvider()).toBeInstanceOf(DisabledPaymentProvider);
   });
 
-  it('uses the configured DOKU gateway when integration is enabled', () => {
+  it('uses the configured Mayar gateway by default when integration is enabled', () => {
+    ENV.PAYMENT_INTEGRATION_ENABLED = 'true';
+    ENV.PAYMENT_GATEWAY_PROVIDER = 'mayar';
+    expect(getActivePaymentProviderName()).toBe('mayar');
+    expect(createPaymentProvider()).toBeInstanceOf(MayarPaymentProvider);
+  });
+
+  it('uses the configured DOKU gateway when integration is enabled and provider is doku', () => {
     ENV.PAYMENT_INTEGRATION_ENABLED = 'true';
     ENV.PAYMENT_GATEWAY_PROVIDER = 'doku';
     expect(getActivePaymentProviderName()).toBe('doku');

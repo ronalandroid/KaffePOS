@@ -36,10 +36,11 @@ const router = Router();
 
 const PAID_PLANS = new Set(['kopi_susu', 'signature', 'founder']);
 
-function createDokuOrderId(userId: string, plan: string, billingCycle: string) {
+function createSubscriptionOrderId(providerName: string, userId: string, plan: string, billingCycle: string) {
+  const prefix = providerName.toUpperCase();
   const planCode = plan.replace(/[^a-z0-9]/gi, '').slice(0, 3).toUpperCase() || 'SUB';
   const cycleCode = billingCycle.replace(/[^a-z0-9]/gi, '').slice(0, 1).toUpperCase() || 'M';
-  return `DOKU-${planCode}${cycleCode}-${userId.slice(0, 8)}-${Date.now().toString(36)}`;
+  return `${prefix}-${planCode}${cycleCode}-${userId.slice(0, 8)}-${Date.now().toString(36)}`;
 }
 
 function resolveProfilePlan(profile: Record<string, unknown> | null | undefined) {
@@ -463,8 +464,13 @@ router.post('/api/subscriptions/payments/create', requirePermission('can_manage_
       [req.authUser!.id],
     );
     const store = storeResult.rows[0];
-    const orderId = createDokuOrderId(req.authUser!.id, payload.plan, payload.billingCycle);
+    const orderId = createSubscriptionOrderId(activeProvider, req.authUser!.id, payload.plan, payload.billingCycle);
     const provider = createPaymentProvider(activeProvider);
+    const dueMinutes = activeProvider === 'mayar' ? env.MAYAR_PAYMENT_DUE_MINUTES : env.DOKU_PAYMENT_DUE_MINUTES;
+    const callbackUrl =
+      activeProvider === 'mayar'
+        ? env.MAYAR_CALLBACK_URL ?? `${env.API_BASE_URL}/api/webhooks/mayar`
+        : env.DOKU_CALLBACK_URL;
     const payment = await provider.createPayment({
       merchantOrderId: orderId,
       amount,
@@ -472,6 +478,7 @@ router.post('/api/subscriptions/payments/create', requirePermission('can_manage_
       customerName: (profile.display_name as string | null) ?? (profile.username as string | null) ?? 'KaffePOS User',
       customerEmail: (profile.email as string | null) ?? req.authUser!.email ?? null,
       paymentMethod: payload.paymentMethod,
+      returnUrl: env.MAYAR_REDIRECT_URL ?? `${env.WEB_BASE_URL}/settings?billing=success&provider=${activeProvider}`,
       itemDetails: [{ name: `Langganan ${quote.planName}`, price: amount, quantity: 1 }],
       metadata: { plan: payload.plan, billingCycle: payload.billingCycle },
     });
@@ -495,8 +502,8 @@ router.post('/api/subscriptions/payments/create', requirePermission('can_manage_
       `,
       [
         sessionId, req.authUser!.id, store?.id ?? null, payload.plan, payload.billingCycle, amount,
-        orderId, payment.paymentUrl, env.DOKU_PAYMENT_DUE_MINUTES,
-        JSON.stringify({ env: env.DOKU_ENVIRONMENT, paymentMode: paymentConfig.mode, callbackUrl: env.DOKU_CALLBACK_URL, selectedPaymentMethod: payload.paymentMethod, voucherCode, quote, storeName: store?.store_name ?? null, providerRaw: payment.raw }),
+        orderId, payment.paymentUrl, dueMinutes,
+        JSON.stringify({ env: paymentConfig.environment, paymentMode: paymentConfig.mode, callbackUrl, selectedPaymentMethod: payload.paymentMethod, voucherCode, quote, storeName: store?.store_name ?? null, providerRaw: payment.raw }),
         payment.providerReference, payment.vaNumber, payment.qrString, payment.paymentMethod, payment.providerStatus, activeProvider,
       ],
     );

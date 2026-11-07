@@ -40,6 +40,7 @@
     "staging:final": "node scripts/staging-final-runner.mjs",
     "coolify:staging:deploy": "node scripts/coolify-staging-deploy.mjs",
     "verify:payment-staging": "node scripts/verify-staging-env.mjs --profile=payment",
+    "smoke:staging:mayar": "node scripts/smoke-mayar-staging.mjs",
     "smoke:staging:doku": "node scripts/smoke-doku-staging.mjs",
     "smoke:insforge": "npm --prefix backend run build && node scripts/smoke-insforge-backend.mjs",
     "smoke:local:fresh-db": "npm --prefix backend run build && node scripts/smoke-local-fresh-db.mjs",

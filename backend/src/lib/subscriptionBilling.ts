@@ -191,7 +191,7 @@ export function buildSubscriptionBillingQuote(input: {
     currency: 'IDR',
     selectedPaymentMethod,
     voucher,
-    trustLabel: 'Pembayaran aman dan diproses melalui DOKU.',
+    trustLabel: 'Pembayaran aman dan diproses melalui Mayar.',
   };
 
   return quote;

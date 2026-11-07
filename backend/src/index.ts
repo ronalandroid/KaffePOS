@@ -35,7 +35,7 @@ import cors from 'cors';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import { buildAllowedCorsOrigins, isOriginAllowed } from './lib/corsOrigins';
 import { env } from './core/env';
-import { resolveSubscriptionPaymentConfig, isDokuConfigured } from './core/billing';
+import { resolveSubscriptionPaymentConfig, isActivePaymentGatewayConfigured } from './core/billing';
 import { pool } from './core/db';
 import { bootstrapAllSchemas } from './schema-bootstrap';
 import { ApiError, log, serializeError } from './core/errors';
@@ -317,9 +317,9 @@ async function verifyDependenciesOnStartup() {
       provider: 'resend',
     },
     payment: {
-      ok: isDokuConfigured(),
-      provider: 'doku',
-      environment: env.DOKU_ENVIRONMENT,
+      ok: isActivePaymentGatewayConfigured(),
+      provider: resolveSubscriptionPaymentConfig().provider,
+      environment: resolveSubscriptionPaymentConfig().environment,
       mode: resolveSubscriptionPaymentConfig().mode,
     },
   });
@@ -398,8 +398,8 @@ async function start() {
     webBaseUrl: env.WEB_BASE_URL,
     apiBaseUrl: env.API_BASE_URL,
     emailProvider: env.RESEND_API_KEY && env.RESEND_FROM_EMAIL ? 'resend' : 'disabled',
-    paymentProvider: isDokuConfigured() ? 'doku' : 'disabled',
-    dokuEnvironment: env.DOKU_ENVIRONMENT,
+    paymentProvider: isActivePaymentGatewayConfigured() ? resolveSubscriptionPaymentConfig().provider : 'disabled',
+    paymentEnvironment: resolveSubscriptionPaymentConfig().environment,
     subscriptionPaymentMode: resolveSubscriptionPaymentConfig().mode,
   });
 

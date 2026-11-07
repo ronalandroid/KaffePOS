@@ -310,7 +310,7 @@ export type GenericPaymentStartResponse = {
   success: true;
   data: {
     paymentId: string;
-    provider: 'doku' | 'disabled' | string;
+    provider: 'mayar' | 'doku' | 'disabled' | string;
     merchantOrderId: string;
     paymentUrl: string | null;
     status: string;
@@ -504,9 +504,11 @@ export const updateCashRegisterEntry = (id: string, payload: Record<string, unkn
   apiFetch<CashRegister>(`/api/cash-register/${id}`, { method: 'PATCH', json: payload });
 
 export type SubscriptionPaymentConfig = {
-  mode: 'manual' | 'disabled' | 'doku_sandbox' | 'doku_production';
+  mode: 'manual' | 'disabled' | 'mayar_sandbox' | 'mayar_production' | 'doku_sandbox' | 'doku_production';
   provider: string;
-  dokuEnvironment: 'sandbox' | 'production';
+  environment?: 'sandbox' | 'production';
+  mayarEnvironment?: 'sandbox' | 'production';
+  dokuEnvironment?: 'sandbox' | 'production';
   onlinePaymentAvailable: boolean;
   manualActivationAvailable: boolean;
   commerciallyReady: boolean;

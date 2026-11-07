@@ -23,20 +23,29 @@ import type { PaymentStatusResult } from '../payments/payment-provider.types';
 const router = Router();
 
 async function applySubscriptionPaymentResult(result: PaymentStatusResult, eventType: string) {
-  if (!result.signatureValid || !result.merchantOrderId) throw new ApiError(401, 'Signature pembayaran tidak valid.');
+  if (!result.signatureValid || (!result.merchantOrderId && !result.providerReference)) {
+    throw new ApiError(401, 'Signature pembayaran tidak valid.');
+  }
+  const lookupOrderId = result.merchantOrderId ?? result.providerReference!;
+  const lookupProviderRef = result.providerReference ?? result.merchantOrderId!;
   const paidEmail = await withTransaction(async (client) => {
     const sessionResult = await client.query(
       `
         select *
         from public.subscription_payment_sessions
-        where merchant_order_id = $1 or midtrans_order_id = $1
+        where merchant_order_id = $1
+           or midtrans_order_id = $1
+           or (provider_reference is not null and provider_reference = $2)
         limit 1
         for update
       `,
-      [result.merchantOrderId],
+      [lookupOrderId, lookupProviderRef],
     );
     const session = sessionResult.rows[0];
     if (!session) throw new ApiError(404, 'Sesi pembayaran tidak ditemukan.');
+    const resolvedOrderId = String(
+      session.merchant_order_id ?? session.midtrans_order_id ?? lookupOrderId,
+    );
     if (result.amount != null && Math.round(Number(session.amount ?? 0)) !== Math.round(result.amount)) {
       throw new ApiError(400, 'Jumlah pembayaran tidak sesuai.');
     }
@@ -48,9 +57,9 @@ async function applySubscriptionPaymentResult(result: PaymentStatusResult, event
           internal_status, payload, signature_valid, processed_at
         ) values ($1, $8, $2, $3, $4, $5, $6, $7::jsonb, true, now())
       `,
-      [session.id, eventType, result.providerReference, result.merchantOrderId, result.rawStatus, result.internalStatus, JSON.stringify(result.raw), result.provider],
+      [session.id, eventType, result.providerReference, resolvedOrderId, result.rawStatus, result.internalStatus, JSON.stringify(result.raw), result.provider],
     ).catch((err) => log('error', 'payment_events.insert_failed', {
-      kind: 'subscription', merchantOrderId: result.merchantOrderId, eventType, error: serializeError(err),
+      kind: 'subscription', merchantOrderId: resolvedOrderId, eventType, error: serializeError(err),
     }));
 
     const paidAt = result.paidAt ?? new Date().toISOString();
@@ -80,7 +89,7 @@ async function applySubscriptionPaymentResult(result: PaymentStatusResult, event
         billingCycle: session.billing_cycle as 'free' | 'monthly' | 'quarterly' | 'semiannual' | 'yearly',
         paymentAmount: Number(session.amount ?? 0),
         paymentMethod: result.paymentMethod ?? result.provider,
-        paymentRef: result.merchantOrderId!,
+        paymentRef: resolvedOrderId,
         paymentNote: `${result.provider} ${result.paymentMethod ?? 'payment'}`,
         paidAt,
         sessionId: session.id as string,
@@ -91,8 +100,8 @@ async function applySubscriptionPaymentResult(result: PaymentStatusResult, event
           paymentId: session.id as string,
           grossAmount: Number(session.amount ?? 0),
           paidAt,
-          orderId: result.merchantOrderId!,
-        }).catch((error) => log('warn', 'affiliate.commission_sync_failed', { error: serializeError(error), orderId: result.merchantOrderId }));
+          orderId: resolvedOrderId,
+        }).catch((error) => log('warn', 'affiliate.commission_sync_failed', { error: serializeError(error), orderId: resolvedOrderId }));
       }
       return activation;
     }
@@ -105,8 +114,8 @@ async function applySubscriptionPaymentResult(result: PaymentStatusResult, event
           userId: session.user_id as string,
           paymentId: session.id as string,
           status: result.rawStatus ?? result.internalStatus,
-          orderId: result.merchantOrderId!,
-        }).catch((error) => log('warn', 'affiliate.commission_cancel_failed', { error: serializeError(error), orderId: result.merchantOrderId }));
+          orderId: resolvedOrderId,
+        }).catch((error) => log('warn', 'affiliate.commission_cancel_failed', { error: serializeError(error), orderId: resolvedOrderId }));
       }
       await insertNotification(
         client,
@@ -114,7 +123,7 @@ async function applySubscriptionPaymentResult(result: PaymentStatusResult, event
         'Pembayaran subscription gagal',
         'Pembayaran belum berhasil. Kamu bisa coba lagi kapan saja.',
         'warning',
-        { paymentRef: result.merchantOrderId, status: result.rawStatus },
+        { paymentRef: resolvedOrderId, status: result.rawStatus },
       );
     }
     return null;
@@ -126,26 +135,30 @@ async function applySubscriptionPaymentResult(result: PaymentStatusResult, event
       paidEmail.displayName ?? 'KaffePOS User',
       paidEmail.plan.toUpperCase(),
       paidEmail.paymentAmount,
-      result.merchantOrderId,
-    ).catch((error) => log('warn', 'email.settlement_failed', { error: serializeError(error), orderId: result.merchantOrderId }));
+      lookupOrderId,
+    ).catch((error) => log('warn', 'email.settlement_failed', { error: serializeError(error), orderId: lookupOrderId }));
   }
 }
 
 /** Settle a POS payment_order from a gateway callback. Returns false if the
  *  order id does not belong to a POS order (so the caller can try subscriptions). */
 async function applyPosPaymentResult(result: PaymentStatusResult, eventType: string): Promise<boolean> {
-  if (!result.merchantOrderId) return false;
+  if (!result.merchantOrderId && !result.providerReference) return false;
+  const lookupOrderId = result.merchantOrderId ?? result.providerReference!;
+  const lookupProviderRef = result.providerReference ?? result.merchantOrderId!;
   const settlement = await withTransaction(async (client) => {
     const orderResult = await client.query(
       `
         select id, user_id, store_id, transaction_id, midtrans_order_id, merchant_order_id,
                gross_amount, subtotal, discount_amount, tax_amount, customer_name, items, status
         from public.payment_orders
-        where merchant_order_id = $1 or midtrans_order_id = $1
+        where merchant_order_id = $1
+           or midtrans_order_id = $1
+           or (provider_reference is not null and provider_reference = $2)
         limit 1
         for update
       `,
-      [result.merchantOrderId],
+      [lookupOrderId, lookupProviderRef],
     );
     const paymentOrder = orderResult.rows[0];
     if (!paymentOrder) return null;
@@ -229,29 +242,48 @@ async function applyPosPaymentResult(result: PaymentStatusResult, eventType: str
   return true;
 }
 
-async function handleDokuWebhook(req: Parameters<Parameters<typeof router.post>[1]>[0], res: Parameters<Parameters<typeof router.post>[1]>[1], next: Parameters<Parameters<typeof router.post>[1]>[2]) {
-  try {
-    const provider = createPaymentProvider('doku');
-    const result = await provider.verifyCallback({
-      body: req.body as Record<string, unknown>,
-      headers: req.headers,
-      rawBody: req.rawBody,
-    });
-    if (!result.signatureValid) {
-      log('warn', 'doku_webhook_signature_failed', { merchantOrderId: result.merchantOrderId, rawStatus: result.rawStatus });
-      throw new ApiError(401, 'Signature DOKU tidak valid.');
+function buildPaymentWebhookHandler(providerName: 'mayar' | 'doku') {
+  const label = providerName === 'mayar' ? 'Mayar' : 'DOKU';
+  return async (
+    req: Parameters<Parameters<typeof router.post>[1]>[0],
+    res: Parameters<Parameters<typeof router.post>[1]>[1],
+    next: Parameters<Parameters<typeof router.post>[1]>[2],
+  ) => {
+    try {
+      const provider = createPaymentProvider(providerName);
+      const result = await provider.verifyCallback({
+        body: req.body as Record<string, unknown>,
+        headers: req.headers,
+        rawBody: req.rawBody,
+      });
+      if (!result.signatureValid) {
+        log('warn', `${providerName}_webhook_signature_failed`, {
+          merchantOrderId: result.merchantOrderId,
+          rawStatus: result.rawStatus,
+        });
+        throw new ApiError(401, `Signature ${label} tidak valid.`);
+      }
+      const settledPosOrder = await applyPosPaymentResult(result, 'callback');
+      if (!settledPosOrder) {
+        await applySubscriptionPaymentResult(result, 'callback');
+      }
+      res.status(200).json({
+        received: true,
+        provider: providerName,
+        status: result.internalStatus,
+        kind: settledPosOrder ? 'pos' : 'subscription',
+      });
+    } catch (error) {
+      alertOnPaymentWebhookFailure(`${label} webhook processing failed`, { error: String(error) });
+      next(error);
     }
-    const settledPosOrder = await applyPosPaymentResult(result, 'callback');
-    if (!settledPosOrder) {
-      await applySubscriptionPaymentResult(result, 'callback');
-    }
-    res.status(200).json({ received: true, provider: 'doku', status: result.internalStatus, kind: settledPosOrder ? 'pos' : 'subscription' });
-  } catch (error) {
-    alertOnPaymentWebhookFailure('DOKU webhook processing failed', { error: String(error) });
-    next(error);
-  }
+  };
 }
 
-router.post('/api/webhooks/doku', handleDokuWebhook);
+router.get('/api/webhooks/mayar', (_req, res) => {
+  res.status(200).json({ ok: true, provider: 'mayar', message: 'Mayar webhook endpoint active.' });
+});
+router.post('/api/webhooks/mayar', buildPaymentWebhookHandler('mayar'));
+router.post('/api/webhooks/doku', buildPaymentWebhookHandler('doku'));
 
 export default router;

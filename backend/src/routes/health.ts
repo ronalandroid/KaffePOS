@@ -14,20 +14,21 @@ import {
 } from '../core';
 import { validateBackendDeploymentConfig } from '../lib/deploymentReadiness';
 import {
+  isActivePaymentGatewayConfigured,
   isCommercialPaymentReady,
   isDokuConfigured,
+  isMayarConfigured,
   resolveSubscriptionPaymentConfig,
 } from '../core/billing';
 
 const router = Router();
 
 function isPaymentConfigured() {
-  const paymentConfig = resolveSubscriptionPaymentConfig();
-  return paymentConfig.provider === 'doku' ? isDokuConfigured() : false;
+  return isActivePaymentGatewayConfigured();
 }
 
 function getPaymentEnvironment() {
-  return resolveSubscriptionPaymentConfig().dokuEnvironment;
+  return resolveSubscriptionPaymentConfig().environment;
 }
 
 function buildReadinessScore(params: {
@@ -59,6 +60,9 @@ function getOperationalWarnings() {
     webBaseUrl: env.WEB_BASE_URL,
     apiBaseUrl: env.API_BASE_URL,
     corsOrigin: env.CORS_ORIGIN,
+    paymentProvider: paymentConfig.provider,
+    mayarEnvironment: env.MAYAR_ENVIRONMENT,
+    mayarConfigured: isMayarConfigured(),
     dokuEnvironment: env.DOKU_ENVIRONMENT,
     subscriptionPaymentMode: env.SUBSCRIPTION_PAYMENT_MODE,
     paymentIntegrationEnabled: env.PAYMENT_INTEGRATION_ENABLED !== 'false',
@@ -122,7 +126,7 @@ export function redactOperationalWarnings(warnings: string[]) {
   for (const warning of warnings) {
     if (/resend|email/i.test(warning)) {
       redacted.add('Email delivery perlu dicek oleh tim operasional.');
-    } else if (/midtrans|payment|pembayaran|subscription/i.test(warning)) {
+    } else if (/midtrans|mayar|doku|payment|pembayaran|subscription/i.test(warning)) {
       redacted.add('Payment flow perlu dicek oleh tim operasional.');
     } else if (/sentry|cors|base_url|origin|environment|production|sandbox/i.test(warning)) {
       redacted.add('Konfigurasi deployment perlu dicek oleh tim operasional.');
@@ -193,7 +197,12 @@ function buildSystemStatusPayload(params: {
         manualActivationAvailable: paymentConfig.manualActivationAvailable,
         provider: paymentConfig.provider,
         environment: getPaymentEnvironment(),
-        merchantId: env.DOKU_CLIENT_ID ?? null,
+        merchantId:
+          paymentConfig.provider === 'mayar'
+            ? env.MAYAR_API_KEY
+              ? 'mayar-configured'
+              : null
+            : env.DOKU_CLIENT_ID ?? null,
       },
       monitoring: {
         backendErrorTracking: Boolean(env.SENTRY_DSN),
@@ -349,6 +358,6 @@ router.get('/api/admin/system-status', authenticate, requireAdmin, async (_req, 
   res.status(result.statusCode).json(result.payload);
 });
 
-export { isDokuConfigured, resolveSubscriptionPaymentConfig, isCommercialPaymentReady };
+export { isMayarConfigured, isDokuConfigured, isActivePaymentGatewayConfigured, resolveSubscriptionPaymentConfig, isCommercialPaymentReady };
 
 export default router;

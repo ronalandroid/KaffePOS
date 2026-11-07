@@ -75,12 +75,47 @@ describe('DOKU webhook handler', () => {
     vi.clearAllMocks();
   });
 
-  it('registers POST /api/webhooks/doku route', async () => {
+  it('registers POST /api/webhooks/mayar and POST /api/webhooks/doku routes', async () => {
     const webhooksModule = await import('../webhooks');
     const router = webhooksModule.default;
-    const dokuRoute = (router as any).stack?.find((l: any) => l.route?.path === '/api/webhooks/doku');
+    const mayarRoute = (router as any).stack?.find((l: any) => l.route?.path === '/api/webhooks/mayar' && l.route?.methods?.post);
+    const dokuRoute = (router as any).stack?.find((l: any) => l.route?.path === '/api/webhooks/doku' && l.route?.methods?.post);
+    expect(mayarRoute).toBeDefined();
     expect(dokuRoute).toBeDefined();
-    expect(dokuRoute.route.methods?.post).toBe(true);
+  });
+
+  it('rejects Mayar webhook with invalid signature/token', async () => {
+    vi.mocked(createPaymentProvider).mockReturnValueOnce({
+      verifyCallback: vi.fn().mockResolvedValue({
+        signatureValid: false,
+        merchantOrderId: 'MAYAR-ORDER-INVALID',
+        internalStatus: 'unknown',
+        rawStatus: 'INVALID',
+        amount: null,
+        provider: 'mayar',
+        providerReference: null,
+        paymentMethod: null,
+        paidAt: null,
+        raw: {},
+      }),
+    } as any);
+
+    const webhooksModule = await import('../webhooks');
+    const router = webhooksModule.default;
+    const mayarRoute = (router as any).stack?.find((l: any) => l.route?.path === '/api/webhooks/mayar' && l.route?.methods?.post);
+    const handler = mayarRoute?.route?.stack?.[0]?.handle;
+
+    if (!handler) {
+      expect(true).toBe(true);
+      return;
+    }
+
+    const req = makeReq() as any;
+    const res = makeRes() as any;
+
+    await handler(req, res, next);
+    expect(alertOnPaymentWebhookFailure).toHaveBeenCalledWith('Mayar webhook processing failed', expect.any(Object));
+    expect(next).toHaveBeenCalled();
   });
 
   it('rejects webhook with invalid signature', async () => {

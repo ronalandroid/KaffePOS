@@ -49,10 +49,21 @@ export const envSchema = z.object({
   CLOUDFLARE_IMAGES_DELIVERY_URL: z.string().trim().url().optional(),
   RESEND_API_KEY: z.string().trim().optional(),
   RESEND_FROM_EMAIL: z.string().trim().optional(),
-  PAYMENT_GATEWAY_PROVIDER: z.enum(['doku', 'disabled']).default('doku'),
+  PAYMENT_GATEWAY_PROVIDER: z.enum(['mayar', 'doku', 'disabled']).default('mayar'),
   PAYMENT_INTEGRATION_ENABLED: z.union([z.literal('true'), z.literal('false')]).optional().default('true'),
-  // DOKU Checkout (hosted payment page). Base URLs are configurable because DOKU
-  // exposes both api-sandbox.doku.com and legacy sandbox hosts per account.
+  // Mayar Headless API v2 (https://api.mayar.id/hl/v2 for production, https://api.mayar.club/hl/v2 for sandbox).
+  MAYAR_ENVIRONMENT: z.enum(['sandbox', 'production']).default('sandbox'),
+  MAYAR_API_KEY: z.string().trim().optional(),
+  MAYAR_WEBHOOK_TOKEN: z.string().trim().optional(),
+  MAYAR_SANDBOX_BASE_URL: z.string().trim().url().default('https://api.mayar.club'),
+  MAYAR_PRODUCTION_BASE_URL: z.string().trim().url().default('https://api.mayar.id'),
+  MAYAR_CREATE_PAYMENT_PATH: z.string().trim().default('/hl/v2/payments/create'),
+  MAYAR_STATUS_PATH_PREFIX: z.string().trim().default('/hl/v2/payments'),
+  MAYAR_WEBHOOK_PATH: z.string().trim().default('/api/webhooks/mayar'),
+  MAYAR_REDIRECT_URL: z.string().trim().url().optional(),
+  MAYAR_CALLBACK_URL: z.string().trim().url().optional(),
+  MAYAR_PAYMENT_DUE_MINUTES: z.coerce.number().int().positive().default(60),
+  // DOKU Checkout (legacy secondary payment provider).
   DOKU_ENVIRONMENT: z.enum(['sandbox', 'production']).default('sandbox'),
   DOKU_CLIENT_ID: z.string().trim().optional(),
   DOKU_SECRET_KEY: z.string().trim().optional(),
@@ -64,7 +75,15 @@ export const envSchema = z.object({
   DOKU_CALLBACK_URL: z.string().trim().url().optional(),
   DOKU_PAYMENT_DUE_MINUTES: z.coerce.number().int().positive().default(60),
   SUBSCRIPTION_PAYMENT_MODE: z
-    .enum(['auto', 'manual', 'disabled', 'doku_sandbox', 'doku_production'])
+    .enum([
+      'auto',
+      'manual',
+      'disabled',
+      'mayar_sandbox',
+      'mayar_production',
+      'doku_sandbox',
+      'doku_production',
+    ])
     .default('auto'),
   AUTH_RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(15 * 60 * 1000),
   AUTH_LOGIN_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(10),

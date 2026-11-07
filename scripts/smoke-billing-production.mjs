@@ -100,14 +100,14 @@ async function checkCommercialStatus() {
 
   if (
     payment?.environment === 'production' &&
-    payment?.mode === 'doku_production' &&
+    (payment?.mode === 'mayar_production' || payment?.mode === 'doku_production') &&
     payment?.onlinePaymentAvailable === true &&
     payment?.commerciallyReady === true
   ) {
-    pass('DOKU production billing is commercially ready');
+    pass(`${(payment?.provider || 'Mayar').toUpperCase()} production billing is commercially ready`);
   } else {
     fail(
-      `DOKU billing is not production-ready (environment=${payment?.environment ?? 'unknown'}, mode=${
+      `Production billing is not ready (provider=${payment?.provider ?? 'unknown'}, environment=${payment?.environment ?? 'unknown'}, mode=${
         payment?.mode ?? 'unknown'
       }, online=${String(payment?.onlinePaymentAvailable)}, commerciallyReady=${String(payment?.commerciallyReady)})`,
     );

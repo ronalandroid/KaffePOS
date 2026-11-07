@@ -42,6 +42,48 @@ describe('backend deployment readiness guardrails', () => {
     expect(result.errors).toEqual([]);
   });
 
+  it('flags production deployment that still uses Mayar sandbox', () => {
+    const result = validateBackendDeploymentConfig({
+      nodeEnv: 'production',
+      webBaseUrl: 'https://kaffepos.my.id',
+      apiBaseUrl: 'https://api.kaffepos.my.id',
+      corsOrigin: 'https://kaffepos.my.id,capacitor://localhost',
+      paymentProvider: 'mayar',
+      mayarEnvironment: 'sandbox',
+      mayarConfigured: true,
+      subscriptionPaymentMode: 'auto',
+      paymentIntegrationEnabled: true,
+      resendApiKey: 're_xxx',
+      resendFromEmail: 'KaffePOS <no-reply@kaffepos.my.id>',
+      sentryDsn: 'https://public@sentry.example/1',
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.errors).toEqual(expect.arrayContaining([
+      expect.stringContaining('MAYAR_ENVIRONMENT'),
+    ]));
+  });
+
+  it('accepts production config when domain, CORS, email, and Mayar are aligned', () => {
+    const result = validateBackendDeploymentConfig({
+      nodeEnv: 'production',
+      webBaseUrl: 'https://kaffepos.my.id',
+      apiBaseUrl: 'https://api.kaffepos.my.id',
+      corsOrigin: 'https://kaffepos.my.id,https://www.kaffepos.my.id,capacitor://localhost,https://localhost,http://localhost',
+      paymentProvider: 'mayar',
+      mayarEnvironment: 'production',
+      mayarConfigured: true,
+      subscriptionPaymentMode: 'auto',
+      paymentIntegrationEnabled: true,
+      resendApiKey: 're_xxx',
+      resendFromEmail: 'KaffePOS <no-reply@kaffepos.my.id>',
+      sentryDsn: 'https://public@sentry.example/1',
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.errors).toEqual([]);
+  });
+
   it('normalizes configured CORS origins before readiness checks', () => {
     const result = validateBackendDeploymentConfig({
       nodeEnv: 'production',
