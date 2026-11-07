@@ -3,7 +3,24 @@
  * Re-exports everything from env, db, errors, middleware, helpers, email, session.
  */
 export { env, adminEmails, type Env } from './env';
-export { pool, withTransaction, type PoolClient } from './db';
+export {
+  pool,
+  withTransaction,
+  buildDatabaseSslConfig,
+  isManagedTlsDatabaseUrl,
+  normalizeDatabaseConnectionString,
+  type PoolClient,
+} from './db';
+export {
+  INSFORGE_DEFAULT_PROJECT_ID,
+  INSFORGE_DEFAULT_HOST,
+  isInsforgeDatabaseTarget,
+  resolveInsforgeHost,
+  isInsforgeSdkConfigured,
+  getInsforgeClient,
+  getInsforgeAdminClient,
+  getDatabaseProviderSummary,
+} from './insforge';
 export {
   log,
   serializeError,

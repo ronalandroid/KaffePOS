@@ -1,5 +1,27 @@
+function isManagedTlsDatabaseUrl(connectionString) {
+  if (!connectionString) return false;
+  return (
+    /\.database\.insforge\.app(?::\d+)?(?:\/|$)/i.test(connectionString) ||
+    /[?&]sslmode=(?:require|verify-ca|verify-full)(?:&|$)/i.test(connectionString)
+  );
+}
+
+function normalizeDatabaseConnectionString(connectionString) {
+  try {
+    const parsed = new URL(connectionString);
+    if (parsed.searchParams.has('sslmode')) {
+      parsed.searchParams.delete('sslmode');
+      return parsed.toString();
+    }
+    return connectionString;
+  } catch {
+    return connectionString;
+  }
+}
+
 export function buildDatabaseSslConfig() {
-  if (process.env.DB_SSL !== 'true') return false;
+  const autoTls = isManagedTlsDatabaseUrl(process.env.DATABASE_URL);
+  if (process.env.DB_SSL !== 'true' && !autoTls) return false;
 
   return {
     rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false',
@@ -13,7 +35,7 @@ export function buildPoolConfig() {
   const ssl = buildDatabaseSslConfig();
   if (process.env.DATABASE_URL) {
     return {
-      connectionString: process.env.DATABASE_URL,
+      connectionString: normalizeDatabaseConnectionString(process.env.DATABASE_URL),
       ssl,
     };
   }

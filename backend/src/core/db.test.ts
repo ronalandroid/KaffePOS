@@ -36,4 +36,13 @@ describe('database SSL config', () => {
       DB_SSL_CA: undefined,
     })).toMatchObject({ rejectUnauthorized: false });
   });
+
+  it('auto-enables verified TLS for InsForge PostgreSQL connection strings', () => {
+    expect(buildDatabaseSslConfig({
+      DB_SSL: 'false',
+      DB_SSL_REJECT_UNAUTHORIZED: 'true',
+      DB_SSL_CA: undefined,
+      DATABASE_URL: 'postgresql://postgres:secret@6x4q2bgn.ap-southeast.database.insforge.app:5432/insforge?sslmode=require',
+    })).toMatchObject({ rejectUnauthorized: true });
+  });
 });

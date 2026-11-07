@@ -1,0 +1,11 @@
+[project]
+id = "0246a183-d8b0-4de6-8d41-9240e2380d50"
+name = "kaffepos-v2"
+region = "ap-southeast"
+host = "https://6x4q2bgn.ap-southeast.insforge.app"
+
+[database]
+migrations_directory = "migrations"
+
+[functions]
+directory = "insforge/functions"

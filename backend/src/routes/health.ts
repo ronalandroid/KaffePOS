@@ -10,6 +10,7 @@ import {
   serializeError,
   authenticate,
   requireAdmin,
+  getDatabaseProviderSummary,
 } from '../core';
 import { validateBackendDeploymentConfig } from '../lib/deploymentReadiness';
 import {
@@ -92,7 +93,7 @@ export type SystemStatusPayload = {
   time: string;
   checks: {
     backend: { ok: boolean };
-    database: { ok: boolean; latencyMs?: number | null };
+    database: { ok: boolean; latencyMs?: number | null; provider?: 'insforge' | 'postgresql' };
     email: { ok: boolean; provider: string; fromEmail: string | null };
     payment: {
       ok: boolean;
@@ -164,6 +165,8 @@ function buildSystemStatusPayload(params: {
   const paymentReady = isPaymentConfigured();
   const paymentCommercialReady = isCommercialPaymentReady();
 
+  const dbProvider = getDatabaseProviderSummary();
+
   return {
     ok: params.ok,
     service: env.SERVICE_NAME,
@@ -172,7 +175,11 @@ function buildSystemStatusPayload(params: {
     time: new Date().toISOString(),
     checks: {
       backend: { ok: true },
-      database: { ok: params.databaseOk, latencyMs: params.databaseLatencyMs },
+      database: {
+        ok: params.databaseOk,
+        latencyMs: params.databaseLatencyMs,
+        provider: dbProvider.provider,
+      },
       email: {
         ok: emailReady,
         provider: 'resend',
@@ -272,6 +279,7 @@ function getShuttingDown() {
 
 router.get('/health', async (_req, res) => {
   const startedAt = Date.now();
+  const dbProvider = getDatabaseProviderSummary();
   try {
     const db = await pool.query('select now() as now');
     res.json({
@@ -285,6 +293,7 @@ router.get('/health', async (_req, res) => {
       checks: {
         database: {
           ok: true,
+          provider: dbProvider.provider,
           latencyMs: Date.now() - startedAt,
           time: db.rows[0]?.now ?? null,
         },
@@ -303,6 +312,7 @@ router.get('/health', async (_req, res) => {
       checks: {
         database: {
           ok: false,
+          provider: dbProvider.provider,
           latencyMs: Date.now() - startedAt,
         },
       },

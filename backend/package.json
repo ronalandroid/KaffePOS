@@ -15,6 +15,7 @@
     "deploy:kds": "cd .. && bash scripts/deploy-kds-one-command.sh"
   },
   "dependencies": {
+    "@insforge/sdk": "^1.5.2",
     "@sentry/node": "^10.51.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",

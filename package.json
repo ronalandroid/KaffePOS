@@ -41,6 +41,7 @@
     "coolify:staging:deploy": "node scripts/coolify-staging-deploy.mjs",
     "verify:payment-staging": "node scripts/verify-staging-env.mjs --profile=payment",
     "smoke:staging:doku": "node scripts/smoke-doku-staging.mjs",
+    "smoke:insforge": "npm --prefix backend run build && node scripts/smoke-insforge-backend.mjs",
     "smoke:local:fresh-db": "npm --prefix backend run build && node scripts/smoke-local-fresh-db.mjs",
     "test:e2e:local": "npm --prefix backend run build && node scripts/e2e-local.mjs",
     "test:e2e:offline": "npm --prefix backend run build && node scripts/e2e-offline-local.mjs"
@@ -59,6 +60,7 @@
     "@capacitor/splash-screen": "^6.0.4",
     "@capacitor/status-bar": "^6.0.3",
     "@capacitor/toast": "^6.0.4",
+    "@insforge/sdk": "^1.5.2",
     "@kduma-autoid/capacitor-bluetooth-printer": "^0.2.1",
     "@sentry/react": "^10.51.0",
     "clsx": "^2.1.1",

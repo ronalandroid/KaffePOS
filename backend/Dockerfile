@@ -7,7 +7,7 @@ RUN npm ci
 COPY tsconfig.json ./
 COPY src ./src
 RUN npm run build \
-  && node -e "const fs=require('fs'); const s=fs.readFileSync('dist/payments/providers/duitku.provider.js','utf8'); if(!s.includes('createHash') || s.includes('createHmac') || !s.includes(\"qris: 'SP'\")) { console.error('Duitku provider build output is stale.'); process.exit(1); }"
+  && node -e "const fs=require('fs'); const s=fs.readFileSync('dist/payments/providers/doku.provider.js','utf8'); if(!s.includes('createHmac') || !s.includes('HMACSHA256=')) { console.error('DOKU provider build output is stale.'); process.exit(1); }"
 
 FROM node:20-alpine AS runtime
 WORKDIR /app
