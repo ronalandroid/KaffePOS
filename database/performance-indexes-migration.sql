@@ -62,7 +62,7 @@ ON kitchen_orders(transaction_id);
 
 -- Index for loyalty passport lookup by phone
 CREATE INDEX IF NOT EXISTS idx_loyalty_passports_phone 
-ON loyalty_passports(phone_number);
+ON loyalty_passports(customer_phone);
 
 -- Index for loyalty stamp events by passport
 CREATE INDEX IF NOT EXISTS idx_loyalty_stamp_events_passport_date 
@@ -70,7 +70,7 @@ ON loyalty_stamp_events(passport_id, created_at DESC);
 
 -- Index for loyalty redemptions by passport
 CREATE INDEX IF NOT EXISTS idx_loyalty_redemptions_passport_date 
-ON loyalty_redemptions(passport_id, redeemed_at DESC);
+ON loyalty_redemptions(passport_id, created_at DESC);
 
 -- ============================================================================
 -- SUBSCRIPTIONS INDEXES

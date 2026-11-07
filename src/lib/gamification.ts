@@ -304,6 +304,10 @@ export function buildStaffPersonalProfileStats(params: {
   scope?: StaffPerformanceScope;
   displayName?: string;
   bonusPoints?: number;
+  // Authoritative lifetime transaction-points computed server-side over the FULL history.
+  // The local `transactions` cache is windowed (~500), so when this is provided we use it
+  // for points/level instead of the local sum — keeping XP consistent across devices.
+  lifetimePoints?: number;
   now?: Date;
 }): StaffPersonalProfileStats {
   const now = params.now ?? new Date();
@@ -315,7 +319,10 @@ export function buildStaffPersonalProfileStats(params: {
   const activeStaffTransactions = staffTransactions.filter(isNonVoid);
   const weeklyTransactions = activeStaffTransactions.filter((transaction) => isThisWeek(transaction, now));
   const todayTransactions = activeStaffTransactions.filter((transaction) => isToday(transaction, now));
-  const points = activeStaffTransactions.reduce((sum, transaction) => sum + calculateTransactionPoints(transaction), 0) + Math.max(0, params.bonusPoints ?? 0);
+  const earnedPoints = params.lifetimePoints != null
+    ? params.lifetimePoints
+    : activeStaffTransactions.reduce((sum, transaction) => sum + calculateTransactionPoints(transaction), 0);
+  const points = earnedPoints + Math.max(0, params.bonusPoints ?? 0);
   const dailyStreak = calculateDailyStreak(activeStaffTransactions, now);
   const leaderboard = buildLeaderboard(params.transactions, staffName, now, { includeFallbackStaff: scope === 'personal' });
   const ownRank = scope === 'personal'

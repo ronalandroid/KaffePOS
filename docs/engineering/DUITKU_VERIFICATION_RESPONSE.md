@@ -1,3 +1,9 @@
+> ⚠️ **Historical / superseded (2026-06-29).** KaffePOS now uses **DOKU**, not Duitku. This
+> document was a one-time response to Duitku's merchant review and is kept for history only.
+> Do not use it for current configuration — see `backend/.env.staging.example` and
+> `backend/src/core/env.ts` (`PAYMENT_GATEWAY_PROVIDER=doku`, keys `DOKU_CLIENT_ID` /
+> `DOKU_SECRET_KEY` / `DOKU_CALLBACK_URL`).
+
 # Duitku Verification Response
 
 Registered website: https://kaffepos.my.id/welcome

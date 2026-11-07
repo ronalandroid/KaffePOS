@@ -63,6 +63,17 @@ router.get('/api/transactions', requirePermission('can_view_transaction_history'
   }
 });
 
+router.get('/api/staff/performance', requirePermission('can_use_pos'), async (req, res, next) => {
+  try {
+    const storeId = storeIdSchema.parse(req.query.storeId);
+    const staffName = z.string().trim().min(1).max(120).parse(req.query.staffName);
+    const performance = await TransactionService.getStaffPerformance(storeId, req.authUser!.id, staffName);
+    res.json(performance);
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post('/api/transactions/checkout', requirePermission('can_use_pos'), async (req, res, next) => {
   try {
     const payload = checkoutSchema.parse(req.body);

@@ -34,7 +34,7 @@ const inventoryWriteSchema = z.object({
   store_id: z.string().uuid(),
   name: z.string().trim().min(1),
   sku: z.string().trim().optional().nullable(),
-  stock: z.number(),
+  stock: z.number().min(0, 'Stok tidak boleh negatif.'),
   unit: z.string().trim().min(1).default('pcs'),
   base_unit: z.string().trim().optional().nullable(),
   purchase_unit: z.string().trim().optional().nullable(),
@@ -357,6 +357,12 @@ router.post(
         const createAllowed = payload.mode === 'create_only' || upsertAllowed;
         const updateAllowed = payload.mode === 'update_existing' || upsertAllowed;
 
+        // Ingredients — validation rejects duplicate names within one import, so each row
+        // maps to exactly one update or insert. Two UNNEST batches replace up to 1000
+        // sequential round-trips (the old per-row loop was an N+1 on the import hot path).
+        type IngredientWrite = { id?: string; name: string; sku: string | null; stock: number; baseUnit: string; purchaseUnit: string; minStock: number; unitCost: number };
+        const ingredientUpdates: IngredientWrite[] = [];
+        const ingredientInserts: IngredientWrite[] = [];
         for (const row of validation.validRows.filter((entry) => entry.kind === 'ingredient')) {
           const key = normalizeKey(row.name);
           const existing = inventoryByName.get(key);
@@ -366,95 +372,135 @@ router.post(
           const unitCost = stock > 0 ? totalCost / stock : 0;
           const baseUnit = row.base_unit || 'pcs';
           const purchaseUnit = row.purchase_unit || baseUnit;
-
+          const write: IngredientWrite = { name: String(row.name ?? ''), sku: row.sku ?? null, stock, baseUnit, purchaseUnit, minStock, unitCost };
           if (existing && updateAllowed) {
-            const updated = await client.query(
-              `
-                update public.inventory
-                set name = $1,
-                    sku = $2,
-                    stock = $3,
-                    unit = $4,
-                    base_unit = $4,
-                    purchase_unit = $5,
-                    conversion_ratio = 1,
-                    min_stock = $6,
-                    cost_per_unit = $7,
-                    is_active = true,
-                    updated_at = now()
-                where id = $8 and store_id = $9
-                returning ${inventoryColumns}
-              `,
-              [
-                row.name,
-                row.sku ?? null,
-                stock,
-                baseUnit,
-                purchaseUnit,
-                minStock,
-                unitCost,
-                existing.id,
-                payload.store_id,
-              ],
-            );
-            inventoryByName.set(key, updated.rows[0]);
-            committed.ingredients += 1;
-            continue;
-          }
-
-          if (!existing && createAllowed) {
-            const inserted = await client.query(
-              `
-                insert into public.inventory (
-                  id, store_id, name, sku, stock, unit, base_unit, purchase_unit, conversion_ratio, min_stock, cost_per_unit, is_active
-                ) values (
-                  gen_random_uuid(), $1, $2, $3, $4, $5, $5, $6, 1, $7, $8, true
-                )
-                returning ${inventoryColumns}
-              `,
-              [payload.store_id, row.name, row.sku ?? null, stock, baseUnit, purchaseUnit, minStock, unitCost],
-            );
-            inventoryByName.set(key, inserted.rows[0]);
-            committed.ingredients += 1;
+            ingredientUpdates.push({ ...write, id: String(existing.id) });
+          } else if (!existing && createAllowed) {
+            ingredientInserts.push(write);
           }
         }
 
+        if (ingredientUpdates.length > 0) {
+          const updated = await client.query(
+            `
+              update public.inventory inv
+              set name = v.w_name,
+                  sku = v.w_sku,
+                  stock = v.w_stock,
+                  unit = v.w_base_unit,
+                  base_unit = v.w_base_unit,
+                  purchase_unit = v.w_purchase_unit,
+                  conversion_ratio = 1,
+                  min_stock = v.w_min_stock,
+                  cost_per_unit = v.w_unit_cost,
+                  is_active = true,
+                  updated_at = now()
+              from unnest(
+                $2::uuid[], $3::text[], $4::text[], $5::numeric[], $6::text[], $7::text[], $8::numeric[], $9::numeric[]
+              ) as v(w_id, w_name, w_sku, w_stock, w_base_unit, w_purchase_unit, w_min_stock, w_unit_cost)
+              where inv.id = v.w_id and inv.store_id = $1
+              returning ${inventoryColumns}
+            `,
+            [
+              payload.store_id,
+              ingredientUpdates.map((w) => w.id),
+              ingredientUpdates.map((w) => w.name),
+              ingredientUpdates.map((w) => w.sku),
+              ingredientUpdates.map((w) => w.stock),
+              ingredientUpdates.map((w) => w.baseUnit),
+              ingredientUpdates.map((w) => w.purchaseUnit),
+              ingredientUpdates.map((w) => w.minStock),
+              ingredientUpdates.map((w) => w.unitCost),
+            ],
+          );
+          for (const rowOut of updated.rows) inventoryByName.set(normalizeKey(rowOut.name), rowOut);
+          committed.ingredients += updated.rows.length;
+        }
+
+        if (ingredientInserts.length > 0) {
+          const inserted = await client.query(
+            `
+              insert into public.inventory (
+                id, store_id, name, sku, stock, unit, base_unit, purchase_unit, conversion_ratio, min_stock, cost_per_unit, is_active
+              )
+              select gen_random_uuid(), $1, v.w_name, v.w_sku, v.w_stock, v.w_base_unit, v.w_base_unit, v.w_purchase_unit, 1, v.w_min_stock, v.w_unit_cost, true
+              from unnest(
+                $2::text[], $3::text[], $4::numeric[], $5::text[], $6::text[], $7::numeric[], $8::numeric[]
+              ) as v(w_name, w_sku, w_stock, w_base_unit, w_purchase_unit, w_min_stock, w_unit_cost)
+              returning ${inventoryColumns}
+            `,
+            [
+              payload.store_id,
+              ingredientInserts.map((w) => w.name),
+              ingredientInserts.map((w) => w.sku),
+              ingredientInserts.map((w) => w.stock),
+              ingredientInserts.map((w) => w.baseUnit),
+              ingredientInserts.map((w) => w.purchaseUnit),
+              ingredientInserts.map((w) => w.minStock),
+              ingredientInserts.map((w) => w.unitCost),
+            ],
+          );
+          for (const rowOut of inserted.rows) inventoryByName.set(normalizeKey(rowOut.name), rowOut);
+          committed.ingredients += inserted.rows.length;
+        }
+
+        // Products — same batching as ingredients (names unique per import).
+        type ProductWrite = { id?: string; name: string; price: number; category: string };
+        const productUpdates: ProductWrite[] = [];
+        const productInserts: ProductWrite[] = [];
         for (const row of validation.validRows.filter((entry) => entry.kind === 'product')) {
           const key = normalizeKey(row.name);
           const existing = menuByName.get(key);
           const price = Math.round(toNumber(row.price));
           const category = row.category || 'Coffee';
-
+          const write: ProductWrite = { name: String(row.name ?? ''), price, category };
           if (existing && updateAllowed) {
-            const updated = await client.query(
-              `
-                update public.menu_items
-                set name = $1, price = $2, category = $3, is_available = true, updated_at = now()
-                where id = $4 and store_id = $5
-                returning ${menuColumns}
-              `,
-              [row.name, price, category, existing.id, payload.store_id],
-            );
-            menuByName.set(key, updated.rows[0]);
-            committed.products += 1;
-            continue;
+            productUpdates.push({ ...write, id: String(existing.id) });
+          } else if (!existing && createAllowed) {
+            productInserts.push(write);
           }
+        }
 
-          if (!existing && createAllowed) {
-            const inserted = await client.query(
-              `
-                insert into public.menu_items (
-                  id, store_id, name, price, category, is_available, sort_order, recipe, variants
-                ) values (
-                  gen_random_uuid(), $1, $2, $3, $4, true, 0, '[]'::jsonb, '[]'::jsonb
-                )
-                returning ${menuColumns}
-              `,
-              [payload.store_id, row.name, price, category],
-            );
-            menuByName.set(key, inserted.rows[0]);
-            committed.products += 1;
-          }
+        if (productUpdates.length > 0) {
+          const updated = await client.query(
+            `
+              update public.menu_items m
+              set name = v.w_name, price = v.w_price, category = v.w_category, is_available = true, updated_at = now()
+              from unnest($2::uuid[], $3::text[], $4::numeric[], $5::text[]) as v(w_id, w_name, w_price, w_category)
+              where m.id = v.w_id and m.store_id = $1
+              returning ${menuColumns}
+            `,
+            [
+              payload.store_id,
+              productUpdates.map((w) => w.id),
+              productUpdates.map((w) => w.name),
+              productUpdates.map((w) => w.price),
+              productUpdates.map((w) => w.category),
+            ],
+          );
+          for (const rowOut of updated.rows) menuByName.set(normalizeKey(rowOut.name), rowOut);
+          committed.products += updated.rows.length;
+        }
+
+        if (productInserts.length > 0) {
+          const inserted = await client.query(
+            `
+              insert into public.menu_items (
+                id, store_id, name, price, category, is_available, sort_order, recipe, variants
+              )
+              select gen_random_uuid(), $1, v.w_name, v.w_price, v.w_category, true, 0, '[]'::jsonb, '[]'::jsonb
+              from unnest($2::text[], $3::numeric[], $4::text[]) as v(w_name, w_price, w_category)
+              returning ${menuColumns}
+            `,
+            [
+              payload.store_id,
+              productInserts.map((w) => w.name),
+              productInserts.map((w) => w.price),
+              productInserts.map((w) => w.category),
+            ],
+          );
+          for (const rowOut of inserted.rows) menuByName.set(normalizeKey(rowOut.name), rowOut);
+          committed.products += inserted.rows.length;
         }
 
         const conversionKey = (ingredientId: unknown, fromUnit?: string | null, toUnit?: string | null) =>
@@ -515,6 +561,10 @@ router.post(
           committed.conversions += 1;
         }
 
+        // Recipes — rows for the same product build on each other in row order, so fold
+        // them in-memory first (same filter-then-append semantics as the old loop), then
+        // flush one batched update covering every touched product.
+        const pendingRecipes = new Map<string, Record<string, unknown>[]>();
         for (const row of validation.validRows.filter((entry) => entry.kind === 'recipe')) {
           const product = menuByName.get(normalizeKey(row.product_name));
           const ingredient = inventoryByName.get(normalizeKey(row.ingredient_name));
@@ -522,7 +572,9 @@ router.post(
             throw new ApiError(400, 'Produk atau bahan resep tidak ditemukan saat import diproses.');
           }
 
-          const currentRecipe = Array.isArray(product.recipe) ? product.recipe : [];
+          const productId = String(product.id);
+          const currentRecipe = pendingRecipes.get(productId)
+            ?? (Array.isArray(product.recipe) ? (product.recipe as Record<string, unknown>[]) : []);
           const ingredientId = String(ingredient.id);
           const nextRecipe = [
             ...currentRecipe.filter((line: Record<string, unknown>) => String(line?.matId ?? '') !== ingredientId),
@@ -532,17 +584,27 @@ router.post(
               unit_reference: row.unit_reference || String(ingredient.base_unit ?? ingredient.unit ?? 'unit'),
             },
           ];
+          pendingRecipes.set(productId, nextRecipe);
+          committed.recipes += 1;
+        }
+
+        if (pendingRecipes.size > 0) {
+          const recipeProductIds = [...pendingRecipes.keys()];
           const updated = await client.query(
             `
-              update public.menu_items
-              set recipe = $1::jsonb, updated_at = now()
-              where id = $2 and store_id = $3
+              update public.menu_items m
+              set recipe = v.w_recipe::jsonb, updated_at = now()
+              from unnest($2::uuid[], $3::text[]) as v(w_id, w_recipe)
+              where m.id = v.w_id and m.store_id = $1
               returning ${menuColumns}
             `,
-            [JSON.stringify(nextRecipe), product.id, payload.store_id],
+            [
+              payload.store_id,
+              recipeProductIds,
+              recipeProductIds.map((id) => JSON.stringify(pendingRecipes.get(id))),
+            ],
           );
-          menuByName.set(normalizeKey(updated.rows[0].name), updated.rows[0]);
-          committed.recipes += 1;
+          for (const rowOut of updated.rows) menuByName.set(normalizeKey(rowOut.name), rowOut);
         }
 
         return {

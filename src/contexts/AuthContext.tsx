@@ -1,5 +1,4 @@
 /* eslint-disable react-refresh/only-export-components */
-/* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ApiError, getAuthSession, getProfileMe, loginRequest, logoutRequest, registerRequest, resendVerificationRequest, resetPasswordRequest, forgotPasswordRequest, verifyEmailCodeRequest } from '@/lib/backendApi';
 import {
@@ -24,6 +23,7 @@ import { getPermissionsForRole, hasPermission, normalizeUserRole, type Permissio
 import { normalizeUserFacingError } from '@/lib/errorMessages';
 import { trackAnalyticsEvent } from '@/lib/analytics';
 import { trackOpsEvent } from '@/lib/opsMetrics';
+import { useStore } from '@/hooks/useStore';
 
 type AuthCtx = {
   user: AuthUser | null;
@@ -98,9 +98,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const currentUserId = opts?.userId ?? user?.id ?? profile?.id ?? null;
 
     try {
-      const mod = await import('@/hooks/useStore');
-      mod.useStore.getState().cleanup?.();
-      mod.useStore.getState().resetState?.();
+      useStore.getState().cleanup?.();
+      useStore.getState().resetState?.();
     } catch {
       // ignore
     }
@@ -220,6 +219,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       mounted.current = false;
     };
+    // Mount-only: this restores the cached session exactly once. applySession /
+    // resetClientState are stable useCallbacks; including them would re-run boot.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const signIn = useCallback(async (email: string, password: string) => {

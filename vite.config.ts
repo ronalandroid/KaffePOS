@@ -16,6 +16,10 @@ const chunkGroups = [
     modules: ['jspdf', 'jspdf-autotable'],
   },
   {
+    name: 'charts',
+    modules: ['recharts', 'd3-'],
+  },
+  {
     name: 'capacitor',
     modules: [
       '@capacitor/core',

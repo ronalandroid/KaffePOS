@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Bell, Check, Loader2, Smartphone, X } from 'lucide-react';
 import { ApiError, getNotifications, markNotificationsRead } from '@/lib/backendApi';
 import { useAuth } from '@/contexts/AuthContext';
@@ -51,7 +50,7 @@ export default function NotificationCenter({
     onClose,
   });
 
-  const loadNotifications = async () => {
+  const loadNotifications = useCallback(async () => {
     if (!user?.id) return;
     try {
       const response = await getNotifications(80);
@@ -67,9 +66,9 @@ export default function NotificationCenter({
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]);
 
-  const markRead = async (ids?: string[]) => {
+  const markRead = useCallback(async (ids?: string[]) => {
     if (!user?.id) return;
     const payload = {
       ...(ids && ids.length > 0 ? { ids } : {}),
@@ -93,7 +92,7 @@ export default function NotificationCenter({
       setSyncingRead(false);
       window.dispatchEvent(new Event('kaffepos-notifications-refresh'));
     }
-  };
+  }, [user?.id, storeId]);
 
   const enablePush = async () => {
     setPushMessage('Menyiapkan push...');
@@ -112,7 +111,7 @@ export default function NotificationCenter({
       loadNotifications().catch(() => {});
     }, 30_000);
     return () => window.clearInterval(poll);
-  }, [isOpen, user?.id]);
+  }, [isOpen, user?.id, loadNotifications]);
 
   useEffect(() => {
     if (!isOpen || unreadCount === 0) return;
@@ -121,7 +120,7 @@ export default function NotificationCenter({
       markRead(unreadIds).catch(() => {});
     }, 1800);
     return () => window.clearTimeout(timer);
-  }, [isOpen, unreadCount, notifications]);
+  }, [isOpen, unreadCount, notifications, markRead]);
 
   if (!isOpen) return null;
 

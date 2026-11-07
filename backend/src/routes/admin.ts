@@ -24,7 +24,7 @@ const router = Router();
 const adminSubscriptionActionSchema = z.object({
   userId: z.string().uuid(),
   plan: z.enum(['secangkir', 'kopi_susu', 'signature']),
-  billingCycle: z.enum(['free', 'monthly', 'quarterly', 'semiannual', 'yearly']),
+  billingCycle: z.enum(['free', 'lifetime', 'monthly', 'quarterly', 'semiannual', 'yearly']),
   paymentAmount: z.number().nonnegative(),
   paymentNote: z.string().trim().optional().nullable(),
 });
@@ -37,6 +37,7 @@ router.get('/api/admin/subscriptions/overview', requireAdmin, async (_req, res, 
           select id, email, display_name, username, role
           from public.profiles
           order by created_at desc
+          limit 500
         `,
       ),
       pool.query(
@@ -44,6 +45,7 @@ router.get('/api/admin/subscriptions/overview', requireAdmin, async (_req, res, 
           select id, user_id, plan, billing_cycle, activated_at, expires_at, status, payment_amount
           from public.subscriptions
           order by activated_at desc
+          limit 500
         `,
       ),
       pool.query(
@@ -51,6 +53,7 @@ router.get('/api/admin/subscriptions/overview', requireAdmin, async (_req, res, 
           select id, user_id, plan, billing_cycle, amount, payment_method, paid_at, status, payment_note
           from public.payment_history
           order by paid_at desc
+          limit 500
         `,
       ),
     ]);

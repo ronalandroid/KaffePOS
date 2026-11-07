@@ -11,6 +11,8 @@ import {
   insertKitchenEvent,
   createKitchenOrderFromTransaction,
   insertNotification,
+  log,
+  serializeError,
   type PoolClient,
   type KitchenRealtimeEvent,
 } from '../core';
@@ -239,9 +241,54 @@ export class TransactionService {
     return result.rows.map((row: Record<string, unknown>) => normalizeTransaction(row));
   }
 
+  // Authoritative lifetime gamification points computed over the FULL transaction history
+  // (the client cache is windowed to ~500). Mirrors calculateTransactionPoints() in
+  // src/lib/gamification.ts: 10 base + upsell + basket + QRIS bonus per non-void sale.
+  static async getStaffPerformance(storeId: string, userId: string, staffName: string) {
+    const result = await withTransaction(async (client) => {
+      await assertStoreOwned(client, storeId, userId);
+      return client.query(
+        `
+          select
+            coalesce(sum(p.pts) filter (where t.cashier = $2), 0)::int          as personal_points,
+            (count(*) filter (where t.cashier = $2))::int                        as personal_transactions,
+            coalesce(sum(p.pts), 0)::int                                         as team_points,
+            (count(*))::int                                                      as team_transactions
+          from public.transactions t
+          cross join lateral (
+            select coalesce(sum((it->>'qty')::numeric), 0) as item_count
+            from jsonb_array_elements(coalesce(t.items, '[]'::jsonb)) it
+          ) ic
+          cross join lateral (
+            select (
+              10
+              + (case when t.total >= 50000 then 8 else 0 end)
+              + least(greatest(ic.item_count - 1, 0) * 2, 8)
+              + (case when t.method = 'QRIS' then 2 else 0 end)
+            ) as pts
+          ) p
+          where t.store_id = $1 and t.is_void = false
+        `,
+        [storeId, staffName],
+      );
+    });
+    const row = result.rows[0] ?? {};
+    return {
+      personal: { points: Number(row.personal_points ?? 0), transactions: Number(row.personal_transactions ?? 0) },
+      team: { points: Number(row.team_points ?? 0), transactions: Number(row.team_transactions ?? 0) },
+    };
+  }
+
   static async checkout(payload: any, authUser: { id: string; email: string | null }) {
     const result = await withTransaction(async (client) => {
       await assertStoreOwned(client, payload.store_id, authUser.id);
+
+      // Serialize concurrent checkouts of the same client-generated id. Offline sync can
+      // replay the same transaction from two devices at once; without this lock both would
+      // pass the duplicate check below, double-deduct stock, and the loser would 500 on the
+      // PK conflict. The xact lock auto-releases on commit/rollback so the loser then sees
+      // the committed row and returns a clean `replayed: true`.
+      await client.query('select pg_advisory_xact_lock(hashtextextended($1::text, 0))', [payload.id]);
 
       const existing = await client.query(
         `select ${transactionColumns} from public.transactions where id = $1 and store_id = $2 limit 1`,
@@ -428,6 +475,8 @@ export class TransactionService {
         storeId: payload.store_id,
         userId: authUser.id,
         metrics: { transactionId: payload.id },
+      }).catch((err) => {
+        log('warn', 'transaction.challenge_check_failed', { error: serializeError(err), transactionId: payload.id });
       });
       await notifyAfterCheckout(client, {
         storeId: payload.store_id,
@@ -436,6 +485,8 @@ export class TransactionService {
         cashierName: payload.cashier,
         total: safeTotal,
         date: payload.date,
+      }).catch((err) => {
+        log('warn', 'transaction.notify_failed', { error: serializeError(err), transactionId: payload.id });
       });
 
       return {

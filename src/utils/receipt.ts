@@ -2,7 +2,7 @@
 import { convertQuantity } from '@/lib/stockEngine';
 import type { StoreSettings, Transaction, StockUnitConversion } from '@/types';
 
-type ReceiptSettings = Partial<StoreSettings> & {
+export type ReceiptSettings = Partial<StoreSettings> & {
   show_logo_on_receipt?: boolean;
   receipt_font_size?: 'small' | 'medium' | 'large';
   receipt_show_address?: boolean;

@@ -1,3 +1,24 @@
+-- ############################################################################
+-- ## DEPRECATED — DO NOT RUN. Kept for historical reference only.            ##
+-- ##                                                                         ##
+-- ## The canonical, code-aligned affiliate/referral schema is the versioned  ##
+-- ## migration applied by the migration runner:                             ##
+-- ##   backend/migrations/20260514_0001_affiliate_referral.sql              ##
+-- ##                                                                         ##
+-- ## This hand-written file predates the runner and is INCOMPATIBLE with the ##
+-- ## application code:                                                       ##
+-- ##  - It lacks the `referral_type` column that CommissionService,          ##
+-- ##    AffiliateService, ReferralTrackingService and routes/affiliate.ts    ##
+-- ##    select and insert — running it would break every affiliate query.   ##
+-- ##  - It uses ON DELETE CASCADE on commission/referral tables, which would ##
+-- ##    silently destroy financial audit history; the canonical migration    ##
+-- ##    correctly uses ON DELETE RESTRICT.                                   ##
+-- ##                                                                         ##
+-- ## It is not executed by the migration runner or any deploy script. If you ##
+-- ## are provisioning a fresh database, run the migration runner instead:    ##
+-- ##   npm --prefix backend run migrate                                      ##
+-- ############################################################################
+
 -- Affiliate & Referral Program Migration
 -- Created: 2026-05-13
 -- Purpose: Add referral codes, affiliate tracking, and commission management

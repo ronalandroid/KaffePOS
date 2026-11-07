@@ -342,10 +342,10 @@ function drawInfoPanel(
 
 export interface ReportData {
   storeName: string;
-  tagline?: string;
-  address?: string;
-  phone?: string;
-  logoData?: string;
+  tagline?: string | undefined;
+  address?: string | undefined;
+  phone?: string | undefined;
+  logoData?: string | undefined;
   period: string;
   periodLabel: string;
   reportTitle?: string;

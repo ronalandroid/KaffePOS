@@ -6,88 +6,20 @@ import { Browser } from '@capacitor/browser';
 import {
   AlertCircle,
   ArrowLeft,
-  BarChart3,
   CheckCircle,
   ExternalLink,
   Eye,
   EyeOff,
   Lock,
-  MonitorSmartphone,
-  Palette,
   RefreshCw,
-  Shield,
-  ShieldCheck,
   Store,
-  Zap,
 } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { AuthMode, getAuthModeFromLocation, getAuthPathForMode } from '@/utils/authFlow';
 import { getPasswordResetParams } from '@/utils/authFlow';
 import { normalizeUserFacingError } from '@/lib/errorMessages';
-import LOGO_ICON from '@/assets/logo-kaffeposappicon.svg';
-
-const brandHighlights = [
-  {
-    title: 'Mudah digunakan',
-    copy: 'Kelola penjualan, stok, pelanggan, dan laporan dari satu aplikasi.',
-    icon: Zap,
-  },
-  {
-    title: 'Transaksi cepat',
-    copy: 'Alur kasir dibuat ringkas agar tim bisa melayani pelanggan tanpa jeda.',
-    icon: BarChart3,
-  },
-  {
-    title: 'Laporan lengkap',
-    copy: 'Ringkasan penjualan, stok, dan riwayat transaksi tersaji rapi.',
-    icon: ShieldCheck,
-  },
-  {
-    title: 'Keamanan terjamin',
-    copy: 'Akses akun dan data outlet berjalan dengan pembatasan per pengguna.',
-    icon: Shield,
-  },
-];
-
-const authPreviewCards = [
-  {
-    title: 'Dashboard live',
-    label: 'Web & APK',
-    copy: 'Pantau penjualan dan laporan dari semua device.',
-    icon: MonitorSmartphone,
-    supportIcon: BarChart3,
-    accent: 'from-sky-50 via-white to-orange-50 text-sky-700 ring-sky-100',
-    supportAccent: 'bg-orange-500 text-white',
-  },
-  {
-    title: 'Brand outlet',
-    label: 'Pengaturan',
-    copy: 'Identitas toko, printer, dan pengguna tetap rapi.',
-    icon: Store,
-    supportIcon: Palette,
-    accent: 'from-orange-50 via-white to-amber-50 text-[#FF6A00] ring-orange-100',
-    supportAccent: 'bg-slate-900 text-white',
-  },
-  {
-    title: 'Lisensi sinkron',
-    label: 'Billing',
-    copy: 'Paket dan masa aktif mudah dicek tanpa berpindah aplikasi.',
-    icon: ShieldCheck,
-    supportIcon: RefreshCw,
-    accent: 'from-emerald-50 via-white to-orange-50 text-emerald-700 ring-emerald-100',
-    supportAccent: 'bg-emerald-500 text-white',
-  },
-] satisfies Array<{
-  title: string;
-  label: string;
-  copy: string;
-  icon: LucideIcon;
-  supportIcon: LucideIcon;
-  accent: string;
-  supportAccent: string;
-}>;
-
+import { LOGO_ICON, brandHighlights } from './authContent';
+import { AuthPreviewStage, AuthMobilePreviewStrip } from './AuthPreviewPanels';
 export default function AuthPage() {
   const { signIn, signUp, resetPassword, updatePassword, resendVerification, verifyEmailCode, isAuthenticated } = useAuth();
   const location = useLocation();
@@ -458,59 +390,7 @@ export default function AuthPage() {
               })}
             </div>
 
-            <div data-testid="auth-preview-stage" className="kaffe-auth-preview mb-5">
-              <div className="relative z-10 flex items-start justify-between gap-5">
-                <div className="min-w-0">
-                  <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-orange-200/80 bg-white/80 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wide text-[#FF6A00]">
-                    <span className="h-2 w-2 rounded-full bg-[#16A34A] shadow-[0_0_0_5px_rgba(22,163,74,0.12)]" aria-hidden="true" />
-                    Sinkronisasi outlet aktif
-                  </div>
-                  <h2 className="text-[18px] font-extrabold leading-snug text-slate-900">
-                    Preview operasional yang selalu tersambung
-                  </h2>
-                  <p className="mt-1.5 text-[12px] font-medium leading-5 text-slate-500">
-                    UI web, mobile web, dan APK dibuat senada supaya tim tetap familiar di perangkat apa pun.
-                  </p>
-                </div>
-                <div className="hidden shrink-0 rounded-2xl border border-orange-100 bg-white/80 px-3 py-2 text-right shadow-sm xl:block">
-                  <p className="text-[11px] font-bold text-slate-400">Sync status</p>
-                  <p className="text-lg font-extrabold text-slate-900">99.9%</p>
-                  <p className="text-[11px] font-semibold text-[#16A34A]">Real-time</p>
-                </div>
-              </div>
-
-              <div className="relative z-10 mt-4 grid grid-cols-3 gap-2.5">
-                {authPreviewCards.map((card, index) => {
-                  const Icon = card.icon;
-                  const SupportIcon = card.supportIcon;
-                  return (
-                    <article
-                      key={card.title}
-                      data-testid="auth-preview-card"
-                      className="kaffe-preview-card kaffe-float-soft"
-                      style={{ animationDelay: `${index * -1.35}s` }}
-                    >
-                      <div className="kaffe-preview-icon-panel flex h-28 w-full items-center justify-center rounded-[16px] border border-orange-100 bg-white shadow-sm">
-                        <div
-                          data-testid="auth-preview-card-icon"
-                          className={`relative z-10 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br shadow-sm ring-1 ${card.accent}`}
-                        >
-                          <Icon size={30} strokeWidth={2.35} aria-hidden="true" />
-                          <span className={`absolute -bottom-1.5 -right-1.5 flex h-7 w-7 items-center justify-center rounded-xl border-2 border-white shadow-sm ${card.supportAccent}`}>
-                            <SupportIcon size={14} strokeWidth={2.7} aria-hidden="true" />
-                          </span>
-                        </div>
-                      </div>
-                      <div className="mt-3 min-w-0">
-                        <p className="text-[10px] font-extrabold uppercase tracking-wide text-[#FF6A00]">{card.label}</p>
-                        <h3 className="mt-1 truncate text-[13px] font-extrabold text-slate-900">{card.title}</h3>
-                        <p className="mt-1 hidden text-[11px] font-medium leading-5 text-slate-500 2xl:block">{card.copy}</p>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            </div>
+            <AuthPreviewStage />
 
           </div>
 
@@ -539,23 +419,7 @@ export default function AuthPage() {
               <p className="text-[13px] text-slate-400 px-4">Bergabung ke dalam ekosistem KaffePOS</p>
             </div>
 
-            <div data-testid="auth-mobile-preview-strip" className="kaffe-mobile-preview-strip lg:hidden" aria-label="Preview fitur KaffePOS">
-              {authPreviewCards.map((card, index) => {
-                const Icon = card.icon;
-                const SupportIcon = card.supportIcon;
-                return (
-                  <div key={card.title} className="kaffe-mobile-preview-card kaffe-float-soft" style={{ animationDelay: `${index * -1.2}s` }}>
-                    <div className={`kaffe-mobile-preview-icon bg-gradient-to-br ${card.accent}`}>
-                      <Icon size={22} strokeWidth={2.4} aria-hidden="true" />
-                      <span className={`kaffe-mobile-preview-badge ${card.supportAccent}`}>
-                        <SupportIcon size={11} strokeWidth={2.7} aria-hidden="true" />
-                      </span>
-                    </div>
-                    <span>{card.title}</span>
-                  </div>
-                );
-              })}
-            </div>
+            <AuthMobilePreviewStrip />
 
             <div className="kaffe-panel min-w-0 rounded-[24px] p-6 sm:p-7 relative transition-all duration-300 hover:border-[#FF6A00]/20">
               <div className="text-center mb-8">
@@ -746,7 +610,7 @@ export default function AuthPage() {
                           onChange={(e) => setUname(e.target.value)}
                           aria-invalid={!!formErrors.uname}
                           aria-describedby={formErrors.uname ? 'auth-uname-error' : undefined}
-                          className={`w-full h-14 rounded-2xl bg-slate-50/50 border pl-12 pr-4 text-[16px] font-bold text-slate-900 placeholder-slate-300 outline-none transition-all focus:bg-white focus:ring-4 focus:ring-[#FF6A00]/5 ${
+                          className={`w-full h-14 rounded-2xl bg-slate-50/50 border pl-12 pr-4 text-[16px] font-bold text-slate-900 placeholder-slate-300 outline-none transition-all focus:bg-white focus:ring-4 focus:ring-[#FF6A00]/40 ${
                             formErrors.uname ? 'border-red-700' : 'border-slate-100 focus:border-[#FF6A00]/20'
                           }`}
                           placeholder="Kopi Senja"
@@ -772,7 +636,7 @@ export default function AuthPage() {
                           onChange={(e) => setEmail(e.target.value)}
                           aria-invalid={!!formErrors.email}
                           aria-describedby={formErrors.email ? 'auth-email-error' : undefined}
-                          className={`w-full h-14 rounded-2xl bg-slate-50/50 border px-5 text-[16px] font-bold text-slate-900 placeholder-slate-300 outline-none transition-all focus:bg-white focus:ring-4 focus:ring-[#FF6A00]/5 ${
+                          className={`w-full h-14 rounded-2xl bg-slate-50/50 border px-5 text-[16px] font-bold text-slate-900 placeholder-slate-300 outline-none transition-all focus:bg-white focus:ring-4 focus:ring-[#FF6A00]/40 ${
                             formErrors.email ? 'border-red-700' : 'border-slate-100 focus:border-[#FF6A00]/20'
                           }`}
                           placeholder="toko@email.com"
@@ -809,7 +673,7 @@ export default function AuthPage() {
                           onChange={(e) => setPass(e.target.value)}
                           aria-invalid={!!formErrors.pass}
                           aria-describedby={formErrors.pass ? 'auth-pass-error' : undefined}
-                          className={`w-full h-14 rounded-2xl bg-slate-50/50 border px-5 pr-12 text-[16px] font-bold text-slate-900 placeholder-slate-300 outline-none transition-all focus:bg-white focus:ring-4 focus:ring-[#FF6A00]/5 ${
+                          className={`w-full h-14 rounded-2xl bg-slate-50/50 border px-5 pr-12 text-[16px] font-bold text-slate-900 placeholder-slate-300 outline-none transition-all focus:bg-white focus:ring-4 focus:ring-[#FF6A00]/40 ${
                             formErrors.pass ? 'border-red-700' : 'border-slate-100 focus:border-[#FF6A00]/20'
                           }`}
                           placeholder="••••••••••"
@@ -841,7 +705,7 @@ export default function AuthPage() {
                           type={show ? 'text' : 'password'}
                           value={confirmPass}
                           onChange={(e) => setConfirmPass(e.target.value)}
-                          className="w-full h-14 rounded-2xl bg-slate-50/50 border border-slate-100 pl-12 pr-4 text-[16px] font-bold text-slate-900 placeholder-slate-300 outline-none transition-all focus:bg-white focus:ring-4 focus:ring-[#FF6A00]/5 focus:border-[#FF6A00]/20"
+                          className="w-full h-14 rounded-2xl bg-slate-50/50 border border-slate-100 pl-12 pr-4 text-[16px] font-bold text-slate-900 placeholder-slate-300 outline-none transition-all focus:bg-white focus:ring-4 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]/20"
                           placeholder="••••••••••"
                         />
                       </div>

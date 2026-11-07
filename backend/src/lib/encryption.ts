@@ -6,9 +6,23 @@ const IV_LENGTH = 12;
 const AUTH_TAG_LENGTH = 16;
 const SALT = 'kaffepos-pii-encryption-v1';
 
+let cachedSecret: string | undefined;
+let cachedKey: Buffer | undefined;
+
 function getEncryptionKey(): Buffer {
-  const secret = env.PII_ENCRYPTION_KEY || env.DATABASE_URL || 'development-only-key';
-  return scryptSync(secret, SALT, 32);
+  // Never derive the PII key from DATABASE_URL — that couples encryption to the DB
+  // password and makes credential rotation impossible without a re-encryption migration.
+  const secret = env.PII_ENCRYPTION_KEY;
+  if (!secret && env.NODE_ENV === 'production') {
+    throw new Error('PII_ENCRYPTION_KEY env var must be set in production');
+  }
+  const effectiveSecret = secret || 'development-only-key';
+  if (cachedKey && cachedSecret === effectiveSecret) {
+    return cachedKey;
+  }
+  cachedSecret = effectiveSecret;
+  cachedKey = scryptSync(effectiveSecret, SALT, 32);
+  return cachedKey;
 }
 
 export function encryptPii(plaintext: string): string {
@@ -16,8 +30,8 @@ export function encryptPii(plaintext: string): string {
 
   const key = getEncryptionKey();
   const iv = randomBytes(IV_LENGTH);
-  const cipher = createCipheriv(ALGORITHM, key, iv);
-  
+  const cipher = createCipheriv(ALGORITHM, key, iv, { authTagLength: AUTH_TAG_LENGTH });
+
   const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
   const authTag = cipher.getAuthTag();
   
@@ -34,7 +48,7 @@ export function decryptPii(encryptedData: string): string {
     const encrypted = data.subarray(IV_LENGTH + AUTH_TAG_LENGTH);
     
     const key = getEncryptionKey();
-    const decipher = createDecipheriv(ALGORITHM, key, iv);
+    const decipher = createDecipheriv(ALGORITHM, key, iv, { authTagLength: AUTH_TAG_LENGTH });
     decipher.setAuthTag(authTag);
     
     return Buffer.concat([decipher.update(encrypted), decipher.final()]).toString('utf8');

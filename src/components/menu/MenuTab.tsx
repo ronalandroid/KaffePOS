@@ -17,12 +17,72 @@ import { usePagination } from '@/hooks/usePagination';
 import type { MenuItem } from '@/types';
 
 const fRp = (n: number) => new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',minimumFractionDigits:0}).format(n||0);
-const EMPTY: Partial<MenuItem> = { name:'', price:0, category:'Coffee', image_url:'', description:'', recipe:[], variants:[], is_available:true };
+const EMPTY: Partial<MenuItem> = { name:'', price:0, category:'Coffee', image_url:'', description:'', recipe:[], variants:[], modifiers:[], is_available:true };
 const ALLOWED_IMAGE_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp']);
 const PAGE_SIZE = 24;
 
 const LoadingSkeleton = memo(function LoadingSkeleton() {
   return <div className="grid grid-cols-1 sm:grid-cols-2 lg:hidden gap-3">{Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-32 rounded-[24px] bg-slate-100 animate-pulse" />)}</div>;
+});
+
+type OptionRow = { name: string; price: number };
+type OptionRowsEditorProps = {
+  title: string; subtitle: string; addLabel: string; emptyHint: string;
+  rows: OptionRow[];
+  onAdd: () => void;
+  onUpdate: (idx: number, key: 'name' | 'price', val: string) => void;
+  onRemove: (idx: number) => void;
+};
+const OptionRowsEditor = memo(function OptionRowsEditor({ title, subtitle, addLabel, emptyHint, rows, onAdd, onUpdate, onRemove }: OptionRowsEditorProps) {
+  return (
+    <div className="border-t border-slate-100 pt-5 mt-2">
+      <div className="flex items-center justify-between mb-3">
+        <div>
+          <p className="text-[13px] font-black text-slate-800">{title}</p>
+          <p className="text-[11px] text-slate-400 font-medium">{subtitle}</p>
+        </div>
+        <button type="button" onClick={onAdd}
+          className="flex items-center gap-1.5 px-4 py-2 bg-orange-50 text-orange-600 rounded-xl text-xs font-black active:scale-95 transition-colors border border-orange-100">
+          <Plus size={14}/>{addLabel}
+        </button>
+      </div>
+      {rows.length === 0 ? (
+        <div className="bg-slate-50 border border-dashed border-slate-200 rounded-xl p-3 text-center">
+          <p className="text-slate-400 text-xs">{emptyHint}</p>
+        </div>
+      ) : (
+        <div className="space-y-2.5">
+          {rows.map((row, idx) => (
+            <div key={idx} className="flex items-center gap-2.5 bg-white border border-slate-100 rounded-2xl p-2.5 shadow-sm">
+              <input
+                value={row.name}
+                onChange={e => onUpdate(idx, 'name', e.target.value)}
+                placeholder="Nama (mis. Large / Extra Shot)"
+                aria-label="Nama opsi"
+                className="flex-1 min-w-0 h-11 border border-slate-100 rounded-xl px-3 text-xs focus:outline-none focus:border-orange-400 bg-slate-50 font-bold text-slate-700"
+              />
+              <div className="w-28 relative shrink-0">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-black text-slate-300 pointer-events-none">Rp</span>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  value={row.price || ''}
+                  onChange={e => onUpdate(idx, 'price', e.target.value)}
+                  placeholder="0"
+                  aria-label="Harga opsi"
+                  className="w-full h-11 border border-slate-100 rounded-xl pl-8 pr-2 text-xs focus:outline-none focus:border-orange-400 text-right font-black bg-slate-50"
+                />
+              </div>
+              <button type="button" onClick={() => onRemove(idx)} aria-label="Hapus opsi"
+                className="w-9 h-9 flex items-center justify-center text-red-400 bg-red-50 rounded-xl active:scale-90 transition-all">
+                <X size={16}/>
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 });
 
 export default function MenuTab({ toast }:any) {
@@ -40,8 +100,8 @@ export default function MenuTab({ toast }:any) {
   const filtered = useMemo(() => menu.filter(m => (cat==='All'||m.category===cat) && (!dSearch||m.name.toLowerCase().includes(dSearch.toLowerCase()))), [menu,cat,dSearch]);
   const { visibleItems, hasMore, remaining, loadMore } = usePagination(filtered, { pageSize: PAGE_SIZE, resetKeys: [cat, dSearch] });
 
-  const openNew  = () => { setForm({ ...EMPTY, recipe: [] }); setShowModal(true); };
-  const openEdit = (item: MenuItem) => { setForm({ ...item, recipe: item.recipe ? [...item.recipe] : [] }); setShowModal(true); };
+  const openNew  = () => { setForm({ ...EMPTY, recipe: [], variants: [], modifiers: [] }); setShowModal(true); };
+  const openEdit = (item: MenuItem) => { setForm({ ...item, recipe: item.recipe ? [...item.recipe] : [], variants: item.variants ? [...item.variants] : [], modifiers: item.modifiers ? [...item.modifiers] : [] }); setShowModal(true); };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; if (!file) return;
@@ -62,9 +122,12 @@ export default function MenuTab({ toast }:any) {
       toast.showToast('Lengkapi bahan resep atau hapus baris yang kosong.', 'warning');
       return;
     }
+    // Drop blank variant/modifier rows so the backend (name required) doesn't 400.
+    const cleanVariants = (form.variants || []).map(v => ({ ...v, name: v.name.trim() })).filter(v => v.name);
+    const cleanModifiers = (form.modifiers || []).map(m => ({ ...m, name: m.name.trim() })).filter(m => m.name);
     setSaving(true);
     try {
-      await saveMenuItem(form);
+      await saveMenuItem({ ...form, variants: cleanVariants, modifiers: cleanModifiers });
       setShowModal(false);
       toast.showToast(form.id ? '✅ Menu diperbarui!' : '✅ Menu ditambahkan!', 'success');
     }
@@ -85,6 +148,16 @@ export default function MenuTab({ toast }:any) {
     setForm(f => { const r = [...(f.recipe||[])]; r[idx] = { ...r[idx], [key]: key==='qty'?parseFloat(val)||0:val }; return { ...f, recipe: r }; });
   };
   const removeRecipeLine = (idx: number) => setForm(f => ({ ...f, recipe: (f.recipe||[]).filter((_,i) => i!==idx) }));
+
+  // Variant (single-select size) + modifier (multi-select priced add-on) editors.
+  const addVariant    = () => setForm(f => ({ ...f, variants: [...(f.variants||[]), { name: '', price: 0 }] }));
+  const updateVariant = (idx: number, key: 'name'|'price', val: string) =>
+    setForm(f => { const v = [...(f.variants||[])]; v[idx] = { ...v[idx], [key]: key==='price'?parseInt(val)||0:val }; return { ...f, variants: v }; });
+  const removeVariant = (idx: number) => setForm(f => ({ ...f, variants: (f.variants||[]).filter((_,i) => i!==idx) }));
+  const addModifier    = () => setForm(f => ({ ...f, modifiers: [...(f.modifiers||[]), { name: '', price: 0 }] }));
+  const updateModifier = (idx: number, key: 'name'|'price', val: string) =>
+    setForm(f => { const m = [...(f.modifiers||[])]; m[idx] = { ...m[idx], [key]: key==='price'?parseInt(val)||0:val }; return { ...f, modifiers: m }; });
+  const removeModifier = (idx: number) => setForm(f => ({ ...f, modifiers: (f.modifiers||[]).filter((_,i) => i!==idx) }));
 
   const getStockStatus = (item: MenuItem) => {
     if (!item.recipe?.length) return null;
@@ -399,6 +472,24 @@ export default function MenuTab({ toast }:any) {
                   </div>
                 )}
               </div>
+
+              {/* VARIAN + MODIFIER */}
+              <OptionRowsEditor
+                title="VARIAN UKURAN"
+                subtitle="Pilihan tunggal saat checkout (mis. S/M/L). Harga menggantikan harga dasar."
+                addLabel="Tambah Varian"
+                emptyHint="Belum ada varian. Menu memakai satu harga."
+                rows={form.variants || []}
+                onAdd={addVariant} onUpdate={updateVariant} onRemove={removeVariant}
+              />
+              <OptionRowsEditor
+                title="TAMBAHAN (MODIFIER)"
+                subtitle="Pilihan ganda berbayar (mis. Extra Shot, Oat Milk). Harga ditambahkan."
+                addLabel="Tambah Modifier"
+                emptyHint="Belum ada tambahan."
+                rows={form.modifiers || []}
+                onAdd={addModifier} onUpdate={updateModifier} onRemove={removeModifier}
+              />
 
               {/* TOGGLE AVAILABLE */}
               <div

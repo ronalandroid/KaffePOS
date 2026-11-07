@@ -1,3 +1,13 @@
+> ⚠️ **Legacy naming notice (updated 2026-06-29).** This document predates the switch to
+> **DOKU** and still references the old `DUITKU_*` / `MIDTRANS_*` keys below. The **active**
+> payment gateway is **DOKU**. The authoritative env contract is `backend/src/core/env.ts`
+> and the working template `backend/.env.staging.example`.
+>
+> Correct values: `PAYMENT_GATEWAY_PROVIDER=doku` (NOT `duitku` — that value fails the env
+> schema and prevents boot), `SUBSCRIPTION_PAYMENT_MODE=doku_sandbox|doku_production`, and the
+> keys `DOKU_CLIENT_ID`, `DOKU_SECRET_KEY`, `DOKU_CALLBACK_URL`, `DOKU_ENVIRONMENT`. The code
+> does **not** read `DUITKU_*` / `MIDTRANS_*` — treat any such references below as superseded.
+
 # KaffePOS Coolify Env Mapping
 
 Use this mapping when configuring Coolify staging services. Do not paste real values into this file. Keep backend secrets out of frontend service env.

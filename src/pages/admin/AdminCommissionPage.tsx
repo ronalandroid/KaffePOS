@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { money } from './adminMoney';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { adminApproveCommission, adminGetCommissionDetail, adminGetCommissions, adminMarkCommissionPaid, adminRejectCommission } from '@/lib/backendApi';
@@ -25,12 +24,12 @@ export default function AdminCommissionPage() {
   const [detail, setDetail] = useState<AdminCommissionDetail | null>(null);
   const [action, setAction] = useState<Action | null>(null);
   const [saving, setSaving] = useState(false);
-  const load = async () => { try { setLoading(true); setError(null); const data = await adminGetCommissions({ status, type, search: dSearch, limit: 50 }); setItems(data.items || []); } catch (err) { setError(err instanceof Error ? err.message : 'Gagal memuat komisi.'); } finally { setLoading(false); } };
-  useEffect(() => { void load(); }, [status, type, dSearch]);
+  const load = useCallback(async () => { try { setLoading(true); setError(null); const data = await adminGetCommissions({ status, type, search: dSearch, limit: 50 }); setItems(data.items || []); } catch (err) { setError(err instanceof Error ? err.message : 'Gagal memuat komisi.'); } finally { setLoading(false); } }, [status, type, dSearch]);
+  useEffect(() => { void load(); }, [load]);
+  const sum = useCallback((target: string) => items.filter((i) => i.status === target).reduce((s, i) => s + getCommissionAmount(i), 0), [items]);
   const summary = useMemo(() => [
     { label: 'Pending', value: sum('pending'), money: true }, { label: 'Eligible', value: sum('eligible'), money: true }, { label: 'Approved', value: sum('approved'), money: true }, { label: 'Paid', value: sum('paid'), money: true }, { label: 'Rejected', value: sum('rejected'), money: true }, { label: 'Total', value: items.reduce((s, i) => s + getCommissionAmount(i), 0), money: true },
-  ], [items]);
-  function sum(target: string) { return items.filter((i) => i.status === target).reduce((s, i) => s + getCommissionAmount(i), 0); }
+  ], [items, sum]);
   const openDetail = async (id: string) => { const data = await adminGetCommissionDetail(id); setDetail(data); };
   const submitAction = async () => { if (!action) return; if (action.type === 'reject' && !action.note.trim()) return; setSaving(true); try { if (action.type === 'approve') { await adminApproveCommission(action.id, action.note || undefined); trackAnalyticsEvent('admin_commission_approved'); } if (action.type === 'reject') { await adminRejectCommission(action.id, action.note); trackAnalyticsEvent('admin_commission_rejected'); } if (action.type === 'paid') { await adminMarkCommissionPaid(action.id, action.note || undefined); trackAnalyticsEvent('admin_commission_marked_paid'); } setAction(null); await load(); } finally { setSaving(false); } };
   return <AdminPageShell title="Admin Commissions" description="Review, approve, reject, dan tandai komisi affiliate/referral sebagai dibayar.">

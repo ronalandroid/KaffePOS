@@ -74,10 +74,11 @@ interface ToastContainerProps {
 }
 
 export function ToastContainer({ toasts, onDismiss }: ToastContainerProps) {
-  if (!toasts.length) return null;
-
   return (
     <div
+      aria-live="polite"
+      aria-atomic="false"
+      role="status"
       className="fixed z-[9999] flex flex-col gap-2 pointer-events-none"
       style={{
         bottom: 'calc(72px + env(safe-area-inset-bottom, 0px))',

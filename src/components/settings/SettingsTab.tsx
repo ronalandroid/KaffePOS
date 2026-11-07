@@ -1,26 +1,12 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react/no-unescaped-entities */
-
-
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/settings/SettingsTab.tsx — KaffePOS v5
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
-  LogOut,
-  Printer,
-  Image,
   Save,
-  Eye,
-  EyeOff,
   CheckCircle2,
-  RotateCcw,
-  Bluetooth,
-  BluetoothOff,
   AlertCircle,
-  Wifi,
   Bell,
   ChevronRight,
+  Printer,
   Store,
   FileText,
   Palette,
@@ -28,7 +14,8 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import SubscriptionSection from './SubscriptionSection';
+import type { ReceiptSettings } from '@/utils/receipt';
+import type { Profile, ToastType } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStore } from '@/hooks/useStore';
 import { usePrinter } from '@/hooks/usePrinter';
@@ -37,18 +24,16 @@ import { getNotifications, updateProfileMe } from '@/lib/backendApi';
 import { normalizeUserFacingError } from '@/lib/errorMessages';
 import { getStoreSettingsKey } from '@/utils/sessionIsolation';
 import NotificationCenter from './NotificationCenter';
-import UpgradePrompt from '@/components/UpgradePrompt';
-import { getPlanDefinition } from '@/lib/subscriptionPlans';
 import type { SubscriptionAccess } from '@/lib/subscriptionAccess';
 import { dispatchUpgradePrompt } from '@/lib/upgradePrompts';
 import ThemeCustomizer from './ThemeCustomizer';
-import CashierManagementSection from './CashierManagementSection';
+import StoreProfilePanel from './StoreProfilePanel';
+import ReceiptSettingsPanel from './ReceiptSettingsPanel';
+import PrinterPanel from './PrinterPanel';
+import CashierPanel from './CashierPanel';
+import LicensePanel from './LicensePanel';
 import {
   createReceiptPrintData,
-  formatReceiptCurrency,
-  getReceiptDividerChar,
-  getReceiptFontPx,
-  getReceiptPreviewWidth,
   getReceiptSettings,
 } from '@/utils/receipt';
 
@@ -62,125 +47,18 @@ const SAFE_COLS = [
 ];
 const ALLOWED_IMAGE_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp']);
 
-function saveToLS(storeId: string | null, data:any) {
+type ToastApi = { showToast: (message: string, type?: ToastType) => void };
+
+function saveToLS(storeId: string | null, data: ReceiptSettings) {
   if (!storeId) return;
   try { localStorage.setItem(getStoreSettingsKey(storeId), JSON.stringify(data)); } catch { /* ignore */ }
 }
-function loadFromLS(storeId: string | null):any {
+function loadFromLS(storeId: string | null): Partial<ReceiptSettings> | null {
   if (!storeId) return null;
   try { const r = localStorage.getItem(getStoreSettingsKey(storeId)); return r ? JSON.parse(r) : null; } catch { return null; }
 }
 
-interface InpProps {
-  label: string;
-  value: string | number;
-  onChange: (val: string) => void;
-  placeholder?: string;
-  note?: string;
-}
-
-const Inp = ({ label, value, onChange, placeholder, note }: InpProps) => (
-  <div className="space-y-1.5">
-    <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-0.5">{label}</label>
-    <input
-      value={value||''}
-      onChange={e=>onChange(e.target.value)}
-      placeholder={placeholder}
-      className="w-full h-12 border border-slate-100 rounded-2xl px-4 text-[15px] font-bold focus:outline-none focus:ring-4 focus:ring-[#FF6A00]/5 focus:border-[#FF6A00]/20 bg-slate-50/50 transition-all placeholder:text-slate-300 shadow-sm"
-    />
-    {note&&<p className="text-[10px] text-slate-400 font-bold italic pl-0.5 opacity-80">{note}</p>}
-  </div>
-);
-
-interface ToggleProps {
-  label: string;
-  value: boolean;
-  onChange: (val: boolean) => void;
-  note?: string;
-}
-
-const Toggle = ({ label, value, onChange, note }: ToggleProps) => (
-  <div
-    onClick={() => onChange(!value)}
-    className="flex items-center justify-between py-4 border-b border-slate-100/50 last:border-0 cursor-pointer active:bg-slate-50/30 -mx-4 px-4 transition-colors"
-  >
-    <div className="flex-1 min-w-0 pr-3">
-      <p className="text-[14px] font-bold text-slate-800">{label}</p>
-      {note&&<p className="text-[10px] text-slate-400 font-bold mt-0.5 italic">{note}</p>}
-    </div>
-    <div
-      className={`h-[26px] w-12 rounded-full transition-all relative shrink-0 ${value?'bg-[#FF6A00] shadow-[0_0_15px_rgba(255,106,0,0.25)]':'bg-slate-200'}`}
-    >
-      <div className={`h-[22px] w-[22px] bg-white rounded-full absolute top-0.5 shadow-sm transition-all duration-300 ${value?'left-[24px]':'left-0.5'}`}/>
-    </div>
-  </div>
-);
-
-interface SelProps {
-  label: string;
-  value: string;
-  onChange: (val: string) => void;
-  options: { v: string; l: string }[];
-}
-
-const Sel = ({ label, value, onChange, options }: SelProps) => (
-  <div className="space-y-1.5">
-    <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-0.5">{label}</label>
-    <div className="relative">
-      <select
-        value={value||''}
-        onChange={e=>onChange(e.target.value)}
-        className="w-full h-12 border border-slate-100 rounded-2xl px-4 text-[15px] font-bold focus:outline-none focus:ring-4 focus:ring-[#FF6A00]/5 focus:border-[#FF6A00]/20 bg-slate-50/50 transition-all appearance-none shadow-sm"
-      >
-        {options.map((o)=><option key={o.v} value={o.v}>{o.l}</option>)}
-      </select>
-      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300">
-        <ChevronRight size={16} className="rotate-90" />
-      </div>
-    </div>
-  </div>
-);
-
-function ReceiptPreview({ s }: { s:any }) {
-  const settings = getReceiptSettings(s);
-  const dc = getReceiptDividerChar(settings.receipt_divider);
-  const W  = getReceiptPreviewWidth(settings.paper_width);
-  const fs = getReceiptFontPx(settings.receipt_font_size);
-  const div = dc.repeat(Math.floor(W/7));
-  const tax = Math.round(68000*(settings.tax_percent||0)/100);
-  return (
-    <div className="flex justify-center overflow-x-auto pb-2">
-      <div style={{width:W,fontFamily:"'Courier New',monospace",fontSize:fs,background:'#fff',border:'1px solid #e2e8f0',borderRadius:8,padding:'10px 8px',lineHeight:1.6,color:'#1e293b',minWidth:W}}>
-        {settings.show_logo_on_receipt&&settings.logo_url&&<div style={{textAlign:settings.logo_position||'center',marginBottom:4}}><img src={settings.logo_url} alt="" style={{height:settings.logo_size||40,display:'inline-block',objectFit:'contain'}}/></div>}
-        <div style={{textAlign:'center',fontWeight:'bold',fontSize:fs+3}}>{settings.store_name||'Nama Toko'}</div>
-        {settings.tagline&&<div style={{textAlign:'center',fontSize:fs-0.5,color:'#64748b'}}>{settings.tagline}</div>}
-        {settings.receipt_show_address&&settings.address&&<div style={{textAlign:'center',fontSize:fs-1,color:'#64748b'}}>{settings.address}</div>}
-        {settings.receipt_show_whatsapp&&settings.whatsapp&&<div style={{textAlign:'center',fontSize:fs-1,color:'#64748b'}}>WA: {settings.whatsapp}</div>}
-        {settings.receipt_header&&<div style={{textAlign:'center',fontSize:fs-0.5}}>{settings.receipt_header}</div>}
-        <div style={{color:'#94a3b8',margin:'4px 0'}}>{div}</div>
-        {settings.receipt_show_trx_id&&<div style={{fontSize:fs-1,color:'#64748b'}}>No: TRX-20250301-001</div>}
-        <div style={{fontSize:fs-1,color:'#64748b'}}>Tgl: {new Date().toLocaleString('id-ID',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
-        {settings.receipt_show_cashier&&<div style={{fontSize:fs-1,color:'#64748b'}}>Kasir: kasir1</div>}
-        <div style={{color:'#94a3b8',margin:'4px 0'}}>{div}</div>
-        {[{n:'Kopi Susu',q:2,p:25000},{n:'Teh Tarik',q:1,p:18000}].map((i,idx)=>(
-          <div key={idx}><div style={{fontWeight:'bold'}}>{i.n}</div><div style={{display:'flex',justifyContent:'space-between',paddingLeft:8}}><span>{i.q}x {formatPreviewCurrency(i.p)}</span><span>{formatPreviewCurrency(i.q*i.p)}</span></div></div>
-        ))}
-        <div style={{color:'#94a3b8',margin:'4px 0'}}>{div}</div>
-        {settings.receipt_show_tax&&tax>0&&<div style={{display:'flex',justifyContent:'space-between',fontSize:fs-0.5}}><span>Pajak {settings.tax_percent}%</span><span>{formatPreviewCurrency(tax)}</span></div>}
-        <div style={{display:'flex',justifyContent:'space-between',fontWeight:'bold',fontSize:fs+1}}><span>TOTAL</span><span>{formatPreviewCurrency(68000+tax)}</span></div>
-        <div style={{color:'#94a3b8',margin:'4px 0'}}>{div}</div>
-        <div style={{display:'flex',justifyContent:'space-between'}}><span>Bayar (Tunai)</span><span>{formatPreviewCurrency(70000)}</span></div>
-        <div style={{display:'flex',justifyContent:'space-between',fontWeight:'bold'}}><span>Kembali</span><span>{formatPreviewCurrency(70000-68000-tax)}</span></div>
-        <div style={{color:'#94a3b8',margin:'4px 0'}}>{div}</div>
-        <div style={{textAlign:'center',fontWeight:'bold'}}>{settings.receipt_footer||'Terima kasih!'}</div>
-        {settings.receipt_custom_line1&&<div style={{textAlign:'center',fontSize:fs-0.5,color:'#64748b'}}>{settings.receipt_custom_line1}</div>}
-        {settings.receipt_custom_line2&&<div style={{textAlign:'center',fontSize:fs-0.5,color:'#64748b'}}>{settings.receipt_custom_line2}</div>}
-        <div style={{textAlign:'center',fontSize:fs-2,color:'#cbd5e1',marginTop:4}}>** {settings.paper_width||'58mm'} **</div>
-      </div>
-    </div>
-  );
-}
-const DEFAULTS:any = getReceiptSettings();
+const DEFAULTS = getReceiptSettings();
 
 type Section = 'brand'|'receipt'|'printer'|'theme'|'cashiers'|'license';
 
@@ -193,14 +71,12 @@ const SETTINGS_NAV: Array<{ id: Section; l: string; icon: LucideIcon }> = [
   { id: 'license', l: 'Lisensi', icon: ShieldCheck },
 ];
 
-const formatPreviewCurrency = (n: number) => formatReceiptCurrency(n);
-
-export default function SettingsTab({ toast, isPro, profile, subscriptionAccess }: { toast:any; isPro: boolean; profile:any; subscriptionAccess: SubscriptionAccess }) {
+export default function SettingsTab({ toast, isPro, profile, subscriptionAccess }: { toast: ToastApi; isPro: boolean; profile: Profile | null; subscriptionAccess: SubscriptionAccess }) {
   const { signOut, refreshProfile } = useAuth();
   const { storeSettings, saveStoreSettings, storeId } = useStore();
   const printer = usePrinter();
   const [section, setSection]     = useState<Section>('brand');
-  const [form, setForm]           = useState<any>({ ...DEFAULTS, ...(loadFromLS(storeId) as any ||{}) });
+  const [form, setForm]           = useState<ReceiptSettings>({ ...DEFAULTS, ...(loadFromLS(storeId) || {}) });
   const [previewOpen, setPrev]    = useState(false);
   const [saving, setSaving]       = useState(false);
   const [saveErr, setSaveErr]     = useState('');
@@ -217,7 +93,6 @@ export default function SettingsTab({ toast, isPro, profile, subscriptionAccess 
   const canBrowserPrint = subscriptionAccess.features.browser_print;
   const canThermalPrint = subscriptionAccess.features.thermal_print;
   const canManageCashiers = subscriptionAccess.features.multi_cashier;
-  const activePlan = getPlanDefinition(subscriptionAccess.plan);
 
   useEffect(() => {
     if (storeSettings) {
@@ -249,18 +124,18 @@ export default function SettingsTab({ toast, isPro, profile, subscriptionAccess 
     return () => clearInterval(poll);
   }, [profile]);
 
-  const doSave = async (data:any) => {
+  const doSave = async (data: ReceiptSettings) => {
     setSaving(true); setSaveErr('');
     try {
-      const payload: Record<string, any> = {};
-      SAFE_COLS.forEach(k => { if (data[k] !== undefined) payload[k] = data[k]; });
-      if (payload.logo_base64 && payload.logo_base64.length > 80000) delete payload.logo_base64;
+      const payload: Record<string, unknown> = {};
+      SAFE_COLS.forEach(k => { const key = k as keyof ReceiptSettings; if (data[key] !== undefined) payload[k] = data[key]; });
+      if (typeof payload.logo_base64 === 'string' && payload.logo_base64.length > 80000) delete payload.logo_base64;
       await saveStoreSettings(payload);
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
       toast.showToast('✅ Pengaturan berhasil disimpan!', 'success');
-    } catch (e:any) {
-      const msg = e?.message || '';
+    } catch (e: unknown) {
+      const msg = (e instanceof Error && e.message) || '';
       if (msg.includes('column') || msg.includes('schema') || msg.includes('Store belum dimuat') || !storeId) {
         setSaved(true);
         setTimeout(() => { setSaved(false); setSaveErr(''); }, 3000);
@@ -273,14 +148,19 @@ export default function SettingsTab({ toast, isPro, profile, subscriptionAccess 
     } finally { setSaving(false); }
   };
 
-  const triggerSave = useCallback((newForm:any) => {
+  // Keep the latest doSave in a ref so the debounced save always runs the current closure
+  // (toast/saveStoreSettings/storeId), never a stale one captured when triggerSave was built.
+  const doSaveRef = useRef(doSave);
+  doSaveRef.current = doSave;
+
+  const triggerSave = useCallback((newForm: ReceiptSettings) => {
     saveToLS(storeId, newForm);
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => doSave(newForm), 1000);
+    timer.current = setTimeout(() => doSaveRef.current(newForm), 1000);
   }, [storeId]);
 
-  const update = (key: string, val:any) => {
-    const nf = { ...form, [key]: val };
+  const update = (key: string, val: string | number | boolean) => {
+    const nf = { ...form, [key]: val } as ReceiptSettings;
     setForm(nf); triggerSave(nf);
   };
 
@@ -312,7 +192,7 @@ export default function SettingsTab({ toast, isPro, profile, subscriptionAccess 
       await refreshProfile();
       setKasirSaved(true); setTimeout(() => setKasirSaved(false), 2500);
       toast.showToast('Nama kasir disimpan!', 'success');
-    } catch (e:any) { toast.showToast(normalizeUserFacingError(e, 'Nama kasir belum bisa disimpan. Coba lagi.'), 'error'); }
+    } catch (e: unknown) { toast.showToast(normalizeUserFacingError(e, 'Nama kasir belum bisa disimpan. Coba lagi.'), 'error'); }
     finally { setSavingKasir(false); }
   };
 
@@ -320,7 +200,7 @@ export default function SettingsTab({ toast, isPro, profile, subscriptionAccess 
     focusLicenseRef.current = true;
     setSection('license');
     toast.showToast('Memuat menu Lisensi Anda...', 'info');
-  }, []);
+  }, [toast]);
 
   useEffect(() => {
     if (section !== 'license' || !focusLicenseRef.current) return;
@@ -362,7 +242,7 @@ export default function SettingsTab({ toast, isPro, profile, subscriptionAccess 
           method: 'Tunai',
           items: [{ name: 'Kopi Susu', qty: 1, price: 25000, subtotal: 25000 }],
           subtotal: 25000, discount: 0, tax: 0, total: 25000, paid: 25000, change: 0,
-        }) as any);
+        }));
         toast.showToast('✅ Test print berhasil! Cek printer.', 'success');
       } else {
         if (!canBrowserPrint) {
@@ -382,11 +262,11 @@ export default function SettingsTab({ toast, isPro, profile, subscriptionAccess 
             method: 'Tunai',
             items: [{ name: 'Kopi Susu', qty: 1, price: 25000, subtotal: 25000 }],
             subtotal: 25000, discount: 0, tax: 0, total: 25000, paid: 25000, change: 0,
-          }) as any);
+          }));
         toast.showToast('🖨️ Test print dibuka di browser', 'success');
       }
-    } catch (e:any) {
-      toast.showToast(e?.message || 'Gagal test print', 'error');
+    } catch (e: unknown) {
+      toast.showToast((e instanceof Error && e.message) || 'Gagal test print', 'error');
     }
   };
 
@@ -476,330 +356,64 @@ export default function SettingsTab({ toast, isPro, profile, subscriptionAccess 
       <div className="flex-1 overflow-y-auto p-3 pb-[calc(0.75rem+64px+env(safe-area-inset-bottom,0px))] space-y-3 lg:max-w-3xl lg:mx-auto lg:w-full lg:pb-3">
 
         {/* ── BRAND ── */}
-        {section==='brand'&&<>
-          <div className="bg-white rounded-2xl border border-slate-100 p-4">
-            <p className="text-xs font-black text-slate-400 mb-3">LOGO TOKO</p>
-            <div className="flex items-center gap-4 mb-3">
-              <div className="w-20 h-20 rounded-2xl border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden bg-slate-50 shrink-0">
-                {form.logo_url?<img src={form.logo_url} alt="logo" className="w-full h-full object-contain"/>:<div className="text-center"><div className="text-3xl">☕</div><p className="text-[10px] text-slate-400 mt-1">Belum ada</p></div>}
-              </div>
-              <div className="flex-1 space-y-2">
-                <button type="button" onClick={()=>logoRef.current?.click()}
-                  className="w-full py-2.5 border-2 border-orange-200 text-orange-600 font-bold rounded-xl text-sm flex items-center justify-center gap-2 active:scale-95">
-                  <Image size={15}/>Upload Logo
-                </button>
-                {form.logo_url&&<button type="button" onClick={()=>{const nf={...form,logo_url:'',logo_base64:''};setForm(nf);triggerSave(nf);}}
-                  className="w-full py-2 border border-slate-200 text-slate-500 rounded-xl text-xs flex items-center justify-center gap-1 active:scale-95">
-                  <RotateCcw size={11}/>Hapus Logo
-                </button>}
-                <p className="text-xs text-slate-400">PNG/JPG maks 500KB</p>
-              </div>
-            </div>
-            <input ref={logoRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={handleLogoUpload}/>
-            <Inp label="URL Logo (alternatif)" value={form.logo_url?.startsWith('data:')?'':form.logo_url} onChange={(v:string)=>update('logo_url',v)} placeholder="https://..."/>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
-            <p className="text-xs font-black text-slate-400">IDENTITAS BRAND</p>
-            <Inp label="Nama Brand / Toko *" value={form.store_name} onChange={(v:string)=>update('store_name',v)} placeholder="KaffePOS Coffee"/>
-            <Inp label="Tagline" value={form.tagline} onChange={(v:string)=>update('tagline',v)} placeholder="Kopi Terbaik di Kota"/>
-            <Inp label="Alamat" value={form.address} onChange={(v:string)=>update('address',v)} placeholder="Jl. Kopi No. 1"/>
-            <Inp label="WhatsApp / Telepon" value={form.whatsapp} onChange={(v:string)=>update('whatsapp',v)} placeholder="08xxxxxxxxxx"/>
-            <Inp label="Email" value={form.email} onChange={(v:string)=>update('email',v)} placeholder="toko@email.com"/>
-            <Inp label="Website" value={form.website} onChange={(v:string)=>update('website',v)} placeholder="www.tokoku.com"/>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
-            <p className="text-xs font-black text-slate-400">KEUANGAN</p>
-            <div>
-              <label className="text-xs font-bold text-slate-500 mb-2 block">Pajak / PPN: <span className="text-orange-500">{form.tax_percent||0}%</span></label>
-              <input type="range" min="0" max="20" value={form.tax_percent||0} onChange={e=>update('tax_percent',parseInt(e.target.value))} className="w-full accent-orange-500 h-2"/>
-              <div className="flex justify-between text-xs text-slate-400 mt-1"><span>0%</span><span>20%</span></div>
-            </div>
-            <Sel label="Mata Uang" value={form.currency||'IDR'} onChange={(v:string)=>update('currency',v)}
-              options={[{v:'IDR',l:'IDR — Rupiah'},{v:'USD',l:'USD — Dollar'},{v:'MYR',l:'MYR — Ringgit'},{v:'SGD',l:'SGD — Singapura'}]}/>
-          </div>
-        </>}
+        {section==='brand' && (
+          <StoreProfilePanel
+            form={form}
+            update={update}
+            setForm={setForm}
+            triggerSave={triggerSave}
+            logoRef={logoRef}
+            handleLogoUpload={handleLogoUpload}
+          />
+        )}
 
         {/* ── STRUK ── */}
-        {section==='receipt'&&<>
-          <button type="button" onClick={()=>setPrev(!previewOpen)}
-            className={`w-full flex items-center justify-center gap-2 py-3 rounded-2xl border-2 font-bold text-sm ${previewOpen?'border-orange-400 bg-orange-50 text-orange-600':'border-slate-200 text-slate-600'}`}>
-            {previewOpen?<EyeOff size={15}/>:<Eye size={15}/>}
-            {previewOpen?'Tutup Preview':'Preview Struk (Realtime)'}
-          </button>
-          {previewOpen&&<div className="bg-white rounded-2xl border border-slate-100 p-4">
-            <ReceiptPreview s={form}/>
-            <button type="button" onClick={handleTestPrint} className="mt-3 w-full py-2.5 border border-slate-200 text-slate-600 font-bold rounded-xl text-sm flex items-center justify-center gap-2 active:scale-95">🖨️ Test Cetak</button>
-          </div>}
+        {section==='receipt' && (
+          <ReceiptSettingsPanel
+            form={form}
+            update={update}
+            previewOpen={previewOpen}
+            setPrev={setPrev}
+            handleTestPrint={handleTestPrint}
+          />
+        )}
 
-          <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-4">
-            <p className="text-xs font-black text-slate-400">UKURAN & FONT</p>
-            <div>
-              <p className="text-xs font-bold text-slate-600 mb-2">Ukuran Kertas</p>
-              <div className="flex gap-2">
-                {[{v:'58mm',l:'58mm (Standar)'},{v:'80mm',l:'80mm (Lebar)'}].map(o=>(
-                  <button type="button" key={o.v} onClick={()=>update('paper_width',o.v)}
-                    className={`flex-1 py-2.5 rounded-xl border-2 text-sm font-bold ${form.paper_width===o.v?'border-orange-500 bg-orange-50 text-orange-600':'border-slate-200 text-slate-500'}`}>{o.l}</button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="text-xs font-bold text-slate-600 mb-2">Ukuran Font</p>
-              <div className="flex gap-2">
-                {[{v:'small',l:'Kecil'},{v:'medium',l:'Sedang'},{v:'large',l:'Besar'}].map(o=>(
-                  <button type="button" key={o.v} onClick={()=>update('receipt_font_size',o.v)}
-                    className={`flex-1 py-2.5 rounded-xl border-2 text-sm font-bold ${form.receipt_font_size===o.v?'border-orange-500 bg-orange-50 text-orange-600':'border-slate-200 text-slate-500'}`}>{o.l}</button>
-                ))}
-              </div>
-            </div>
-            <Sel label="Garis Pemisah" value={form.receipt_divider||'dash'} onChange={(v:string)=>update('receipt_divider',v)}
-              options={[{v:'dash',l:'Garis --------'},{v:'equal',l:'Sama ========'},{v:'star',l:'Bintang ********'},{v:'dot',l:'Titik ········'}]}/>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
-            <p className="text-xs font-black text-slate-400">LOGO DI STRUK</p>
-            <Toggle label="Tampilkan Logo" value={form.show_logo_on_receipt} onChange={(v:boolean)=>update('show_logo_on_receipt',v)}/>
-            {form.show_logo_on_receipt&&<>
-              <div>
-                <p className="text-xs font-bold text-slate-600 mb-2">Posisi Logo</p>
-                <div className="flex gap-2">
-                  {[{v:'left',l:'⬅ Kiri'},{v:'center',l:'Tengah'},{v:'right',l:'Kanan ➡'}].map(o=>(
-                    <button type="button" key={o.v} onClick={()=>update('logo_position',o.v)}
-                      className={`flex-1 py-2 rounded-xl border-2 text-xs font-bold ${form.logo_position===o.v?'border-orange-500 bg-orange-50 text-orange-600':'border-slate-200 text-slate-500'}`}>{o.l}</button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <p className="text-xs font-bold text-slate-600 mb-1">Ukuran Logo: <span className="text-orange-500">{form.logo_size||40}px</span></p>
-                <input type="range" min="20" max="80" value={form.logo_size||40} onChange={e=>update('logo_size',parseInt(e.target.value))} className="w-full accent-orange-500"/>
-              </div>
-            </>}
-          </div>
-
-          <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
-            <p className="text-xs font-black text-slate-400">TEKS STRUK</p>
-            <Inp label="Teks Header" value={form.receipt_header} onChange={(v:string)=>update('receipt_header',v)} placeholder="Selamat datang!"/>
-            <Inp label="Teks Footer" value={form.receipt_footer} onChange={(v:string)=>update('receipt_footer',v)} placeholder="Terima kasih!"/>
-            <Inp label="Baris Custom 1" value={form.receipt_custom_line1} onChange={(v:string)=>update('receipt_custom_line1',v)} placeholder="Follow IG: @namatoko"/>
-            <Inp label="Baris Custom 2" value={form.receipt_custom_line2} onChange={(v:string)=>update('receipt_custom_line2',v)} placeholder="Rating kami di Google Maps!"/>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-slate-100 p-4">
-            <p className="text-xs font-black text-slate-400 mb-1">ELEMEN STRUK</p>
-            <Toggle label="Tampilkan Alamat" value={form.receipt_show_address} onChange={(v:boolean)=>update('receipt_show_address',v)}/>
-            <Toggle label="Tampilkan WhatsApp" value={form.receipt_show_whatsapp} onChange={(v:boolean)=>update('receipt_show_whatsapp',v)}/>
-            <Toggle label="Tampilkan ID Transaksi" value={form.receipt_show_trx_id} onChange={(v:boolean)=>update('receipt_show_trx_id',v)}/>
-            <Toggle label="Tampilkan Nama Kasir" value={form.receipt_show_cashier} onChange={(v:boolean)=>update('receipt_show_cashier',v)}/>
-            <Toggle label="Tampilkan Pajak" value={form.receipt_show_tax} onChange={(v:boolean)=>update('receipt_show_tax',v)} note="Hanya tampil jika pajak > 0%"/>
-          </div>
-        </>}
-
-      {/* ── PRINTER ── */}
-        {section==='printer'&&<>
-          {!canThermalPrint && (
-            <UpgradePrompt
-              recommendedPlan="signature"
-              billingCycle="monthly"
-              title="Thermal printer ada di paket Signature"
-              description="Hubungkan printer Bluetooth Classic atau USB saat outletmu sudah butuh alur cetak yang lebih cepat dan stabil."
-              actionLabel="Tingkatkan ke Pro untuk Akses Printer"
-              onAction={openLicenseSection}
-            />
-          )}
-
-          {/* Status Card */}
-          <div className={`rounded-2xl p-4 border-2 ${
-            printer.reconnecting ? 'bg-yellow-50 border-yellow-300' :
-            printer.connected    ? 'bg-green-50 border-green-300' :
-                                   'bg-slate-50 border-slate-200'
-          }`}>
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                printer.reconnecting ? 'bg-yellow-100' :
-                printer.connected    ? 'bg-green-100' : 'bg-slate-100'
-              }`}>
-                {printer.reconnecting
-                  ? <div className="w-5 h-5 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin"/>
-                  : printer.connected
-                    ? <Bluetooth size={20} className="text-green-600"/>
-                    : <BluetoothOff size={20} className="text-slate-400"/>}
-              </div>
-              <div className="flex-1">
-                <p className={`font-black text-sm ${
-                  printer.reconnecting ? 'text-yellow-700' :
-                  printer.connected    ? 'text-green-700' : 'text-slate-500'
-                }`}>
-                  {printer.reconnecting ? 'Menghubungkan ulang...' :
-                   printer.connected    ? printer.printerName || 'Bluetooth Printer' :
-                                         'Tidak terhubung'}
-                </p>
-                <p className={`text-xs font-bold ${
-                  printer.reconnecting ? 'text-yellow-500' :
-                  printer.connected    ? 'text-green-500' : 'text-slate-400'
-                }`}>
-                  {printer.reconnecting ? '🟡 Sedang menghubungkan ulang...' :
-                   printer.connected    ? '🟢 Terhubung' : '🔴 Belum terhubung'}
-                </p>
-              </div>
-              {printer.connected && <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"/>}
-            </div>
-
-            {/* Tombol aksi */}
-            <div className="mt-3 flex gap-2">
-              {printer.btConnected ? (
-                <button type="button" onClick={() => { printer.disconnectBt(); toast.showToast('Printer diputus', 'info'); }}
-                  className="flex-1 py-2.5 border-2 border-red-200 text-red-500 font-bold rounded-xl flex items-center justify-center gap-2 active:scale-95 text-sm">
-                  <BluetoothOff size={14}/>Putuskan
-                </button>
-              ) : (
-                <button type="button"
-                onClick={async () => {
-                  if (!canThermalPrint) {
-                      dispatchUpgradePrompt({
-                        trigger: 'thermal_printer',
-                        promptKey: 'feature:thermal_printer',
-                        recommendedPlan: 'signature',
-                        title: 'Printer thermal ada di paket Signature',
-                        description: 'Upgrade untuk menghubungkan printer Bluetooth Classic atau USB saat outlet butuh alur cetak yang lebih cepat.',
-                      });
-                      return;
-                    }
-                    try {
-                      const n = await printer.connectClassic();
-                      toast.showToast('✅ Terhubung: ' + n, 'success');
-                    } catch (e:any) {
-                      toast.showToast(e?.message || 'Gagal terhubung', 'error');
-                    }
-                  }}
-                  disabled={printer.btReconnecting}
-                  className="flex-1 py-2.5 bg-slate-900 text-white font-bold rounded-xl flex items-center justify-center gap-2 active:scale-95 disabled:opacity-40 text-sm">
-                  {printer.btReconnecting
-                    ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/>
-                    : <Bluetooth size={14}/>}
-                  {printer.btReconnecting ? 'Menghubungkan...' : canThermalPrint ? 'Hubungkan Printer' : 'Butuh Signature'}
-                </button>
-              )}
-              {printer.btConnected && (
-                <button type="button" onClick={handleTestPrint}
-                  className="px-4 py-2.5 border-2 border-orange-200 text-orange-600 font-bold rounded-xl flex items-center justify-center gap-1.5 active:scale-95 text-sm">
-                  <Printer size={14}/>Test
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Web BT tidak tersedia */}
-          {!printer.btSupported && (
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
-              <p className="text-amber-700 font-bold text-xs mb-1">⚠ Web Bluetooth tidak tersedia</p>
-              <p className="text-amber-600 text-xs">Gunakan Chrome Android, atau aktifkan di chrome://flags → #enable-web-bluetooth → Enabled.</p>
-            </div>
-          )}
-
-          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-3">
-            <p className="text-blue-700 text-xs font-bold mb-1">ℹ️ Cara menghubungkan RPPO2N / MP-58 Pro</p>
-            <p className="text-blue-600 text-xs">1. Pair printer di Android: Settings → Bluetooth → Scan → pilih printer (PIN: 0000)</p>
-            <p className="text-blue-600 text-xs">2. Kembali ke app → klik "Hubungkan Printer"</p>
-            <p className="text-blue-600 text-xs">3. App otomatis connect via Bluetooth Classic (SPP)</p>
-          </div>
-
-          <div className="bg-white rounded-[32px] border border-slate-100 p-6 shadow-soft">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 bg-orange-50 rounded-xl flex items-center justify-center"><Wifi size={18} className="text-[#FF6A00]"/></div>
-              <div><p className="font-black text-slate-800 text-[14px] italic uppercase tracking-tighter">Cetak via Browser</p><p className={`text-[10px] font-black uppercase tracking-widest ${canBrowserPrint ? 'text-emerald-500' : 'text-slate-300'}`}>{canBrowserPrint ? 'Tersedia' : 'Butuh Kopi Susu'}</p></div>
-            </div>
-            <p className="text-xs font-bold text-slate-400 mb-6 leading-relaxed">Printer WiFi atau browser print cocok untuk operasional ringan dan review struk dari desktop.</p>
-            <button type="button" onClick={handleTestPrint}
-              className={`w-full py-4 border-2 font-black uppercase italic tracking-widest rounded-2xl flex items-center justify-center gap-3 active:scale-95 text-[12px] transition-all ${canBrowserPrint ? 'border-orange-100 text-[#FF6A00] hover:bg-orange-50' : 'border-slate-100 text-slate-300'}`}>
-              <Printer size={18}/> {canBrowserPrint ? 'Test Cetak Browser' : 'Upgrade Browser Print'}
-            </button>
-          </div>
-        </>
-      }
+        {/* ── PRINTER ── */}
+        {section==='printer' && (
+          <PrinterPanel
+            printer={printer}
+            toast={toast}
+            canThermalPrint={canThermalPrint}
+            canBrowserPrint={canBrowserPrint}
+            openLicenseSection={openLicenseSection}
+            handleTestPrint={handleTestPrint}
+          />
+        )}
 
         {/* ── TEMA ── */}
-        {section==='theme'&&<>
-          <ThemeCustomizer toast={toast} />
-        </>}
+        {section==='theme' && <ThemeCustomizer toast={toast} />}
 
         {/* ── KASIR ── */}
-        {section==='cashiers'&&<>
-          {!canManageCashiers ? (
-            <UpgradePrompt
-              recommendedPlan="signature"
-              billingCycle="monthly"
-              title="Multi kasir ada di paket Signature"
-              description="Buat akun kasir terpisah dan kelola akses outlet saat tim mulai berkembang."
-              actionLabel="Lihat Paket Signature"
-              onAction={() => dispatchUpgradePrompt({
-                trigger: 'multi_cashier',
-                promptKey: 'feature:multi_cashier',
-                recommendedPlan: 'signature',
-                title: 'Multi kasir ada di paket Signature',
-                description: 'Upgrade untuk membuat akun kasir, mengatur akses outlet, dan memisahkan aktivitas tim dengan lebih rapi.',
-              })}
-            />
-          ) : (
-            <CashierManagementSection toast={toast} />
-          )}
-        </>}
+        {section==='cashiers' && (
+          <CashierPanel canManageCashiers={canManageCashiers} toast={toast} />
+        )}
 
         {/* ── LISENSI ── */}
         {section==='license' && (
           <div id="settings-license-panel" ref={licensePanelRef} tabIndex={-1} className="space-y-3 outline-none">
-            <SubscriptionSection
+            <LicensePanel
               isPro={isPro}
               profile={profile}
               toast={toast}
-              onRefreshStatus={refreshProfile}
+              refreshProfile={refreshProfile}
+              kasirName={kasirName}
+              setKasirName={setKasirName}
+              handleSaveKasir={handleSaveKasir}
+              savingKasir={savingKasir}
+              kasirSaved={kasirSaved}
+              subscriptionAccess={subscriptionAccess}
+              signOut={signOut}
             />
-
-            <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
-              <p className="text-xs font-black text-slate-400">NAMA KASIR</p>
-              <p className="text-xs text-slate-400">Nama ini akan muncul di setiap struk sebagai identitas kasir</p>
-              <div className="flex gap-2">
-                <div className="flex-1">
-                  <input value={kasirName} onChange={e => setKasirName(e.target.value)} placeholder="Nama Kasir"
-                    className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-400" style={{fontSize:16}}/>
-                </div>
-                <button type="button" onClick={handleSaveKasir} disabled={savingKasir||!kasirName.trim()}
-                  className="px-4 py-3 bg-orange-500 text-white font-bold rounded-xl active:scale-95 disabled:opacity-50 flex items-center gap-1.5 text-sm shrink-0">
-                  {savingKasir?<div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/>:kasirSaved?<CheckCircle2 size={16}/>:<Save size={15}/>}
-                  {kasirSaved?'Tersimpan':'Simpan'}
-                </button>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl border border-slate-100 p-4">
-              <p className="text-xs font-black text-slate-400 mb-3">INFO AKUN</p>
-              <div className="space-y-3 mb-4">
-                <div className="flex justify-between items-center py-1.5 border-b border-slate-50">
-                  <span className="text-sm text-slate-500">Username</span>
-                  <span className="text-sm font-bold text-slate-800">@{profile?.username||'-'}</span>
-                </div>
-                <div className="flex justify-between items-center py-1.5 border-b border-slate-50">
-                  <span className="text-sm text-slate-500">Email</span>
-                  <span className="text-sm font-bold text-slate-800 truncate max-w-[180px]">{profile?.email||'-'}</span>
-                </div>
-                <div className="flex justify-between items-center py-1.5">
-                  <span className="text-sm text-slate-500">Tier Aktif</span>
-                  <span className={`text-sm font-black px-2 py-0.5 rounded-lg ${isPro?'bg-orange-100 text-orange-600':'bg-slate-100 text-slate-600'}`}>
-                    {activePlan.name}
-                  </span>
-                </div>
-                {subscriptionAccess.expiryDate && (
-                  <div className="flex justify-between items-center py-1.5">
-                    <span className="text-sm text-slate-500">Sisa Masa Aktif</span>
-                    <span className="text-sm font-bold text-slate-800">{subscriptionAccess.daysRemaining ?? 0} hari</span>
-                  </div>
-                )}
-              </div>
-              <button type="button" onClick={()=>{if(confirm('Keluar dari akun?'))signOut();}}
-                className="w-full py-3 border-2 border-red-200 text-red-500 font-bold rounded-xl flex items-center justify-center gap-2 active:scale-95">
-                <LogOut size={16}/>Keluar dari Akun
-              </button>
-            </div>
           </div>
         )}
 

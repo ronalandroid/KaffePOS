@@ -23,6 +23,7 @@ const menuItemWriteSchema = z.object({
   sort_order: z.number().int().nonnegative().optional(),
   recipe: z.array(menuRecipeItemSchema).optional(),
   variants: z.array(z.object({ name: z.string().trim().min(1), price: z.number().nonnegative() })).optional(),
+  modifiers: z.array(z.object({ name: z.string().trim().min(1), price: z.number().nonnegative() })).optional(),
 });
 
 router.get('/api/menu-items', async (req, res, next) => {

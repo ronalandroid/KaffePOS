@@ -40,7 +40,10 @@
     "staging:final": "node scripts/staging-final-runner.mjs",
     "coolify:staging:deploy": "node scripts/coolify-staging-deploy.mjs",
     "verify:payment-staging": "node scripts/verify-staging-env.mjs --profile=payment",
-    "smoke:staging:doku": "node scripts/smoke-doku-staging.mjs"
+    "smoke:staging:doku": "node scripts/smoke-doku-staging.mjs",
+    "smoke:local:fresh-db": "npm --prefix backend run build && node scripts/smoke-local-fresh-db.mjs",
+    "test:e2e:local": "npm --prefix backend run build && node scripts/e2e-local.mjs",
+    "test:e2e:offline": "npm --prefix backend run build && node scripts/e2e-offline-local.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^6.2.1",
@@ -73,6 +76,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^7.6.5",
+    "@playwright/test": "^1.61.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -95,10 +99,13 @@
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.4",
     "typescript": "5.4.5",
-    "vite": "^8.0.3",
+    "vite": "^8.1.0",
     "vitest": "^4.1.2"
   },
   "overrides": {
-    "tar": "^7.5.1"
+    "tar": "^7.5.16",
+    "undici": "^7.28.0",
+    "dompurify": "^3.4.11",
+    "react-router": "^6.30.4"
   }
 }

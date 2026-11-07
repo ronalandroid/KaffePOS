@@ -241,6 +241,7 @@ export class DokuPaymentProvider implements PaymentProvider {
       const internalStatus = this.mapProviderStatus(rawStatus);
       return {
         provider: 'doku',
+        // Polling responses are not HMAC-signed by DOKU; authenticity comes from the signed request we sent.
         signatureValid: true,
         merchantOrderId: asString(pick(raw, ['order', 'invoice_number'])) ?? input.merchantOrderId,
         providerReference: asString(pick(raw, ['transaction', 'original_request_id'])),

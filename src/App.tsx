@@ -207,10 +207,8 @@ export default function App() {
     try {
       await loadAll(storeId);
       if (reason === 'network-online') {
-        import('./hooks/useStore').then((mod) => {
-          const state = mod.useStore.getState() as any;
-          if (state.flushPending) state.flushPending();
-        }).catch(() => {});
+        const state = useStore.getState() as any;
+        if (state.flushPending) state.flushPending();
       }
     } catch {
       // no-op: flow existing tetap berjalan meski reload gagal.

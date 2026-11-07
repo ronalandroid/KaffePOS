@@ -49,7 +49,9 @@ async function applySubscriptionPaymentResult(result: PaymentStatusResult, event
         ) values ($1, $8, $2, $3, $4, $5, $6, $7::jsonb, true, now())
       `,
       [session.id, eventType, result.providerReference, result.merchantOrderId, result.rawStatus, result.internalStatus, JSON.stringify(result.raw), result.provider],
-    ).catch(() => undefined);
+    ).catch((err) => log('error', 'payment_events.insert_failed', {
+      kind: 'subscription', merchantOrderId: result.merchantOrderId, eventType, error: serializeError(err),
+    }));
 
     const paidAt = result.paidAt ?? new Date().toISOString();
     await client.query(
@@ -148,9 +150,10 @@ async function applyPosPaymentResult(result: PaymentStatusResult, eventType: str
     const paymentOrder = orderResult.rows[0];
     if (!paymentOrder) return null;
 
-    // A paid/completed order is terminal: ignore a late non-success notification
-    // (out-of-order or duplicate webhook) so a settled sale is never voided/reversed.
-    if ((paymentOrder.status === 'paid' || paymentOrder.status === 'completed') && result.internalStatus !== 'paid') {
+    // A paid/completed order is terminal. Ignore ANY further webhook for it — whether a
+    // late failure (never reverse a settled sale) or a duplicate/replayed success (avoid
+    // re-finalizing and re-notifying). The settlement already happened on the first paid event.
+    if (paymentOrder.status === 'paid' || paymentOrder.status === 'completed') {
       return { storeId: paymentOrder.store_id as string, transactionId: paymentOrder.transaction_id ?? null, kitchenOrder: null };
     }
 
@@ -194,7 +197,9 @@ async function applyPosPaymentResult(result: PaymentStatusResult, eventType: str
         ) values ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, true, now())
       `,
       [paymentOrder.id, result.provider, eventType, result.providerReference, result.merchantOrderId, result.rawStatus, result.internalStatus, JSON.stringify(result.raw)],
-    ).catch(() => undefined);
+    ).catch((err) => log('error', 'payment_events.insert_failed', {
+      kind: 'pos', merchantOrderId: result.merchantOrderId, eventType, error: serializeError(err),
+    }));
 
     let transactionId: string | null = paymentOrder.transaction_id ?? null;
     let kitchenOrder: Record<string, unknown> | null = null;

@@ -30,14 +30,17 @@ export interface StoreSettings {
 export interface MenuItem {
   id: string; store_id: string; name: string; price: number;
   category: string; image_url?: string; description?: string;
-  recipe?: RecipeItem[]; variants?: Variant[];
+  recipe?: RecipeItem[]; variants?: Variant[]; modifiers?: Modifier[];
   is_available: boolean; sort_order?: number;
   created_at?: string; updated_at?: string;
 }
 export interface RecipeItem { matId: string; qty: number; unit_reference?: string; note?: string; }
 export interface Variant    { name: string; price: number; }
+// A priced, multi-selectable add-on (e.g. "Extra Shot", "Oat Milk"). Single-select size
+// lives in Variant; modifiers stack and each adds its price to the cart line.
+export interface Modifier   { name: string; price: number; }
 export interface CartItem extends MenuItem {
-  qty: number; variantId?: string; _baseId?: string; note?: string;
+  qty: number; variantId?: string; _baseId?: string; note?: string; modifiers?: Modifier[];
 }
 export interface InventoryItem {
   id: string; store_id: string; name: string;

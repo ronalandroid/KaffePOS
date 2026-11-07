@@ -98,4 +98,36 @@ describe('CommissionService', () => {
     expect(result.created).toBe(false);
     expect(result.reason).toBe('self_referral');
   });
+
+  it('markPaid rejects commission that is not approved', async () => {
+    db.query.mockResolvedValueOnce({ rows: [{ id: 'comm-1', status: 'pending', eligible_at: null }] });
+
+    const service = new CommissionService(db as any);
+    await expect(service.markPaid('comm-1', null, null)).rejects.toThrow('Hanya komisi approved');
+    // Only the SELECT FOR UPDATE ran — no update query was issued.
+    expect(db.query).toHaveBeenCalledTimes(1);
+  });
+
+  it('markPaid rejects payout before the holdback window (eligible_at in the future)', async () => {
+    const future = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    db.query.mockResolvedValueOnce({ rows: [{ id: 'comm-2', status: 'approved', eligible_at: future }] });
+
+    const service = new CommissionService(db as any);
+    await expect(service.markPaid('comm-2', null, null)).rejects.toThrow('masa tunggu');
+    // Guard fires before the update — cash is not released early.
+    expect(db.query).toHaveBeenCalledTimes(1);
+  });
+
+  it('markPaid settles an approved commission once the holdback has elapsed', async () => {
+    const past = new Date(Date.now() - 31 * 24 * 60 * 60 * 1000).toISOString();
+    db.query
+      .mockResolvedValueOnce({ rows: [{ id: 'comm-3', status: 'approved', eligible_at: past }] })
+      .mockResolvedValueOnce({ rows: [{ id: 'comm-3', status: 'paid', payout_reference: 'PO-9' }] });
+
+    const service = new CommissionService(db as any);
+    const result = await service.markPaid('comm-3', 'note', 'PO-9');
+
+    expect(result.status).toBe('paid');
+    expect(db.query).toHaveBeenCalledTimes(2);
+  });
 });

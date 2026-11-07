@@ -6,6 +6,9 @@ on:
     branches:
       - main
       - master
+      - 'chore/**'
+      - 'feat/**'
+      - 'fix/**'
 
 permissions:
   contents: read

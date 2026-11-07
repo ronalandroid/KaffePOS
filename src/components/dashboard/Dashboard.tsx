@@ -1,11 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 
-
-
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   TrendingUp,
   Package,
@@ -33,7 +27,7 @@ import { useStore } from '@/hooks/useStore';
 import { useAuth } from '@/contexts/AuthContext';
 import { getInventoryUsageMap } from '@/utils/receipt';
 import { getOnboardingChecklist } from '@/lib/onboarding';
-import type { Tab } from '@/types';
+import type { Tab, Transaction, Expense, InventoryItem, CashRegister, TransactionItem } from '@/types';
 import AIInsightsPage from './AIInsightsPage';
 
 const fRp = (n: number) =>
@@ -107,20 +101,20 @@ function openDashboardTab(targetTab: Tab) {
 
 export default function Dashboard() {
   const { subscriptionAccess } = useAuth();
-  const {
-    storeId,
-    transactions,
-    expenses,
-    inventory,
-    unitConversions,
-    menu,
-    cashRegister,
-    storeSettings,
-    loading,
-    syncing,
-    isOnline,
-    loadAll,
-  } = useStore();
+  // Individual selectors so kitchen realtime events and cart changes don't re-run the
+  // dashboard's expensive analytics memos — only the slices read here trigger a re-render.
+  const storeId = useStore((s) => s.storeId);
+  const transactions = useStore((s) => s.transactions);
+  const expenses = useStore((s) => s.expenses);
+  const inventory = useStore((s) => s.inventory);
+  const unitConversions = useStore((s) => s.unitConversions);
+  const menu = useStore((s) => s.menu);
+  const cashRegister = useStore((s) => s.cashRegister);
+  const storeSettings = useStore((s) => s.storeSettings);
+  const loading = useStore((s) => s.loading);
+  const syncing = useStore((s) => s.syncing);
+  const isOnline = useStore((s) => s.isOnline);
+  const loadAll = useStore((s) => s.loadAll);
   const [range, setRange] = useState<RangeKey>('today');
   const [refreshing, setRefreshing] = useState(false);
   const [showBetaBadge, setShowBetaBadge] = useState(() => {
@@ -131,61 +125,85 @@ export default function Dashboard() {
     }
   });
 
+  // Refresh the "today" baseline when the calendar day rolls over or the tab regains
+  // focus — otherwise a POS left open past midnight keeps showing yesterday under "Hari Ini".
+  const [nowTs, setNowTs] = useState(() => Date.now());
+  useEffect(() => {
+    let timerId: ReturnType<typeof setTimeout>;
+    const scheduleMidnight = () => {
+      const d = new Date();
+      const nextMidnight = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1, 0, 0, 5).getTime();
+      timerId = setTimeout(() => {
+        setNowTs(Date.now());
+        scheduleMidnight();
+      }, nextMidnight - d.getTime());
+    };
+    scheduleMidnight();
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') setNowTs(Date.now());
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      clearTimeout(timerId);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, []);
+
   const { now, startToday, startWeek, startMonth } = useMemo(() => {
-    const d = new Date();
+    const d = new Date(nowTs);
     return {
       now: d,
       startToday: startOfDay(d),
       startWeek: startOfWeek(d),
       startMonth: startOfMonth(d),
     };
-  }, []);
+  }, [nowTs]);
 
   const nonVoidTransactions = useMemo(
-    () => transactions.filter((t: any) => !t.is_void),
+    () => transactions.filter((t: Transaction) => !t.is_void),
     [transactions]
   );
 
   const salesToday = useMemo(
     () =>
       nonVoidTransactions
-        .filter((t: any) => isSameDay(new Date(t.date), now))
-        .reduce((sum: number, t: any) => sum + (t.total || 0), 0),
+        .filter((t: Transaction) => isSameDay(new Date(t.date), now))
+        .reduce((sum: number, t: Transaction) => sum + (t.total || 0), 0),
     [nonVoidTransactions, now]
   );
 
   const salesWeek = useMemo(
     () =>
       nonVoidTransactions
-        .filter((t: any) => new Date(t.date) >= startWeek)
-        .reduce((sum: number, t: any) => sum + (t.total || 0), 0),
+        .filter((t: Transaction) => new Date(t.date) >= startWeek)
+        .reduce((sum: number, t: Transaction) => sum + (t.total || 0), 0),
     [nonVoidTransactions, startWeek]
   );
 
   const salesMonth = useMemo(
     () =>
       nonVoidTransactions
-        .filter((t: any) => new Date(t.date) >= startMonth)
-        .reduce((sum: number, t: any) => sum + (t.total || 0), 0),
+        .filter((t: Transaction) => new Date(t.date) >= startMonth)
+        .reduce((sum: number, t: Transaction) => sum + (t.total || 0), 0),
     [nonVoidTransactions, startMonth]
   );
 
   const rangeStart = range === 'today' ? startToday : range === 'week' ? startWeek : startMonth;
 
   const filteredTransactions = useMemo(
-    () => nonVoidTransactions.filter((t: any) => new Date(t.date) >= rangeStart),
+    () => nonVoidTransactions.filter((t: Transaction) => new Date(t.date) >= rangeStart),
     [nonVoidTransactions, rangeStart]
   );
 
   const filteredExpenses = useMemo(
-    () => expenses.filter((e: any) => new Date(e.date) >= rangeStart),
+    () => expenses.filter((e: Expense) => new Date(e.date) >= rangeStart),
     [expenses, rangeStart]
   );
 
   const topProducts = useMemo(() => {
     const buckets = new Map<string, { qty: number; revenue: number }>();
-    filteredTransactions.forEach((trx: any) => {
-      (trx.items || []).forEach((item: any) => {
+    filteredTransactions.forEach((trx: Transaction) => {
+      (trx.items || []).forEach((item: TransactionItem) => {
         const prev = buckets.get(item.name) || { qty: 0, revenue: 0 };
         buckets.set(item.name, {
           qty: prev.qty + (item.qty || 0),
@@ -201,7 +219,7 @@ export default function Dashboard() {
 
   const paymentData = useMemo(() => {
     const buckets = new Map<string, number>();
-    filteredTransactions.forEach((trx: any) => {
+    filteredTransactions.forEach((trx: Transaction) => {
       buckets.set(trx.method, (buckets.get(trx.method) || 0) + (trx.total || 0));
     });
     return [...buckets.entries()].map(([label, value], index) => ({
@@ -217,11 +235,11 @@ export default function Dashboard() {
         const hour = 7 + index * 2;
         const nextHour = hour + 2;
         const value = filteredTransactions
-          .filter((trx: any) => {
+          .filter((trx: Transaction) => {
             const d = new Date(trx.date);
             return isSameDay(d, now) && d.getHours() >= hour && d.getHours() < nextHour;
           })
-          .reduce((sum: number, trx: any) => sum + (trx.total || 0), 0);
+          .reduce((sum: number, trx: Transaction) => sum + (trx.total || 0), 0);
         return { label: `${String(hour).padStart(2, '0')}:00`, value };
       });
     }
@@ -231,8 +249,8 @@ export default function Dashboard() {
       const dayDate = new Date(rangeStart);
       dayDate.setDate(dayDate.getDate() + index);
       const value = filteredTransactions
-        .filter((trx: any) => isSameDay(new Date(trx.date), dayDate))
-        .reduce((sum: number, trx: any) => sum + (trx.total || 0), 0);
+        .filter((trx: Transaction) => isSameDay(new Date(trx.date), dayDate))
+        .reduce((sum: number, trx: Transaction) => sum + (trx.total || 0), 0);
       return {
         label: range === 'month'
           ? `${dayDate.getDate()}`
@@ -245,8 +263,8 @@ export default function Dashboard() {
   const lowStockItems = useMemo(
     () =>
       inventory
-        .filter((item: any) => item.stock <= item.min_stock)
-        .sort((a: any, b: any) => (a.stock / Math.max(a.min_stock, 1)) - (b.stock / Math.max(b.min_stock, 1)))
+        .filter((item: InventoryItem) => item.stock <= item.min_stock)
+        .sort((a: InventoryItem, b: InventoryItem) => (a.stock / Math.max(a.min_stock, 1)) - (b.stock / Math.max(b.min_stock, 1)))
         .slice(0, 5),
     [inventory]
   );
@@ -268,13 +286,13 @@ export default function Dashboard() {
 
   const activeCashier = useMemo(() => {
     const todayRegister = cashRegister
-      .filter((entry: any) => isSameDay(new Date(entry.date), now))
-      .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      .filter((entry: CashRegister) => isSameDay(new Date(entry.date), now))
+      .sort((a: CashRegister, b: CashRegister) => new Date(b.date).getTime() - new Date(a.date).getTime());
     return todayRegister[0] || null;
-  }, [cashRegister]);
+  }, [cashRegister, now]);
 
-  const totalRangeRevenue = filteredTransactions.reduce((sum: number, trx: any) => sum + (trx.total || 0), 0);
-  const totalRangeExpenses = filteredExpenses.reduce((sum: number, exp: any) => sum + (exp.amount || 0), 0);
+  const totalRangeRevenue = filteredTransactions.reduce((sum: number, trx: Transaction) => sum + (trx.total || 0), 0);
+  const totalRangeExpenses = filteredExpenses.reduce((sum: number, exp: Expense) => sum + (exp.amount || 0), 0);
   const avgTransaction = filteredTransactions.length > 0 ? totalRangeRevenue / filteredTransactions.length : 0;
   const hasAnyBusinessData =
     nonVoidTransactions.length > 0 || expenses.length > 0 || inventory.length > 0 || cashRegister.length > 0;
@@ -326,20 +344,21 @@ export default function Dashboard() {
                       }
                       setShowBetaBadge(false);
                     }}
-                    className="ml-0.5 flex h-5 min-h-0 w-5 min-w-0 items-center justify-center rounded-full text-orange-700 hover:bg-orange-100"
+                    className="ml-0.5 flex h-6 min-h-0 w-6 min-w-0 items-center justify-center rounded-full text-orange-700 hover:bg-orange-100"
                     aria-label="Sembunyikan badge beta"
                     title="Sembunyikan badge beta"
                   >
-                    <X size={12} />
+                    <X size={12} aria-hidden="true" />
                   </button>
                 </span>
               ) : null}
               <button type="button"
                 onClick={handleRefresh}
                 disabled={!storeId || refreshing || syncing}
+                aria-label="Segarkan data"
                 className="w-10 h-10 shrink-0 rounded-lg bg-white border border-slate-200/80 shadow-sm text-slate-500 flex items-center justify-center disabled:opacity-50 active:scale-95 transition-all hover:bg-orange-50 hover:text-[#FF6A00]"
               >
-                <RefreshCw size={20} className={refreshing || syncing ? 'animate-spin text-[#FF6A00]' : ''} />
+                <RefreshCw size={20} aria-hidden="true" className={refreshing || syncing ? 'animate-spin text-[#FF6A00]' : ''} />
               </button>
             </div>
           </div>
@@ -478,7 +497,7 @@ export default function Dashboard() {
           <DashboardCard
             title="Penjualan Hari Ini"
             value={fRp(salesToday)}
-            sub={`${nonVoidTransactions.filter((t: any) => isSameDay(new Date(t.date), now)).length} transaksi`}
+            sub={`${nonVoidTransactions.filter((t: Transaction) => isSameDay(new Date(t.date), now)).length} transaksi`}
             icon={<TrendingUp size={22} />}
             color="#FF6A00"
           />
@@ -678,7 +697,7 @@ export default function Dashboard() {
               <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-100">
                 <p className="text-[11px] font-black text-emerald-600 uppercase tracking-wider">Nilai Stok Gudang</p>
                 <p className="text-xl font-black text-slate-800 mt-1">
-                  {fRp(inventory.reduce((sum: number, item: any) => sum + (item.stock || 0) * (item.cost_per_unit || 0), 0))}
+                  {fRp(inventory.reduce((sum: number, item: InventoryItem) => sum + (item.stock || 0) * (item.cost_per_unit || 0), 0))}
                 </p>
               </div>
             </div>

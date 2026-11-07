@@ -8,8 +8,9 @@ import {
   evaluateCustomTheme,
   getReadableTextColor,
 } from '@/lib/theme';
+import type { ToastType } from '@/types';
 
-export default function ThemeCustomizer({ toast }: { toast: { showToast: (message: string, type?: string) => void } }) {
+export default function ThemeCustomizer({ toast }: { toast: { showToast: (message: string, type?: ToastType) => void } }) {
   const appTheme = useStore((state) => state.appTheme);
   const customTheme = useStore((state) => state.customTheme);
   const setAppTheme = useStore((state) => state.setAppTheme);

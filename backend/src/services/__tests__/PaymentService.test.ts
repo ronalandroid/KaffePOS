@@ -22,21 +22,21 @@ vi.mock('../../core', async () => {
   };
 });
 
-vi.mock('midtrans-client', () => {
-  const mockCreateTransaction = vi.fn().mockResolvedValue({
-    token: 'snap-token-123',
-    redirect_url: 'https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-123',
-  });
-  const mockSnap = vi.fn().mockImplementation(function() {
-    this.createTransaction = mockCreateTransaction;
-    return this;
-  });
-  return {
-    default: {
-      Snap: mockSnap,
-    },
-  };
-});
+vi.mock('../../payments/payment-provider.factory', () => ({
+  getActivePaymentProviderName: vi.fn(() => 'doku'),
+  createPaymentProvider: vi.fn(() => ({
+    providerName: 'doku',
+    createPayment: vi.fn().mockResolvedValue({
+      snap_token: 'snap-token-123',
+      paymentUrl: 'https://checkout-staging.doku.com/link/snap-token-123',
+      gross_amount: 65000,
+      merchantOrderId: `ORDER-${Date.now()}`,
+      providerReference: 'DOKU-REF-123',
+    }),
+    verifyCallback: vi.fn(),
+    checkTransactionStatus: vi.fn(),
+  })),
+}));
 
 import { pool, withTransaction, assertStoreOwned } from '../../core';
 import { PaymentService } from '../PaymentService';
@@ -53,7 +53,7 @@ describe('PaymentService', () => {
   });
 
   describe('createTransaction', () => {
-    it.skip('should create payment order with calculated totals', async () => {
+    it('should create payment order with calculated totals', async () => {
       const payload = {
         store_id: storeId,
         items: [
@@ -66,34 +66,30 @@ describe('PaymentService', () => {
       const mockClient = {
         query: vi.fn()
           .mockResolvedValueOnce({ rows: [{ id: menuItemId, name: 'Cappuccino', price: 30000, variants: JSON.stringify([{ name: 'Large', price: 35000 }]), is_available: true }] })
-          .mockResolvedValueOnce({ rows: [{ id: randomUUID() }] }),
+          .mockResolvedValueOnce({ rows: [{ id: randomUUID(), snap_token: 'snap-token-123', gross_amount: 65000 }] }),
         release: vi.fn(),
       };
 
       vi.mocked(withTransaction).mockImplementationOnce(async (callback) => callback(mockClient as any));
       vi.mocked(pool.query).mockResolvedValueOnce({ rows: [] } as any);
 
-      try {
-        const result = await PaymentService.createTransaction({
-          payload,
-          user: { id: userId, storeId } as any,
-          ip: '127.0.0.1',
-          userAgent: 'test-agent',
-        });
+      const result = await PaymentService.createTransaction({
+        payload,
+        user: { id: userId, storeId } as any,
+        ip: '127.0.0.1',
+        userAgent: 'test-agent',
+      });
 
-        expect(result.gross_amount).toBe(65000);
-      } catch (error: any) {
-        console.error('Test error:', error.message, error.stack);
-        throw error;
-      } // (35000 * 2) - 5000
-      expect(result.snap_token).toBe('snap-token-123');
+      expect(result.gross_amount).toBe(65000); // (35000 * 2) - 5000
+      expect(result.payment_url).toBe('https://checkout-staging.doku.com/link/snap-token-123');
+      expect(result.status).toBe('pending');
       expect(mockClient.query).toHaveBeenCalledWith(
         expect.stringContaining('insert into public.payment_orders'),
         expect.any(Array)
       );
     });
 
-    it.skip('should validate store ownership before creating payment', async () => {
+    it('should validate store ownership before creating payment', async () => {
       const payload = {
         store_id: storeId,
         items: [{ menu_item_id: menuItemId, qty: 1 }],
@@ -102,8 +98,8 @@ describe('PaymentService', () => {
 
       const mockClient = {
         query: vi.fn()
-          .mockResolvedValueOnce({ rows: [{ id: menuItemId, name: 'Cappuccino', price: 30000, variants: [], is_available: true }] })
-          .mockResolvedValueOnce({ rows: [{ id: randomUUID() }] }),
+          .mockResolvedValueOnce({ rows: [{ id: menuItemId, name: 'Cappuccino', price: 30000, variants: '[]', is_available: true }] })
+          .mockResolvedValueOnce({ rows: [{ id: randomUUID(), snap_token: 'snap-token-123', gross_amount: 30000 }] }),
         release: vi.fn(),
       };
       vi.mocked(withTransaction).mockImplementationOnce(async (callback) => callback(mockClient as any));

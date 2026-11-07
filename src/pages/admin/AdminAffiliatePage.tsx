@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { money } from './adminMoney';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { adminGetAffiliateDetail, adminGetAffiliates, adminUpdateAffiliateStatus } from '@/lib/backendApi';
@@ -19,8 +18,8 @@ export default function AdminAffiliatePage() {
   const [action, setAction] = useState<{ id: string; status: AffiliateStatus; note: string } | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const load = async () => { try { setLoading(true); setError(null); const data = await adminGetAffiliates({ status, search: dSearch, limit: 50 }); setItems(data.items || []); } catch (err) { setError(err instanceof Error ? err.message : 'Gagal memuat affiliate.'); } finally { setLoading(false); } };
-  useEffect(() => { void load(); }, [status, dSearch]);
+  const load = useCallback(async () => { try { setLoading(true); setError(null); const data = await adminGetAffiliates({ status, search: dSearch, limit: 50 }); setItems(data.items || []); } catch (err) { setError(err instanceof Error ? err.message : 'Gagal memuat affiliate.'); } finally { setLoading(false); } }, [status, dSearch]);
+  useEffect(() => { void load(); }, [load]);
 
   const summary = useMemo(() => [
     { label: 'Total', value: items.length },

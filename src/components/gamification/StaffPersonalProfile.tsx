@@ -18,6 +18,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { useStore } from '@/hooks/useStore';
+import { getStaffPerformance, type StaffPerformanceResponse } from '@/lib/backendApi';
 import { normalizeUserRole, type UserRole } from '@/lib/accessControl';
 import {
   buildStaffPersonalProfileStats,
@@ -301,10 +302,24 @@ function EmptyPerformanceState({ isOwner }: { isOwner: boolean }) {
 }
 
 export default function StaffPersonalProfile({ profile, role }: { profile?: Profile | null; role?: UserRole }) {
-  const { transactions, syncing, isOnline, storeSettings, loading, activeChallenges, challengeProgress } = useStore();
+  const { transactions, syncing, isOnline, storeSettings, loading, activeChallenges, challengeProgress, storeId } = useStore();
   const [soundEnabled, setSoundEnabled] = useState(() => isCelebrationSoundEnabled());
   const resolvedRole = normalizeUserRole(role ?? profile?.role);
   const isOwner = resolvedRole === 'owner_admin';
+
+  // Authoritative lifetime points from the server (full history). The local `transactions`
+  // cache is windowed (~500), so without this a cashier's XP/level drifts per device.
+  const staffName = profile?.display_name || profile?.username || 'Kasir';
+  const [serverPerf, setServerPerf] = useState<StaffPerformanceResponse | null>(null);
+  useEffect(() => {
+    if (!isOnline || !storeId) return;
+    let cancelled = false;
+    getStaffPerformance(storeId, staffName)
+      .then((perf) => { if (!cancelled) setServerPerf(perf); })
+      .catch(() => { /* offline/permission — fall back to local windowed computation */ });
+    return () => { cancelled = true; };
+  }, [isOnline, storeId, staffName]);
+  const lifetimePoints = serverPerf ? (isOwner ? serverPerf.team.points : serverPerf.personal.points) : undefined;
   const mergedChallengeProgress = useMemo(
     () => deriveLocalChallengeProgress({
       challenges: activeChallenges.filter((challenge) => challenge.is_active),
@@ -328,9 +343,10 @@ export default function StaffPersonalProfile({ profile, role }: { profile?: Prof
       profile,
       scope: isOwner ? 'team' : 'personal',
       bonusPoints: challengeRewardPoints,
+      ...(lifetimePoints != null ? { lifetimePoints } : {}),
       ...(isOwner ? { displayName: `Tim ${storeSettings?.store_name || 'Outlet'}` } : {}),
     }),
-    [challengeRewardPoints, isOwner, profile, storeSettings?.store_name, transactions],
+    [challengeRewardPoints, isOwner, lifetimePoints, profile, storeSettings?.store_name, transactions],
   );
   const unlockedBadges = stats.badges.filter((badge) => badge.unlocked).length;
   const visibleLeaderboard = isOwner

@@ -20,6 +20,7 @@ describe('backend modular bootstrap sync', () => {
     'subscriptions',
     'admin',
     'misc',
+    'importLocalStorage',
   ];
 
   it('keeps all extracted route modules imported and mounted from bootstrap', () => {
@@ -42,6 +43,7 @@ describe('backend modular bootstrap sync', () => {
     expect(indexSource).toContain('app.use(subscriptionsRouter)');
     expect(indexSource).toContain('app.use(adminRouter)');
     expect(indexSource).toContain('app.use(miscRouter)');
+    expect(indexSource).toContain('app.use(importLocalStorageRouter)');
     expect(indexSource).not.toMatch(/app\.(get|post|put|patch|delete)\s*\(/);
   });
 
@@ -57,10 +59,13 @@ describe('backend modular bootstrap sync', () => {
     expect(indexSource).not.toContain("import { Pool,");
   });
 
-  it('uses the shared core ApiError so route errors keep their HTTP status', () => {
-    expect(indexSource).toContain("import { ApiError, getSafeApiErrorMessage, log, serializeError } from './core/errors';");
+  it('uses the shared core ApiError and delegates to the centralized error handler', () => {
+    expect(indexSource).toContain("import { ApiError, log, serializeError } from './core/errors';");
     expect(indexSource).not.toMatch(/class\s+ApiError\s+extends\s+Error/);
-    expect(indexSource).toContain('error instanceof ApiError');
+    // Error handling is delegated to the single centralized handler (structured codes + Sentry)
+    // instead of an inline duplicate; the inline `error instanceof ApiError` block was removed.
+    expect(indexSource).toContain("import { errorHandler } from './core/errorHandler';");
+    expect(indexSource).toContain('app.use(errorHandler)');
   });
 
   it('uses the shared core env parser instead of keeping a second bootstrap schema', () => {

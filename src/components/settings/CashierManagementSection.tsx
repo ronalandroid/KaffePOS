@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { ToastType } from '@/types';
 import { Edit3, Loader2, Power, PowerOff, Search, UserPlus, Users } from 'lucide-react';
 import {
   createCashier,
@@ -11,7 +12,7 @@ import {
 import { normalizeUserFacingError } from '@/lib/errorMessages';
 
 type Props = {
-  toast: { showToast: (message: string, type?: string) => void };
+  toast: { showToast: (message: string, type?: ToastType) => void };
 };
 
 type FormMode = 'create' | 'edit';

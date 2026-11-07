@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AlertCircle, Clock3, ExternalLink, History, RefreshCw, Shield, Sparkles, CreditCard, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -97,7 +96,7 @@ export default function SubscriptionSection({ isPro, profile, toast, onRefreshSt
   const [pricingCycle, setPricingCycle] = useState<PaidCycle>('yearly');
   const billingNoticeShown = useRef(false);
 
-  const loadSubscriptionData = async () => {
+  const loadSubscriptionData = useCallback(async () => {
     if (!user?.id) return;
     setLoading(true);
     try {
@@ -111,11 +110,11 @@ export default function SubscriptionSection({ isPro, profile, toast, onRefreshSt
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id, toast]);
 
   useEffect(() => {
     loadSubscriptionData();
-  }, [user?.id]);
+  }, [loadSubscriptionData]);
 
   useEffect(() => {
     if (!user?.id || billingNoticeShown.current || typeof window === 'undefined') return;
@@ -141,6 +140,9 @@ export default function SubscriptionSection({ isPro, profile, toast, onRefreshSt
     params.delete('billing');
     const nextSearch = params.toString();
     window.history.replaceState({}, '', `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ''}`);
+    // One-shot billing-return handler, guarded by billingNoticeShown. Keyed on user id only;
+    // onRefreshStatus / loadSubscriptionData are invoked imperatively, not re-subscribed.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
   useEffect(() => {
@@ -149,7 +151,7 @@ export default function SubscriptionSection({ isPro, profile, toast, onRefreshSt
       loadSubscriptionData().catch(() => {});
     }, 30_000);
     return () => { clearInterval(poll); };
-  }, [user?.id]);
+  }, [user?.id, loadSubscriptionData]);
 
   const expiryDate = currentSubscription?.expires_at ? new Date(currentSubscription.expires_at) : null;
   const daysRemaining = expiryDate ? Math.ceil((expiryDate.getTime() - Date.now()) / 86_400_000) : null;

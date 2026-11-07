@@ -843,7 +843,7 @@ router.post('/api/auth/logout', authenticate, async (req, res, next) => {
 
 // ── Profile routes ─────────────────────────────────────────────
 
-router.get('/api/profile/me', async (req, res, next) => {
+router.get('/api/profile/me', authenticate, async (req, res, next) => {
   try {
     const profile = await withTransaction(async (client) => {
       const ensured = await ensureProfile(client, req.authUser!);

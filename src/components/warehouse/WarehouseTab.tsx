@@ -3,7 +3,6 @@
  
  
  
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { memo, useState, useMemo, useRef } from 'react';
 import { Plus, Archive, X, AlertTriangle, Search, RefreshCw, ChefHat, Calculator, Upload, CheckCircle2, FileSpreadsheet } from 'lucide-react';
 import { useStore } from '@/hooks/useStore';
@@ -45,7 +44,10 @@ const WAREHOUSE_SECTION_ITEMS = [
   { id: 'import', label: 'Impor Bulk', icon: Upload },
 ] as const;
 
-export default function WarehouseTab({ toast }: { toast:any }) {
+import type { ToastType } from '@/types';
+type ToastApi = { showToast: (message: string, type?: ToastType) => void };
+
+export default function WarehouseTab({ toast }: { toast: ToastApi }) {
   const {
     inventory,
     menu,
@@ -136,7 +138,7 @@ export default function WarehouseTab({ toast }: { toast:any }) {
       setShowModal(false);
       const msg = form.type==='new' ? '✅ Bahan ditambahkan!' : form.type==='edit' ? '✅ Bahan diperbarui!' : '✅ Stok diperbarui!';
       toast.showToast(msg, 'success');
-    } catch (e:any) {
+    } catch (e: unknown) {
       toast.showToast(normalizeUserFacingError(e, 'Bahan baku belum bisa disimpan. Periksa kembali isian stok.'), 'error');
     } finally {
       setSaving(false);
@@ -167,7 +169,7 @@ export default function WarehouseTab({ toast }: { toast:any }) {
       });
       setOpnameTarget(null);
       toast.showToast('Opname stok disimpan', 'success');
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.showToast(normalizeUserFacingError(error, 'Opname stok belum bisa disimpan. Periksa stok fisik lalu coba lagi.'), 'error');
     } finally {
       setOpnameSaving(false);
@@ -193,7 +195,7 @@ export default function WarehouseTab({ toast }: { toast:any }) {
       });
       setConversionForm({ ingredient_id: '', from_unit: '', to_unit: 'pcs', ratio: '1' });
       toast.showToast('Konversi satuan disimpan', 'success');
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.showToast(normalizeUserFacingError(error, 'Konversi satuan belum bisa disimpan. Periksa satuan dan rasio.'), 'error');
     } finally {
       conversionInFlight.current = false;
@@ -234,7 +236,7 @@ export default function WarehouseTab({ toast }: { toast:any }) {
       await saveMenuItem({ ...product, recipe: nextRecipe });
       setRecipeForm({ product_id: product.id, ingredient_id: '', qty: '', unit_reference: '' });
       toast.showToast('Resep produk diperbarui', 'success');
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message = getRecipeSaveErrorMessage(error);
       setRecipeError(message);
       toast.showToast(message, 'error');
@@ -265,7 +267,7 @@ export default function WarehouseTab({ toast }: { toast:any }) {
       setImportText('');
       setImportRows([]);
       toast.showToast(`Import stok selesai: ${result.committed.ingredients} bahan, ${result.committed.products} produk, ${result.committed.recipes} resep`, 'success');
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.showToast(normalizeUserFacingError(error, 'Import stok gagal diproses. Periksa data lalu coba lagi.'), 'error');
     } finally {
       setImporting(false);

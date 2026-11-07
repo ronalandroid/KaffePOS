@@ -82,8 +82,9 @@ export const DEFAULT_TRIAL_CONVERSION_PLAN = 'kopi_susu' as const;
 export const DEFAULT_TRIAL_CONVERSION_CYCLE = 'monthly' as const;
 export const DEFAULT_TRIAL_CONVERSION_AMOUNT = 49000;
 
-export function calculateExpiryDate(billingCycle: 'free' | 'monthly' | 'quarterly' | 'semiannual' | 'yearly') {
-  if (billingCycle === 'free') return null;
+export function calculateExpiryDate(billingCycle: 'free' | 'lifetime' | 'monthly' | 'quarterly' | 'semiannual' | 'yearly') {
+  // 'lifetime' is the beli-putus (one-time purchase) cycle: no expiry, permanent access.
+  if (billingCycle === 'free' || billingCycle === 'lifetime') return null;
   const expiresAt = new Date();
   const days = billingCycle === 'monthly' ? 30 : billingCycle === 'quarterly' ? 90 : billingCycle === 'semiannual' ? 180 : 365;
   expiresAt.setDate(expiresAt.getDate() + days);
@@ -107,7 +108,7 @@ export function buildSubscriptionQuoteOrThrow(payload: {
 export async function activatePaidSubscription(client: PoolClient, payload: {
   userId: string;
   plan: 'secangkir' | 'kopi_susu' | 'signature' | 'founder';
-  billingCycle: 'free' | 'monthly' | 'quarterly' | 'semiannual' | 'yearly';
+  billingCycle: 'free' | 'lifetime' | 'monthly' | 'quarterly' | 'semiannual' | 'yearly';
   paymentAmount: number;
   paymentMethod: string;
   paymentRef: string;

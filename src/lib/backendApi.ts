@@ -1,17 +1,8 @@
-import { Capacitor } from '@capacitor/core';
-import { getStoredAccessToken } from '@/lib/authSession';
-import { normalizeUserFacingError } from '@/lib/errorMessages';
-import { resolveRuntimeApiBaseUrl } from '@/lib/releaseConfig';
 import type {
   CashFlowEntry,
   CashRegister,
   Expense,
   InventoryItem,
-  KitchenOrder,
-  KitchenOrderStatus,
-  KitchenRealtimeEvent,
-  KitchenRealtimeStatus,
-  KitchenStation,
   MenuItem,
   StockUnitConversion,
   StoreSettings,
@@ -21,16 +12,6 @@ import type { Permission, UserRole } from '@/lib/accessControl';
 import type { SubscriptionBillingQuote, SubscriptionPaymentMethod, SubscriptionPaymentMethodId } from '@/lib/subscriptionBilling';
 import type { BulkImportMode, BulkImportPreview, BulkImportRow } from '@/lib/stockEngine';
 import type {
-  LoyaltyOverview,
-  LoyaltyCustomer,
-  LoyaltyPassport,
-  LoyaltyRedemption,
-  LoyaltyReward,
-  LoyaltySettings,
-  LoyaltyStampEvent,
-  LoyaltyTierSetting,
-} from '@/lib/loyalty';
-import type {
   Challenge,
   ChallengeProgressSummary,
   TeamChallengeCompletion,
@@ -38,16 +19,15 @@ import type {
 } from '@/lib/challenges';
 import type { KaffeNotification, NotificationReadPayload } from '@/lib/notifications';
 
-const EXPLICIT_API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').trim().replace(/\/$/, '');
+import { apiFetch, type ApiListResponse, type ApiRecord } from './api/client';
 
-type RequestInitWithJson = RequestInit & {
-  auth?: boolean;
-  body?: BodyInit | null;
-  json?: Record<string, unknown> | null;
-};
+// Re-export the transport core and the extracted endpoint catalogs so every
+// existing `@/lib/backendApi` import keeps working unchanged (barrel pattern).
+export { ApiError, apiFetch, buildApiUrl, resolveApiBaseUrl } from './api/client';
+export * from './api/loyalty';
+export * from './api/kitchen';
+export * from './api/affiliate';
 
-type ApiListResponse<T> = { items: T[] };
-type ApiRecord = Record<string, unknown>;
 
 export type SystemStatusResponse = {
   ok: boolean;
@@ -93,98 +73,6 @@ export type AppVersionResponse = {
   };
   checkedAt: string;
 };
-
-export class ApiError extends Error {
-  status: number;
-
-  constructor(message: string, status: number) {
-    super(message);
-    this.name = 'ApiError';
-    this.status = status;
-  }
-}
-
-export function resolveApiBaseUrl() {
-  return resolveRuntimeApiBaseUrl({
-    explicitApiBaseUrl: EXPLICIT_API_BASE_URL,
-    hostname: typeof window === 'undefined' ? null : window.location.hostname,
-    isNativePlatform: Capacitor.isNativePlatform(),
-  });
-}
-
-export function buildApiUrl(path: string) {
-  const apiBaseUrl = resolveApiBaseUrl();
-  if (!apiBaseUrl) return path;
-  return `${apiBaseUrl}${path}`;
-}
-
-async function getAccessToken() {
-  return getStoredAccessToken();
-}
-
-async function readErrorMessage(response: Response) {
-  try {
-    const data = await readJsonResponse<{ message?: string; errors?: Array<{ message?: string }> }>(response);
-    return normalizeUserFacingError({
-      message: data.message || data.errors?.[0]?.message || `Request gagal (${response.status})`,
-      status: response.status,
-    });
-  } catch {
-    return normalizeUserFacingError({ message: `Request gagal (${response.status})`, status: response.status });
-  }
-}
-
-async function readJsonResponse<T>(response: Response): Promise<T> {
-  const contentLength = response.headers.get('content-length');
-  if (response.status === 204 || contentLength === '0') {
-    return undefined as T;
-  }
-
-  const contentType = response.headers.get('content-type') || '';
-  if (!contentType.includes('application/json')) {
-    return undefined as T;
-  }
-
-  return response.json() as Promise<T>;
-}
-
-export async function apiFetch<T>(path: string, init: RequestInitWithJson = {}): Promise<T> {
-  const { auth = true, json = null, ...requestInit } = init;
-  const headers = new Headers(init.headers);
-  headers.set('Accept', 'application/json');
-
-  if (json) {
-    headers.set('Content-Type', 'application/json');
-  }
-
-  if (auth) {
-    const token = await getAccessToken();
-    if (!token) {
-      throw new ApiError('Sesi login tidak ditemukan.', 401);
-    }
-    headers.set('Authorization', `Bearer ${token}`);
-  }
-
-  const body = json ? JSON.stringify(json) : (requestInit.body ?? null);
-
-  let response: Response;
-  try {
-    response = await fetch(buildApiUrl(path), {
-      ...requestInit,
-      headers,
-      body,
-    });
-  } catch (error) {
-    throw new ApiError(normalizeUserFacingError(error, 'Tidak bisa terhubung ke server. Pastikan internet aktif atau coba lagi beberapa saat.'), 0);
-  }
-
-  if (!response.ok) {
-    const message = await readErrorMessage(response);
-    throw new ApiError(message, response.status);
-  }
-
-  return readJsonResponse<T>(response);
-}
 
 export type AuthSessionResponse = {
   accessToken: string;
@@ -554,6 +442,15 @@ export const updateMenuItem = (id: string, payload: Record<string, unknown>) =>
 export const removeMenuItem = (id: string) =>
   apiFetch<{ success: boolean }>(`/api/menu-items/${id}`, { method: 'DELETE' });
 
+export type StaffPerformanceResponse = {
+  personal: { points: number; transactions: number };
+  team: { points: number; transactions: number };
+};
+export const getStaffPerformance = (storeId: string, staffName: string) =>
+  apiFetch<StaffPerformanceResponse>(
+    `/api/staff/performance?storeId=${encodeURIComponent(storeId)}&staffName=${encodeURIComponent(staffName)}`,
+  );
+
 export const getInventory = (storeId: string) =>
   apiFetch<ApiListResponse<InventoryItem>>(`/api/inventory?storeId=${encodeURIComponent(storeId)}`);
 export const createInventoryItem = (payload: Record<string, unknown>) =>
@@ -806,206 +703,6 @@ export const getTeamChallengeCompletion = (storeId: string) =>
 export const updateChallenge = (id: string, payload: { store_id: string; is_active?: boolean }) =>
   apiFetch<Challenge>(`/api/challenges/${id}`, { method: 'PATCH', json: payload });
 
-export const getLoyaltyOverview = (storeId: string) =>
-  apiFetch<LoyaltyOverview>(`/api/loyalty/overview?storeId=${encodeURIComponent(storeId)}`);
-export const searchLoyaltyPassports = (storeId: string, query = '') =>
-  apiFetch<ApiListResponse<LoyaltyPassport>>(
-    `/api/loyalty/passports?storeId=${encodeURIComponent(storeId)}&query=${encodeURIComponent(query)}`,
-  );
-export const searchLoyaltyCustomers = (storeId: string, search = '') =>
-  apiFetch<ApiListResponse<LoyaltyCustomer>>(
-    `/api/loyalty/customers?storeId=${encodeURIComponent(storeId)}&search=${encodeURIComponent(search)}`,
-  );
-export const getLoyaltySettings = (storeId: string) =>
-  apiFetch<{ settings: LoyaltySettings; rewards: LoyaltyReward[]; tiers: LoyaltyTierSetting[] }>(
-    `/api/loyalty/settings?storeId=${encodeURIComponent(storeId)}`,
-  );
-export const putLoyaltySettings = (payload: Partial<LoyaltySettings> & { store_id: string }) =>
-  apiFetch<{ settings: LoyaltySettings; tiers: LoyaltyTierSetting[] }>('/api/loyalty/settings', {
-    method: 'PUT',
-    json: payload as Record<string, unknown>,
-  });
-export const createLoyaltyPassport = (payload: {
-  store_id: string;
-  customer_name?: string | null;
-  customer_phone: string;
-}) => apiFetch<LoyaltyPassport>('/api/loyalty/passports', { method: 'POST', json: payload });
-export const addLoyaltyStamp = (payload: {
-  store_id: string;
-  passport_id?: string;
-  stamps_earned?: number;
-  customer_name?: string | null;
-  customer_phone?: string;
-  transaction_id?: string | null;
-  transaction_amount: number;
-  note?: string | null;
-  idempotency_key?: string | null;
-}) => apiFetch<{
-  passport: LoyaltyPassport;
-  customer?: LoyaltyCustomer;
-  event: LoyaltyStampEvent;
-  earned: { stamps: number; points: number };
-  replayed?: boolean;
-}>('/api/loyalty/stamps', { method: 'POST', json: payload });
-export const addKopiPassportStamp = (payload: {
-  store_id: string;
-  customer_id?: string;
-  passport_id?: string;
-  name?: string | null;
-  phone?: string;
-  transaction_id?: string | null;
-  transaction_amount: number;
-  stamps_earned?: number;
-  note?: string | null;
-  idempotency_key?: string | null;
-}) => apiFetch<{
-  passport: LoyaltyPassport;
-  customer?: LoyaltyCustomer;
-  event: LoyaltyStampEvent;
-  earned: { stamps: number; points: number };
-  replayed?: boolean;
-}>('/api/loyalty/stamp', { method: 'POST', json: payload });
-export const redeemLoyaltyReward = (payload: {
-  store_id: string;
-  passport_id: string;
-  reward_id: string;
-  transaction_id?: string | null;
-  transaction_amount: number;
-  idempotency_key?: string | null;
-}) => apiFetch<{
-  redemption: LoyaltyRedemption;
-  passport: LoyaltyPassport;
-  customer?: LoyaltyCustomer;
-  reward: LoyaltyReward;
-  replayed?: boolean;
-}>('/api/loyalty/redemptions', { method: 'POST', json: payload });
-export const redeemKopiPassportReward = (payload: {
-  store_id: string;
-  customer_id?: string;
-  passport_id?: string;
-  reward_id: string;
-  transaction_id?: string | null;
-  transaction_amount: number;
-  idempotency_key?: string | null;
-}) => apiFetch<{
-  redemption: LoyaltyRedemption;
-  passport: LoyaltyPassport;
-  customer?: LoyaltyCustomer;
-  reward: LoyaltyReward;
-  replayed?: boolean;
-}>('/api/loyalty/redeem', { method: 'POST', json: payload });
-export const updateLoyaltySettings = (payload: Partial<LoyaltySettings> & { store_id: string }) =>
-  apiFetch<LoyaltySettings>('/api/loyalty/settings', { method: 'PATCH', json: payload as Record<string, unknown> });
-export const createLoyaltyReward = (payload: {
-  store_id: string;
-  name: string;
-  description?: string | null;
-  type: LoyaltyReward['type'];
-  reward_value: number;
-  points_or_stamps_needed?: number;
-  points_cost: number;
-  stamps_cost: number;
-  is_active?: boolean;
-}) => apiFetch<LoyaltyReward>('/api/loyalty/rewards', { method: 'POST', json: payload });
-export const updateLoyaltyReward = (id: string, payload: Partial<Omit<LoyaltyReward, 'id' | 'store_id' | 'created_at' | 'updated_at'>>) =>
-  apiFetch<LoyaltyReward>(`/api/loyalty/rewards/${id}`, { method: 'PATCH', json: payload as Record<string, unknown> });
-
-export const getKitchenOrders = (storeId: string, filters?: { status?: KitchenOrderStatus; station?: KitchenStation | 'all' }) => {
-  const params = new URLSearchParams({ storeId });
-  if (filters?.status) params.set('status', filters.status);
-  if (filters?.station && filters.station !== 'all') params.set('station', filters.station);
-  return apiFetch<{ items: KitchenOrder[] }>(`/api/kitchen/orders?${params.toString()}`);
-};
-
-export const updateKitchenOrderStatus = (
-  id: string,
-  payload: { store_id: string; status: KitchenOrderStatus; reason?: string | null; changed_by_name?: string | null },
-) => apiFetch<KitchenOrder>(`/api/kitchen/orders/${id}/status`, { method: 'PATCH', json: payload });
-
-export const updateKitchenItemStatus = (
-  id: string,
-  payload: { store_id: string; status: KitchenOrderStatus; changed_by_name?: string | null },
-) => apiFetch<KitchenOrder>(`/api/kitchen/items/${id}/status`, { method: 'PATCH', json: payload });
-
-export function subscribeKitchenEvents(options: {
-  storeId: string;
-  onEvent: (event: KitchenRealtimeEvent) => void;
-  onStatus?: (status: KitchenRealtimeStatus) => void;
-  onError?: (error: unknown) => void;
-}) {
-  const controller = new AbortController();
-  let stopped = false;
-  let retryTimer: ReturnType<typeof setTimeout> | null = null;
-  let retryAttempt = 0;
-
-  const connect = async () => {
-    if (stopped) return;
-    options.onStatus?.(retryAttempt > 0 ? 'reconnecting' : 'connecting');
-    try {
-      const token = await getStoredAccessToken();
-      if (!token) throw new ApiError('Sesi login tidak ditemukan.', 401);
-
-      const response = await fetch(buildApiUrl(`/api/kitchen/events?storeId=${encodeURIComponent(options.storeId)}`), {
-        method: 'GET',
-        headers: {
-          Accept: 'text/event-stream',
-          Authorization: `Bearer ${token}`,
-        },
-        signal: controller.signal,
-      });
-
-      if (!response.ok || !response.body) {
-        throw new ApiError(await readErrorMessage(response), response.status);
-      }
-
-      retryAttempt = 0;
-      options.onStatus?.('connected');
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = '';
-
-      while (!stopped) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const chunks = buffer.split('\n\n');
-        buffer = chunks.pop() || '';
-
-        for (const chunk of chunks) {
-          const dataLine = chunk.split('\n').find((line) => line.startsWith('data: '));
-          if (!dataLine) continue;
-          try {
-            const event = JSON.parse(dataLine.slice(6)) as KitchenRealtimeEvent | { type: 'ping' };
-            if (event.type === 'ping') continue;
-            if ('id' in event) {
-              options.onEvent(event as KitchenRealtimeEvent);
-            }
-          } catch {
-            // Ignore malformed event chunks and wait for the next full SSE frame.
-          }
-        }
-      }
-
-      if (!stopped) throw new Error('Kitchen realtime terputus.');
-    } catch (error) {
-      if (stopped || controller.signal.aborted) return;
-      retryAttempt += 1;
-      options.onError?.(error);
-      options.onStatus?.(typeof navigator !== 'undefined' && !navigator.onLine ? 'offline' : 'reconnecting');
-      const delay = Math.min(20_000, 1000 * 2 ** Math.min(retryAttempt, 5));
-      retryTimer = setTimeout(connect, delay);
-    }
-  };
-
-  void connect();
-
-  return () => {
-    stopped = true;
-    if (retryTimer) clearTimeout(retryTimer);
-    controller.abort();
-  };
-}
-
 export const importLocalStoragePayload = (payload: {
   store_id: string;
   store_settings?: Record<string, unknown> | null;
@@ -1025,149 +722,3 @@ export const importLocalStoragePayload = (payload: {
   json: payload,
 });
 
-// ============================================================================
-// Affiliate & Referral API
-// ============================================================================
-
-export async function generateReferralCode(): Promise<{ code: string; referral_link: string }> {
-  return apiFetch('/api/referrals/generate', { method: 'POST', auth: true });
-}
-
-export async function getReferralStats(): Promise<import('@/types/affiliate').ReferralStats> {
-  return apiFetch('/api/referrals/me', { auth: true });
-}
-
-export async function getAffiliateDashboard(): Promise<import('@/types/affiliate').AffiliateDashboardData> {
-  return apiFetch('/api/affiliate/me', { auth: true });
-}
-
-export async function applyForAffiliate(data: import('@/types/affiliate').AffiliateApplyInput): Promise<{ affiliate_profile: import('@/types/affiliate').AffiliateProfile }> {
-  return apiFetch('/api/affiliate/apply', {
-    method: 'POST',
-    auth: true,
-    json: { ...data },
-  });
-}
-
-export async function updateAffiliatePayoutDetails(data: import('@/types/affiliate').AffiliatePayoutInput): Promise<{ affiliate_profile: import('@/types/affiliate').AffiliateProfile }> {
-  return apiFetch('/api/affiliate/me/payout', {
-    method: 'PATCH',
-    auth: true,
-    json: { ...data },
-  });
-}
-
-export async function getAffiliateCommissions(
-  status?: import('@/types/affiliate').CommissionStatus
-): Promise<{ items: import('@/types/affiliate').CommissionTransaction[] }> {
-  const url = status ? `/api/affiliate/commissions?status=${status}` : '/api/affiliate/commissions';
-  return apiFetch(url, { auth: true });
-}
-
-// Admin APIs
-export async function adminGetAffiliates(params: {
-  status?: import('@/types/affiliate').AffiliateStatus | 'all';
-  search?: string;
-  page?: number;
-  limit?: number;
-} = {}): Promise<{ items: import('@/types/affiliate').AdminAffiliateListItem[]; pagination?: unknown }> {
-  const query = new URLSearchParams();
-  if (params.status && params.status !== 'all') query.set('status', params.status);
-  if (params.search) query.set('search', params.search);
-  if (params.page) query.set('page', String(params.page));
-  if (params.limit) query.set('limit', String(params.limit));
-  const suffix = query.toString() ? `?${query.toString()}` : '';
-  return apiFetch(`/api/admin/affiliates${suffix}`, { auth: true });
-}
-
-export async function adminGetAffiliateDetail(id: string): Promise<import('@/types/affiliate').AdminAffiliateDetail> {
-  return apiFetch(`/api/admin/affiliates/${id}`, { auth: true });
-}
-
-export async function adminUpdateAffiliateStatus(
-  id: string,
-  status: import('@/types/affiliate').AffiliateStatus,
-  note?: string
-): Promise<{ affiliate_profile: import('@/types/affiliate').AffiliateProfile }> {
-  return apiFetch(`/api/admin/affiliates/${id}/status`, {
-    method: 'PATCH',
-    auth: true,
-    json: { status, note },
-  });
-}
-
-export async function adminGetReferrals(params: {
-  status?: string;
-  referral_type?: string;
-  search?: string;
-  page?: number;
-  limit?: number;
-} = {}): Promise<{ items: import('@/types/affiliate').AdminReferralListItem[]; pagination?: unknown }> {
-  const query = new URLSearchParams();
-  if (params.status && params.status !== 'all') query.set('status', params.status);
-  if (params.referral_type && params.referral_type !== 'all') query.set('referral_type', params.referral_type);
-  if (params.search) query.set('search', params.search);
-  if (params.page) query.set('page', String(params.page));
-  if (params.limit) query.set('limit', String(params.limit));
-  const suffix = query.toString() ? `?${query.toString()}` : '';
-  return apiFetch(`/api/admin/referrals${suffix}`, { auth: true });
-}
-
-export async function adminGetReferralDetail(id: string): Promise<import('@/types/affiliate').AdminReferralDetail> {
-  return apiFetch(`/api/admin/referrals/${id}`, { auth: true });
-}
-
-export async function adminGetCommissions(params: {
-  status?: import('@/types/affiliate').CommissionStatus | 'all';
-  type?: string;
-  search?: string;
-  page?: number;
-  limit?: number;
-} = {}): Promise<{ items: import('@/types/affiliate').AdminCommissionListItem[]; pagination?: unknown }> {
-  const query = new URLSearchParams();
-  if (params.status && params.status !== 'all') query.set('status', params.status);
-  if (params.type && params.type !== 'all') query.set('type', params.type);
-  if (params.search) query.set('search', params.search);
-  if (params.page) query.set('page', String(params.page));
-  if (params.limit) query.set('limit', String(params.limit));
-  const suffix = query.toString() ? `?${query.toString()}` : '';
-  return apiFetch(`/api/admin/commissions${suffix}`, { auth: true });
-}
-
-export async function adminGetCommissionDetail(id: string): Promise<import('@/types/affiliate').AdminCommissionDetail> {
-  return apiFetch(`/api/admin/commissions/${id}`, { auth: true });
-}
-
-export async function adminApproveCommission(
-  commissionId: string,
-  notes?: string
-): Promise<{ commission: import('@/types/affiliate').CommissionTransaction }> {
-  return apiFetch(`/api/admin/commissions/${commissionId}/approve`, {
-    method: 'PATCH',
-    auth: true,
-    json: { note: notes },
-  });
-}
-
-export async function adminRejectCommission(
-  commissionId: string,
-  rejectionReason: string,
-  notes?: string
-): Promise<{ commission: import('@/types/affiliate').CommissionTransaction }> {
-  return apiFetch(`/api/admin/commissions/${commissionId}/reject`, {
-    method: 'PATCH',
-    auth: true,
-    json: { note: rejectionReason || notes || '' },
-  });
-}
-
-export async function adminMarkCommissionPaid(
-  commissionId: string,
-  notes?: string
-): Promise<{ commission: import('@/types/affiliate').CommissionTransaction }> {
-  return apiFetch(`/api/admin/commissions/${commissionId}/mark-paid`, {
-    method: 'PATCH',
-    auth: true,
-    json: { note: notes },
-  });
-}

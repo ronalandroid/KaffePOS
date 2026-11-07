@@ -3,7 +3,6 @@
 
 
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/history/HistoryTab.tsx — KaffePOS v4 — PrintActionSheet
 import { memo, useState, useMemo, useCallback, useRef } from 'react';
 import { X, Ban, Search, Printer, ChevronDown } from 'lucide-react';
@@ -12,6 +11,7 @@ import PrintActionSheet from '@/components/pos/PrintActionSheet';
 import { TransactionCard } from '@/components/history/TransactionCard';
 import { normalizeUserFacingError } from '@/lib/errorMessages';
 import type { SubscriptionAccess } from '@/lib/subscriptionAccess';
+import type { Transaction, TransactionItem } from '@/types';
 import { useModalBehavior } from '@/hooks/useModalBehavior';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { usePagination } from '@/hooks/usePagination';
@@ -43,14 +43,14 @@ export default function HistoryTab({
   const { transactions, voidTransaction, storeSettings } = useStore();
 
   const [search,   setSearch]   = useState('');
-  const [detail,   setDetail]   = useState<any>(null);
+  const [detail,   setDetail]   = useState<Transaction | null>(null);
   const [voidR,    setVoidR]    = useState('');
-  const [showVoid, setShowVoid] = useState<any>(null);
+  const [showVoid, setShowVoid] = useState<Transaction | null>(null);
   const [voiding,  setVoiding]  = useState(false);
   const voidInFlight = useRef(false);
   const [period,   setPeriod]   = useState<Period>('all');
   const [showPrintSheet, setShowPrintSheet] = useState(false);
-  const [printTx, setPrintTx] = useState<any>(null);
+  const [printTx, setPrintTx] = useState<Transaction | null>(null);
   const dSearch = useDebouncedValue(search, 300);
 
   // ── Period filter ────────────────────────────────────────────
@@ -88,6 +88,7 @@ export default function HistoryTab({
 
   const handleVoid = useCallback(async () => {
     if (voidInFlight.current) return;
+    if (!showVoid) return;
     if (!voidR.trim()) { toast.showToast('Masukkan alasan void','warning'); return; }
     voidInFlight.current = true;
     setVoiding(true);
@@ -96,13 +97,13 @@ export default function HistoryTab({
       toast.showToast('Transaksi di-void','success');
       setShowVoid(null); setVoidR('');
       if (detail?.id === showVoid.id) setDetail(null);
-    } catch(e:any) {
+    } catch(e: unknown) {
       toast.showToast(normalizeUserFacingError(e, 'Transaksi belum bisa di-void. Coba lagi.'),'error');
     } finally { setVoiding(false); voidInFlight.current = false; }
   }, [voidR, showVoid, detail, voidTransaction, toast]);
 
   // Buka PrintActionSheet
-  const handlePrint = useCallback((tx:any) => {
+  const handlePrint = useCallback((tx: Transaction) => {
     setPrintTx(tx);
     setShowPrintSheet(true);
   }, [],   );
@@ -219,7 +220,7 @@ export default function HistoryTab({
 
             <div className="bg-slate-50 rounded-[32px] p-6 mb-8 border border-slate-100">
               <div className="space-y-4 mb-6">
-                {detail.items.map((i:any, idx: number) => (
+                {detail.items.map((i: TransactionItem, idx: number) => (
                   <div key={idx} className="flex justify-between items-start gap-4">
                     <div className="flex-1">
                       <p className="font-bold text-slate-800 text-[15px]">{i.name}</p>

@@ -85,8 +85,15 @@ export type Env = z.infer<typeof envSchema>;
 
 export const env = envSchema.parse(process.env);
 
+// In production, ADMIN_EMAILS must be set explicitly — a hardcoded fallback would
+// hand admin access to whoever controls that address if the env var is ever missing.
+const adminEmailsRaw =
+  env.ADMIN_EMAILS || (env.NODE_ENV === 'production' ? '' : 'kaffeposapp@gmail.com');
+if (env.NODE_ENV === 'production' && !adminEmailsRaw) {
+  throw new Error('ADMIN_EMAILS env var must be set in production');
+}
 export const adminEmails = new Set(
-  (env.ADMIN_EMAILS || 'kaffeposapp@gmail.com')
+  adminEmailsRaw
     .split(',')
     .map((email) => email.trim().toLowerCase())
     .filter(Boolean),

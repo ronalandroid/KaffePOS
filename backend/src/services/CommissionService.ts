@@ -112,7 +112,10 @@ export class CommissionService {
       }
       affiliateProfileId = affiliate.id;
       commissionType = 'affiliate_cash';
-      rate = Number(affiliate.commission_rate ?? 20);
+      // Clamp the commission rate to [0, 100]. A misconfigured rate (e.g. 150) or a NaN from
+      // the DB would otherwise pay out MORE than the subscription value — a direct cash loss.
+      const rawRate = Number(affiliate.commission_rate ?? 20);
+      rate = Math.min(100, Math.max(0, Number.isFinite(rawRate) ? rawRate : 20));
       amount = Math.max(0, Math.floor(input.grossAmount * (rate / 100)));
     }
 
@@ -351,6 +354,11 @@ export class CommissionService {
   async markPaid(id: string, note: string | null, payoutReference: string | null) {
     const current = await this.getForUpdate(id);
     if (current.status !== 'approved') throw new ApiError(400, 'Hanya komisi approved yang bisa ditandai paid.');
+    // Enforce the 30-day holdback window at payout time. Paying out before eligible_at would
+    // release affiliate cash that may still be clawed back (refund/chargeback) — a direct loss.
+    if (current.eligible_at && new Date(current.eligible_at as string).getTime() > Date.now()) {
+      throw new ApiError(400, 'Komisi belum melewati masa tunggu (holdback) dan belum bisa dibayar.');
+    }
     const result = await this.db.query(
       `
         update public.commission_transactions

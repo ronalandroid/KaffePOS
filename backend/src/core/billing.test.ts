@@ -185,4 +185,21 @@ describe('activatePaidSubscription idempotency', () => {
     expect(client.paymentHistory[0].payment_ref).toBe('SUB-KOPI-SUSU-MONTHLY-user-1-1');
     expect(client.sessions.get('session-1')?.subscription_id).toBe('subscription-1');
   });
+
+  it('activates a lifetime (beli putus) plan with no expiry', async () => {
+    const client = new BillingClientStub();
+
+    await activatePaidSubscription(client as unknown as PoolClient, createPayload({
+      plan: 'signature',
+      billingCycle: 'lifetime',
+      paymentMethod: 'manual_transfer',
+      paymentRef: 'MANUAL-LIFETIME-1',
+    }));
+
+    expect(client.subscriptions).toHaveLength(1);
+    expect(client.subscriptions[0].plan).toBe('signature');
+    expect(client.subscriptions[0].billing_cycle).toBe('lifetime');
+    // Null expiry = permanent access: isSubscriptionExpired treats it as never expiring.
+    expect(client.subscriptions[0].expires_at).toBeNull();
+  });
 });

@@ -31,6 +31,9 @@ import {
 import { normalizeUserFacingError } from '@/lib/errorMessages';
 import { dispatchUpgradePrompt } from '@/lib/upgradePrompts';
 import { dispatchCelebrationOnce, isCelebrationSoundEnabled } from '@/lib/celebration';
+import { useStore } from '@/hooks/useStore';
+import { buildInsightContext } from '@/lib/insightContext';
+import { getAIInsightCached, type AIInsight } from '@/lib/aiInsight';
 
 const fRp = (value: number) =>
   new Intl.NumberFormat('id-ID', {
@@ -139,6 +142,29 @@ export default function AIInsightsPage({ storeId, canUseAiInsight, hasBusinessDa
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
 
+  // Real AI narrative from Gemini (falls back to a local heuristic if the key is unset/offline).
+  // The rule-based cards below are the structured analysis; this is the genuine AI summary that
+  // makes the "AI Insights" label honest — with a source badge so users know which they're seeing.
+  const transactions = useStore((s) => s.transactions);
+  const inventory = useStore((s) => s.inventory);
+  const expenses = useStore((s) => s.expenses);
+  const storeSettings = useStore((s) => s.storeSettings);
+  const [aiNarrative, setAiNarrative] = useState<AIInsight | null>(null);
+  useEffect(() => {
+    if (!canUseAiInsight || !storeId || !hasBusinessData) return;
+    let cancelled = false;
+    const ctx = buildInsightContext({
+      transactions,
+      inventory,
+      expenses,
+      storeName: storeSettings?.store_name || 'Kafe Saya',
+    });
+    getAIInsightCached(ctx)
+      .then((insight) => { if (!cancelled) setAiNarrative(insight); })
+      .catch(() => { /* keep the structured cards even if the narrative fetch fails */ });
+    return () => { cancelled = true; };
+  }, [canUseAiInsight, storeId, hasBusinessData, transactions, inventory, expenses, storeSettings?.store_name]);
+
   const openUpgrade = useCallback(() => {
     dispatchUpgradePrompt({
       trigger: 'ai_insight',
@@ -218,6 +244,27 @@ export default function AIInsightsPage({ storeId, canUseAiInsight, hasBusinessDa
 
   return (
     <section className="kaffe-panel rounded-2xl p-5 md:p-6">
+      {aiNarrative && (
+        <div className="mb-5 rounded-2xl border border-orange-100 bg-gradient-to-br from-orange-50/80 to-white p-4 md:p-5">
+          <div className="mb-2.5 flex items-center justify-between gap-3">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FF6A00] px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white">
+              <Sparkles size={12} aria-hidden="true" />
+              {aiNarrative.source === 'gemini' ? 'Ditenagai Gemini AI' : 'Analisis otomatis'}
+            </span>
+          </div>
+          <p className="text-sm font-semibold leading-relaxed text-slate-700">{aiNarrative.summary}</p>
+          {aiNarrative.tips.length > 0 && (
+            <ul className="mt-3 space-y-1.5">
+              {aiNarrative.tips.slice(0, 3).map((tip, idx) => (
+                <li key={idx} className="flex items-start gap-2 text-xs font-semibold text-slate-600">
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[#FF6A00]" aria-hidden="true" />
+                  {tip}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0">
           <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-orange-100 bg-orange-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-[#FF6A00]">

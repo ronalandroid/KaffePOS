@@ -1,4 +1,5 @@
 import type { SubscriptionPlanId } from '@/lib/subscriptionPlans';
+import { IS_PAYMENT_DISABLED } from '@/lib/paymentMode';
 import type { UpgradePromptEventPayload, SubscriptionUsageLimits } from '@/lib/backendApi';
 
 export type UpgradePromptTrigger =
@@ -49,6 +50,8 @@ function key(prefix: string, userOrStoreId?: string | null, promptKey = 'global'
 }
 
 export function dispatchUpgradePrompt(detail: UpgradePromptRequest) {
+  // In beli-putus deployments there is nothing to upsell — every prompt is a no-op.
+  if (IS_PAYMENT_DISABLED) return;
   if (typeof window === 'undefined') return;
   window.dispatchEvent(new CustomEvent<UpgradePromptRequest>('kaffepos-upgrade-prompt', { detail }));
 }

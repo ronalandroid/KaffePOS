@@ -267,8 +267,14 @@ export function usePrinter(): UsePrinterReturn {
     }
 
     // 3. Browser fallback
-    printReceiptBrowser(data);
-    return 'browser';
+    try {
+      printReceiptBrowser(data);
+      return 'browser';
+    } catch (e:any) {
+      const msg = e?.message || 'Cetak struk gagal.';
+      if (mounted.current) setLastError(msg);
+      throw new Error(msg);
+    }
   }, [activeMethod]);
 
   const clearError = useCallback(() => { if (mounted.current) setLastError(null); }, [],   );

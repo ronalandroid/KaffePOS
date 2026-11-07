@@ -9,8 +9,6 @@ const FRONTEND_REQUIRED = [
   'VITE_GA4_MEASUREMENT_ID',
   'VITE_CLARITY_PROJECT_ID',
   'VITE_PUBLIC_ASSET_BASE_URL',
-  'VITE_MIDTRANS_IS_PRODUCTION',
-  'VITE_MIDTRANS_CLIENT_KEY',
   'VITE_PAYMENT_GATEWAY_PROVIDER',
   'VITE_AFFILIATE_REFERRAL_ENABLED',
   'VITE_REFERRAL_ENABLED',
@@ -26,10 +24,11 @@ const BACKEND_REQUIRED = [
   'JWT_SECRET',
   'SESSION_SECRET',
   'ENCRYPTION_KEY',
-  'MIDTRANS_IS_PRODUCTION',
-  'MIDTRANS_SERVER_KEY',
-  'MIDTRANS_CLIENT_KEY',
   'PAYMENT_GATEWAY_PROVIDER',
+  'DOKU_ENVIRONMENT',
+  'DOKU_CLIENT_ID',
+  'DOKU_SECRET_KEY',
+  'DOKU_CALLBACK_URL',
   'RESEND_API_KEY',
   'RESEND_FROM_EMAIL',
   'EMAIL_REPLY_TO',
@@ -52,7 +51,6 @@ const MINIMAL_FRONTEND_REQUIRED = [
   'VITE_STAGING_PROFILE',
   'VITE_API_BASE_URL',
   'VITE_ANALYTICS_ENABLED',
-  'VITE_MIDTRANS_IS_PRODUCTION',
 ];
 
 const PAYMENT_FRONTEND_REQUIRED = [
@@ -90,13 +88,11 @@ const PAYMENT_BACKEND_REQUIRED = [
   'ENCRYPTION_KEY',
   'PAYMENT_INTEGRATION_ENABLED',
   'PAYMENT_GATEWAY_PROVIDER',
-  'DUITKU_ENVIRONMENT',
-  'DUITKU_MERCHANT_CODE',
-  'DUITKU_MERCHANT_KEY',
-  'DUITKU_CALLBACK_URL',
-  'DUITKU_RETURN_URL',
+  'DOKU_ENVIRONMENT',
+  'DOKU_CLIENT_ID',
+  'DOKU_SECRET_KEY',
+  'DOKU_CALLBACK_URL',
   'SUBSCRIPTION_PAYMENT_MODE',
-  'MIDTRANS_SNAP_ENABLED',
 ];
 
 const PAYMENT_OPTIONAL_SKIPPED = [
@@ -118,9 +114,8 @@ const MINIMAL_OPTIONAL_SKIPPED = [
   'VITE_GA4_MEASUREMENT_ID',
   'VITE_CLARITY_PROJECT_ID',
   'VITE_PUBLIC_ASSET_BASE_URL',
-  'VITE_MIDTRANS_CLIENT_KEY',
-  'MIDTRANS_SERVER_KEY',
-  'MIDTRANS_CLIENT_KEY',
+  'DOKU_CLIENT_ID',
+  'DOKU_SECRET_KEY',
   'RESEND_API_KEY',
   'RESEND_FROM_EMAIL',
   'EMAIL_REPLY_TO',
@@ -149,7 +144,8 @@ const FORBIDDEN_FRONTEND_PATTERNS = [
   /SESSION_SECRET/i,
   /ENCRYPTION_KEY/i,
   /MIDTRANS_SERVER_KEY/i,
-  /DUITKU_(MERCHANT_KEY|API_KEY|SECRET)/i,
+  /DOKU_SECRET_KEY/i,
+  /DOKU_CLIENT_ID/i,
   /RESEND_API_KEY/i,
   /CLOUDFLARE_R2_(ACCESS_KEY_ID|SECRET_ACCESS_KEY)/i,
   /GA4_API_SECRET/i,
@@ -201,8 +197,7 @@ const PAYMENT_URL_REQUIRED_KEYS = [
   'VITE_API_BASE_URL',
   'WEB_BASE_URL',
   'API_BASE_URL',
-  'DUITKU_CALLBACK_URL',
-  'DUITKU_RETURN_URL',
+  'DOKU_CALLBACK_URL',
 ];
 
 const DEFAULT_ENV_FILES = [
@@ -329,7 +324,7 @@ function main() {
   if (stagingProfile === 'payment' && env.STAGING_PROFILE !== 'payment') invalidStagingValues.push('STAGING_PROFILE must be payment');
   if (stagingProfile === 'payment' && env.VITE_STAGING_PROFILE !== 'payment') invalidStagingValues.push('VITE_STAGING_PROFILE must be payment');
   if (env.MIDTRANS_IS_PRODUCTION && env.MIDTRANS_IS_PRODUCTION !== 'false') invalidStagingValues.push('MIDTRANS_IS_PRODUCTION must be false');
-  if (env.VITE_MIDTRANS_IS_PRODUCTION && env.VITE_MIDTRANS_IS_PRODUCTION !== 'false') invalidStagingValues.push('VITE_MIDTRANS_IS_PRODUCTION must be false');
+  if (env.DOKU_ENVIRONMENT && env.DOKU_ENVIRONMENT !== 'sandbox') invalidStagingValues.push('DOKU_ENVIRONMENT must be sandbox in staging');
   if (stagingProfile === 'minimal') {
     for (const key of ['PAYMENT_INTEGRATION_ENABLED', 'EMAIL_INTEGRATION_ENABLED', 'R2_STORAGE_ENABLED', 'ANALYTICS_SERVER_ENABLED']) {
       if (env[key] !== 'false') invalidStagingValues.push(`${key} must be false in minimal staging`);
@@ -339,12 +334,11 @@ function main() {
   }
   if (stagingProfile === 'payment') {
     const expected = {
-      PAYMENT_GATEWAY_PROVIDER: 'duitku',
+      PAYMENT_GATEWAY_PROVIDER: 'doku',
       PAYMENT_INTEGRATION_ENABLED: 'true',
-      DUITKU_ENVIRONMENT: 'sandbox',
-      SUBSCRIPTION_PAYMENT_MODE: 'duitku_sandbox',
-      MIDTRANS_SNAP_ENABLED: 'false',
-      VITE_PAYMENT_GATEWAY_PROVIDER: 'duitku',
+      DOKU_ENVIRONMENT: 'sandbox',
+      SUBSCRIPTION_PAYMENT_MODE: 'doku_sandbox',
+      VITE_PAYMENT_GATEWAY_PROVIDER: 'doku',
     };
     for (const [key, value] of Object.entries(expected)) {
       if (env[key] !== value) invalidStagingValues.push(`${key} must be ${value} in payment staging`);

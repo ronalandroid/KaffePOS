@@ -252,7 +252,7 @@ export async function listPairedBtDevices(): Promise<Array<{ name: string; mac: 
   try {
     const res = await NativeBt.listPairedDevices();
     return res.devices || [];
-  } catch { return []; }
+  } catch (e) { console.warn('[KaffePOS] printer.bt_list_failed', e); return []; }
 }
 
 export async function connectClassicBt(mac?: string): Promise<string> {
@@ -269,7 +269,7 @@ export async function connectClassicBt(mac?: string): Promise<string> {
 }
 
 export async function disconnectClassicBt(): Promise<void> {
-  try { await NativeBt.disconnect(); } catch { /* ignore */ }
+  try { await NativeBt.disconnect(); } catch (e) { console.warn('[KaffePOS] printer.bt_disconnect_failed', e); }
   _nativeBtConnected = false;
 }
 
@@ -347,7 +347,7 @@ let _usbName: string | null = null;
 export function isUsbPrinterConnected(): boolean { return _usbConnected; }
 export function getUsbPrinterName(): string | null { return _usbName; }
 export async function listUsbDevices(): Promise<any[]> {
-  try { const res = await UsbPrinter.listUsbPrinters(); return res.devices || []; } catch { return []; }
+  try { const res = await UsbPrinter.listUsbPrinters(); return res.devices || []; } catch (e) { console.warn('[KaffePOS] printer.usb_list_failed', e); return []; }
 }
 export async function connectUsbPrinter(vendorId?: number, productId?: number): Promise<string> {
   const result = await UsbPrinter.connectUsb({ vendorId: vendorId!, productId: productId! });
@@ -355,7 +355,7 @@ export async function connectUsbPrinter(vendorId?: number, productId?: number): 
   return _usbName!;
 }
 export async function disconnectUsbPrinter(): Promise<void> {
-  try { await UsbPrinter.disconnectUsb(); } catch { /* ignore */ }
+  try { await UsbPrinter.disconnectUsb(); } catch (e) { console.warn('[KaffePOS] printer.usb_disconnect_failed', e); }
   _usbConnected = false;
 }
 export async function printReceiptUsb(data: PrintData): Promise<void> {
@@ -447,7 +447,11 @@ export async function printReceiptBrowser(data: PrintData): Promise<void> {
     </body>
   </html>`;
   const w = window.open('', '_blank');
-  if (w) { w.document.write(html); w.document.close(); }
+  // A blocked popup must surface as an error — otherwise the print chain reports success
+  // while no receipt is ever printed and the customer leaves without one.
+  if (!w) throw new Error('Browser memblokir popup cetak. Izinkan popup untuk mencetak struk.');
+  w.document.write(html);
+  w.document.close();
 }
 
 export async function smartPrint(data: PrintData): Promise<PrintMethod> {

@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
- 
- 
+
+
 /* eslint-disable react-refresh/only-export-components */
  
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -84,7 +83,7 @@ export function useNeedsOpeningCash(
     }
 
     return () => clearTimeout(timerRef.current);
-  }, [ready, syncing, cashRegister.length]);  
+  }, [ready, syncing, cashRegister]);
 
   // Reset otomatis jam 00:00
   useEffect(() => {

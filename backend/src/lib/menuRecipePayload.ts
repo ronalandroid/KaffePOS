@@ -12,6 +12,11 @@ export const menuVariantSchema = z.object({
   price: z.number().nonnegative('Harga varian tidak boleh negatif.'),
 });
 
+export const menuModifierSchema = z.object({
+  name: z.string().trim().min(1, 'Nama tambahan wajib diisi.'),
+  price: z.number().nonnegative('Harga tambahan tidak boleh negatif.'),
+});
+
 const menuItemPatchSchema = z.object({
   name: z.string().trim().min(1, 'Nama menu wajib diisi.').optional(),
   price: z.number().nonnegative('Harga menu tidak boleh negatif.').optional(),
@@ -22,6 +27,7 @@ const menuItemPatchSchema = z.object({
   sort_order: z.number().int().nonnegative('Urutan menu tidak valid.').optional(),
   recipe: z.array(menuRecipeItemSchema).optional(),
   variants: z.array(menuVariantSchema).optional(),
+  modifiers: z.array(menuModifierSchema).optional(),
 });
 
 export function prepareMenuItemPatchPayload(rawPayload: Record<string, unknown>) {
@@ -30,7 +36,7 @@ export function prepareMenuItemPatchPayload(rawPayload: Record<string, unknown>)
 
   for (const [key, value] of Object.entries(parsed)) {
     if (value === undefined) continue;
-    if (key === 'recipe' || key === 'variants') {
+    if (key === 'recipe' || key === 'variants' || key === 'modifiers') {
       payload[key] = JSON.stringify(value);
       continue;
     }

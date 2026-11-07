@@ -17,6 +17,7 @@ dist/
 *.patch.ts
 *.orig
 .agent/
+gan-harness/
 android/
 !android/
 android/*

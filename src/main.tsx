@@ -16,6 +16,7 @@ import { runAppUpgradeBootstrap } from './lib/appUpgrade';
 import { initCriticalStorageBackupBridge, persistCriticalStorageBackup, restoreCriticalStorageBackup } from './lib/appStorageBackup';
 import { captureFrontendError, initFrontendErrorTracking } from './lib/errorTracking';
 import { applyDevicePerformanceHints } from './lib/devicePerformance';
+import { initStoreListeners } from '@/store';
 
 function registerOfflineShell() {
   if (import.meta.env.DEV) return;
@@ -75,6 +76,7 @@ async function bootstrap() {
     await runAppUpgradeBootstrap();
     applyPersistedTheme();
     applyDevicePerformanceHints();
+    initStoreListeners();
     await persistCriticalStorageBackup();
 
     if (Capacitor.isNativePlatform()) {

@@ -29,10 +29,10 @@ export class MenuService {
       return client.query(
         `
           insert into public.menu_items (
-            id, store_id, name, price, category, image_url, description, is_available, sort_order, recipe, variants
+            id, store_id, name, price, category, image_url, description, is_available, sort_order, recipe, variants, modifiers
           ) values (
             coalesce($1, gen_random_uuid()),
-            $2, $3, $4, $5, $6, $7, coalesce($8, true), coalesce($9, 0), coalesce($10, '[]'::jsonb), coalesce($11, '[]'::jsonb)
+            $2, $3, $4, $5, $6, $7, coalesce($8, true), coalesce($9, 0), coalesce($10, '[]'::jsonb), coalesce($11, '[]'::jsonb), coalesce($12, '[]'::jsonb)
           )
           returning ${menuColumns}
         `,
@@ -48,6 +48,7 @@ export class MenuService {
           payload.sort_order ?? 0,
           JSON.stringify(payload.recipe ?? []),
           JSON.stringify(payload.variants ?? []),
+          JSON.stringify(payload.modifiers ?? []),
         ],
       );
     });
@@ -57,7 +58,7 @@ export class MenuService {
 
   static async updateMenuItem(itemId: string, body: Record<string, unknown>, userId: string) {
     const payload = prepareMenuItemPatchPayload(
-      pickDefined(body, ['name', 'price', 'category', 'image_url', 'description', 'is_available', 'sort_order', 'recipe', 'variants']),
+      pickDefined(body, ['name', 'price', 'category', 'image_url', 'description', 'is_available', 'sort_order', 'recipe', 'variants', 'modifiers']),
     );
     const { clause, values } = buildUpdateClause(payload);
     let storeId: string | null = null;

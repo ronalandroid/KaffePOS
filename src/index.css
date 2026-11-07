@@ -14,6 +14,7 @@
     --a11y-focus-inner: #ffffff;
     --a11y-target-size: 44px;
     --brand-orange: #FF6A00;
+    --brand-orange-text: #C44500;
     --brand-orange-start: #FF6A00;
     --brand-orange-end: #FF8A1C;
     --brand-orange-hover: #EA580C;
@@ -937,10 +938,12 @@ h1, h2, h3, h4, h5, h6, .font-display {
   opacity: 1;
 }
 
+/* Orange-as-text is forced to the WCAG-AA accessible shade (#C44500, 5.0:1 on white).
+   Raw --brand-orange (#FF6A00) is 2.87:1 and only safe for fills / large UI, not text. */
 .text-\[\#FF6A00\],
 .text-orange-500,
 .text-orange-600 {
-  color: var(--brand-orange) !important;
+  color: var(--brand-orange-text) !important;
 }
 
 .bg-\[\#FF6A00\],

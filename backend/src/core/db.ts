@@ -26,6 +26,9 @@ export const pool = new Pool(
     ? {
         connectionString: env.DATABASE_URL,
         ssl: buildDatabaseSslConfig(env),
+        max: 20,
+        idleTimeoutMillis: 30_000,
+        connectionTimeoutMillis: 5_000,
       }
     : {
         host: env.DB_HOST,
@@ -34,6 +37,9 @@ export const pool = new Pool(
         user: env.DB_USER,
         password: env.DB_PASSWORD,
         ssl: buildDatabaseSslConfig(env),
+        max: 20,
+        idleTimeoutMillis: 30_000,
+        connectionTimeoutMillis: 5_000,
       },
 );
 

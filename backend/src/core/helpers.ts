@@ -4,7 +4,7 @@
  */
 import { randomUUID } from 'node:crypto';
 import type { PoolClient } from 'pg';
-import { ApiError } from './errors';
+import { ApiError, log, serializeError } from './errors';
 import {
   getPermissionsForRole,
   normalizeUserRole,
@@ -285,10 +285,18 @@ export function pickDefined<T extends Record<string, unknown>>(payload: T, allow
   return result;
 }
 
+const ALLOWED_COLUMN_RE = /^[a-z][a-z0-9_]*$/;
+
 export function buildUpdateClause(payload: Record<string, unknown>, startIndex = 1) {
   const entries = Object.entries(payload);
   if (entries.length === 0) {
     throw new ApiError(400, 'Tidak ada field yang bisa diubah.');
+  }
+
+  for (const [column] of entries) {
+    if (!ALLOWED_COLUMN_RE.test(column)) {
+      throw new ApiError(400, `Nama kolom tidak valid: ${column}`);
+    }
   }
 
   const values = entries.map(([, value]) => value);
@@ -299,7 +307,15 @@ export function buildUpdateClause(payload: Record<string, unknown>, startIndex =
   return { clause, values };
 }
 
+const ALLOWED_COUNT_TABLES = new Set([
+  'menu_items', 'inventory', 'transactions', 'expenses',
+  'cash_flow', 'store_accounts', 'loyalty_passports', 'kitchen_orders',
+]);
+
 export async function countRowsForStore(client: PoolClient, table: string, storeId: string) {
+  if (!ALLOWED_COUNT_TABLES.has(table)) {
+    throw new ApiError(400, `Tabel tidak diizinkan: ${table}`);
+  }
   const result = await client.query(`select count(*)::int as count from public.${table} where store_id = $1`, [storeId]);
   return result.rows[0]?.count ?? 0;
 }
@@ -368,8 +384,10 @@ async function maybeInsertTrialEndingNotification(
       },
       (subscription.store_id as string | null | undefined) ?? null,
     );
-  } catch {
-    // Notification must not block profile subscription sync.
+  } catch (e) {
+    // Notification must not block profile subscription sync — but log so a persistent
+    // failure (schema drift, constraint) is visible rather than silently swallowed.
+    log('warn', 'profile.trial_notification_failed', { error: serializeError(e) });
   }
 }
 
@@ -490,7 +508,7 @@ export async function syncProfileSubscriptionState(client: PoolClient, userId: s
         paymentRef,
         nowIso,
       ],
-    ).catch(() => undefined);
+    ).catch((e) => log('error', 'profile.payment_history_insert_failed', { paymentRef, error: serializeError(e) }));
 
     try {
       await insertNotification(
@@ -631,6 +649,7 @@ export const menuColumns = `
   sort_order,
   recipe,
   variants,
+  modifiers,
   created_at,
   updated_at
 `;

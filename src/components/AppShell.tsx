@@ -3,14 +3,10 @@
 
 
 
-/* eslint-disable react-hooks/exhaustive-deps */
-
-
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/AppShell.tsx — KaffePOS v5 — FAST INIT: cache storeId, show instantly
 import React, { useState, useEffect, useCallback, useRef, Suspense, lazy, useMemo } from 'react';
-import { ShoppingBag, Package, Tag, History, BarChart3, Settings, WifiOff, LayoutDashboard, ChefHat, RefreshCw, LogOut, Trophy, BadgePercent, Target, Gift, Handshake } from 'lucide-react';
+import { WifiOff, RefreshCw, LogOut } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStore } from '@/hooks/useStore';
@@ -24,18 +20,20 @@ import AppVersionSync from './sync/AppVersionSync';
 import type { Tab, ToastType } from '@/types';
 import { isPostUpdateSyncPending, markPostUpdateSyncComplete, readUpgradeReport } from '@/lib/appUpgrade';
 import { subscriptionManager } from '@/services/SubscriptionManager';
-import { canAccessTab, getDefaultTabForRole, getVisibleTabs } from '@/lib/accessControl';
+import { canAccessTab, getDefaultTabForRole } from '@/lib/accessControl';
 import { selectStoreForBootstrap } from '@/lib/storeContext';
-import { trackClientError } from '@/lib/opsMetrics';
 import { trackOpsEvent } from '@/lib/opsMetrics';
 import { trackAnalyticsEvent } from '@/lib/analytics';
-import { captureFrontendError } from '@/lib/errorTracking';
 import UpgradeModal from './subscription/UpgradeModal';
 import SmartUpgradeBanner from './subscription/SmartUpgradeBanner';
 import NotificationBell from './notifications/NotificationBell';
 import NotificationCenter from './notifications/NotificationCenter';
 import CelebrationHost from './gamification/Celebration';
 import BetaFeedbackButton from './beta/BetaFeedbackButton';
+import { NAV, LS_LAST_TAB, EXPLICIT_SIGNOUT_KEY, getCachedStoreId, setCachedStoreId, getLastTabStorageKey, getValidTab, createLoadedTabsState } from './AppShell.helpers';
+import { TabError, TabSpinner, AppLoading } from './AppShellChrome';
+import { AppSidebarNav, AppBottomNav } from './AppShellNav';
+import { IS_PAYMENT_DISABLED } from '@/lib/paymentMode';
 import {
   cacheSubscriptionUsageLimits,
   daysSince,
@@ -46,7 +44,7 @@ import {
   shouldThrottleUpgradePrompt,
   type UpgradePromptRequest,
 } from '@/lib/upgradePrompts';
-import LOGO_ICON from '@/assets/logo-kaffeposappicon.svg';
+const LOGO_ICON = '/logo-kaffeposappicon.svg';
 
 const DashboardTab = lazy(() => import('./dashboard/Dashboard'));
 const StaffPersonalProfileTab = lazy(() => import('./gamification/StaffPersonalProfile'));
@@ -62,112 +60,8 @@ const HistoryTab   = lazy(() => import('./history/HistoryTab'));
 const ReportTab    = lazy(() => import('./report/ReportTab'));
 const SettingsTab  = lazy(() => import('./settings/SettingsTab'));
 
-const NAV = [
-  { id: 'dashboard' as Tab, label: 'Dashboard',  icon: LayoutDashboard },
-  { id: 'performance' as Tab, label: 'Performa', icon: Trophy },
-  { id: 'challenges' as Tab, label: 'Misi', icon: Target },
-  { id: 'referrals' as Tab, label: 'Referral', icon: Gift },
-  { id: 'affiliate' as Tab, label: 'Affiliate', icon: Handshake },
-  { id: 'pos'       as Tab, label: 'Kasir',      icon: ShoppingBag },
-  { id: 'loyalty'   as Tab, label: 'Loyalty',    icon: BadgePercent },
-  { id: 'kitchen'   as Tab, label: 'Dapur',     icon: ChefHat },
-  { id: 'warehouse' as Tab, label: 'Stok',       icon: Package     },
-  { id: 'menu'      as Tab, label: 'Produk',     icon: Tag         },
-  { id: 'history'   as Tab, label: 'Transaksi',  icon: History     },
-  { id: 'report'    as Tab, label: 'Laporan',    icon: BarChart3   },
-  { id: 'settings'  as Tab, label: 'Lainnya',    icon: Settings    },
-] as const;
-
-const LS_LAST_TAB  = 'kpos_last_tab';
-const EXPLICIT_SIGNOUT_KEY = 'kaffepos_explicit_signout';
-
-// ── Error boundary ────────────────────────────────────────────────
-class TabError extends React.Component<{ name: string; children: React.ReactNode }, { err: boolean }> {
-  state = { err: false };
-  static getDerivedStateFromError() { return { err: true }; }
-  componentDidCatch(e: Error) {
-    console.error('[TabError]', e);
-    void trackClientError(e, {
-      source: 'tab_error_boundary',
-      metadata: { tabName: this.props.name },
-    });
-    captureFrontendError(e, {
-      source: 'tab_error_boundary',
-      metadata: { tabName: this.props.name },
-    });
-  }
-  render() {
-    if (this.state.err) return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-        <p className="text-3xl mb-3">😵</p>
-        <p className="font-bold text-slate-700">{this.props.name} mengalami error</p>
-        <button type="button" onClick={() => this.setState({ err: false })}
-          className="mt-4 px-5 py-2.5 bg-orange-500 text-white rounded-xl text-sm font-bold active:scale-95">
-          Coba Lagi
-        </button>
-      </div>
-    );
-    return this.props.children;
-  }
-}
-
-function TabSpinner() {
-  return (
-    <div className="flex-1 flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-orange-200 border-t-orange-500 rounded-full animate-spin" />
-    </div>
-  );
-}
-
-function AppLoading({ message }: { message?: string }) {
-  return (
-    <div className="fixed inset-0 bg-white flex flex-col items-center justify-center gap-6">
-      <div className="relative">
-         <div className="text-6xl animate-bounce duration-2000">☕</div>
-         <div className="absolute -inset-6 border-4 border-[#FF6A00]/5 border-t-[#FF6A00] rounded-full animate-spin" />
-      </div>
-      <p className="text-[12px] font-black text-slate-400 tracking-[0.3em] uppercase italic">{message || 'Memuat...'}</p>
-    </div>
-  );
-}
-
-/** Cache storeId di localStorage */
-function getCachedStoreId(userId: string): string | null {
-  try { return localStorage.getItem(getStoreCacheKey(userId)); } catch { return null; }
-}
-function setCachedStoreId(userId: string, id: string) {
-  try { localStorage.setItem(getStoreCacheKey(userId), id); } catch { /* ignore */ }
-}
-
-function getLastTabStorageKey(userId?: string) {
-  return userId ? `${LS_LAST_TAB}:${userId}` : LS_LAST_TAB;
-}
-
-function getValidTab(value: string | null): Tab | null {
-  if (!value) return null;
-  return NAV.some((entry) => entry.id === value) ? (value as Tab) : null;
-}
-
-function createLoadedTabsState(initialTab: Tab): Record<Tab, boolean> {
-  return {
-    dashboard: initialTab === 'dashboard',
-    performance: initialTab === 'performance',
-    challenges: initialTab === 'challenges',
-    referrals: initialTab === 'referrals',
-    affiliate: initialTab === 'affiliate',
-    pos: initialTab === 'pos',
-    loyalty: initialTab === 'loyalty',
-    kitchen: initialTab === 'kitchen',
-    warehouse: initialTab === 'warehouse',
-    menu: initialTab === 'menu',
-    history: initialTab === 'history',
-    report: initialTab === 'report',
-    settings: initialTab === 'settings',
-  };
-}
-
 export default function AppShell() {
-  const { user, profile, isPro, subscriptionAccess, refreshProfile, role, can } = useAuth();
+  const { user, profile, isPro, subscriptionAccess, refreshProfile, role, can, signOut } = useAuth();
   const {
     storeId,
     loadAll,
@@ -280,7 +174,7 @@ export default function AppShell() {
         saveCashRegister(entry as Partial<any>).catch(() => {});
       });
     } catch { /* ignore */ }
-  }, [isOnline]);
+  }, [isOnline, saveCashRegister]);
 
   const initDone    = useRef(false);
   const isMounted   = useRef(true);
@@ -288,7 +182,9 @@ export default function AppShell() {
   useEffect(() => {
     isMounted.current = true;
     return () => { isMounted.current = false; cleanup(); };
-  }, [],   );
+    // Mount/unmount lifecycle only — cleanup() must run exactly once on unmount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const uid = user?.id || profile?.id;
@@ -353,6 +249,9 @@ export default function AppShell() {
     };
 
     init();
+    // Re-initialise store data only when the user/store identity changes. loadAll, can,
+    // and showToast are stable helpers pulled in via closure; keying off them would re-run init.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, profile?.id, profile?.assigned_store_id, role, refreshProfile]);
 
   // Reset tampilan saat logout; pembersihan cache dilakukan di AuthContext
@@ -461,6 +360,9 @@ export default function AppShell() {
     effectiveUsage.percentUsed >= 80 &&
     effectiveUsage.transactionsUsed < effectiveUsage.transactionLimit &&
     !shouldThrottleUpgradePrompt(storeId, transactionLimitPromptKey, 3)
+    // upgradeBannerDismissedAt is intentionally kept as a recompute trigger: dismissing the
+    // banner updates it so shouldThrottleUpgradePrompt() is re-evaluated against fresh storage.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [effectiveUsage.percentUsed, effectiveUsage.transactionLimit, effectiveUsage.transactionsUsed, storeId, transactionLimitPromptKey, upgradeBannerDismissedAt]);
 
   useEffect(() => {
@@ -596,13 +498,15 @@ export default function AppShell() {
 
     window.addEventListener('kaffepos-open-tab', openTab as EventListener);
     return () => window.removeEventListener('kaffepos-open-tab', openTab as EventListener);
-  }, [changeTab]);
+  }, [changeTab, role]);
 
-  const toast = {
+  // Memoised so the tab components receiving `toast` as a prop keep a stable reference
+  // across AppShell re-renders instead of a fresh object on every render.
+  const toast = useMemo(() => ({
     showToast: (m: string, t?: ToastType) => showToast(m, t),
     showDownloadSuccess,
     showDownloadError
-  };
+  }), [showToast, showDownloadSuccess, showDownloadError]);
 
   const renderTabPanel = (tabId: Tab, name: string, node: React.ReactNode) => {
     if (!canAccessTab(role, tabId)) return null;
@@ -644,40 +548,13 @@ export default function AppShell() {
           </div>
         </div>
 
-        <nav className="flex-1 px-3 py-3 space-y-1 overflow-y-auto scrollbar-hide">
-          {NAV.filter((entry) => getVisibleTabs(role).includes(entry.id)).map(({ id, label, icon: Icon }) => {
-            const active = tab === id;
-            return (
-              <button type="button"
-                key={id}
-                onClick={() => changeTab(id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 relative group ${
-                  active ? 'bg-orange-50 text-[#FF6A00]' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
-                }`}
-              >
-                <div className="transition-all duration-200">
-                  <Icon size={18} strokeWidth={active ? 2.5 : 2} />
-                </div>
-                <span className="font-bold text-[13px] transition-all">{label}</span>
-                {active && (
-                  <div className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-[#FF6A00]" />
-                )}
-                {id === 'pos' && syncing && (
-                  <span className="ml-auto w-2 h-2 bg-emerald-500 rounded-full animate-ping" />
-                )}
-                {id === 'challenges' && hasOpenChallenge && (
-                  <span className="ml-auto h-2 w-2 rounded-full bg-[#FF6A00] shadow-[0_0_0_3px_rgba(255,106,0,0.12)]" />
-                )}
-              </button>
-            );
-          })}
-        </nav>
+        <AppSidebarNav role={role} tab={tab} changeTab={changeTab} syncing={syncing} hasOpenChallenge={hasOpenChallenge} />
 
         <div className="p-4 border-t border-slate-100">
            <button type="button"
              onClick={() => {
                 localStorage.setItem(EXPLICIT_SIGNOUT_KEY, '1');
-                import('@/contexts/AuthContext').then(m => (m as any).useAuth.getState().signOut());
+                void signOut();
              }}
              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 hover:bg-rose-50 hover:text-rose-500 transition-all font-bold text-[13px]"
            >
@@ -724,7 +601,7 @@ export default function AppShell() {
           </div>
         ) : null}
 
-        {showTransactionLimitBanner && (
+        {!IS_PAYMENT_DISABLED && showTransactionLimitBanner && (
           <SmartUpgradeBanner
             used={effectiveUsage.transactionsUsed}
             limit={effectiveUsage.transactionLimit}
@@ -824,40 +701,7 @@ export default function AppShell() {
         </main>
 
         {/* ── MOBILE NAV (Bottom) ── */}
-        <nav className="kaffe-bottom-nav lg:hidden flex items-stretch justify-start overflow-x-auto bg-white/95 backdrop-blur-xl border-t border-orange-100/80 z-40 px-1 shadow-[0_-12px_32px_rgba(255,106,0,0.10)]"
-          style={{ height: 'calc(64px + env(safe-area-inset-bottom,0px))', paddingBottom: 'env(safe-area-inset-bottom,0px)' }}>
-          {NAV.filter((entry) => getVisibleTabs(role).includes(entry.id)).map(({ id, label, icon: Icon }) => {
-            const active = tab === id;
-            return (
-              <button type="button"
-                key={id}
-                onClick={() => changeTab(id)}
-                className={`flex h-full w-[74px] flex-none flex-col items-center justify-center transition-all relative min-w-0 ${
-                  active ? 'text-[#FF6A00]' : 'text-slate-400 hover:text-slate-600'
-                }`}
-                aria-label={`Buka tab ${label}`}
-              >
-                <div className="flex flex-col items-center gap-1 transition-all duration-200">
-                  <div className="relative">
-                    <Icon size={20} strokeWidth={active ? 2.5 : 2} />
-                    {id === 'pos' && syncing && (
-                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-500 rounded-full animate-ping border border-white shadow-sm" />
-                    )}
-                    {id === 'challenges' && hasOpenChallenge && (
-                      <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full border border-white bg-[#FF6A00] shadow-sm" />
-                    )}
-                  </div>
-                  <span className="max-w-full truncate px-1 text-[10px] font-semibold">
-                    {label}
-                  </span>
-                </div>
-                {active && (
-                  <div className="absolute top-0 left-1/2 h-1 w-8 -translate-x-1/2 rounded-b-lg bg-[#FF6A00]" />
-                )}
-              </button>
-            );
-          })}
-        </nav>
+        <AppBottomNav role={role} tab={tab} changeTab={changeTab} syncing={syncing} hasOpenChallenge={hasOpenChallenge} />
       </div>
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
       <SyncConflictCenter
