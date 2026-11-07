@@ -45,8 +45,16 @@ describe('KaffePOS reference experience', () => {
     expect(screen.getByRole('heading', { name: /Sistem Kasir Cafe yang Rapi, Cepat, dan Siap Tumbuh/i })).toBeInTheDocument();
     expect(screen.getByTestId('reference-device-showcase')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /Satu POS untuk Mengelola Operasional Cafe Lebih Rapi/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Sinkronisasi Cloud Tanpa Kompromi dengan InsForge & Mayar v2/i })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /Ubah Transaksi Harian Jadi Keputusan Bisnis/i })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /Mulai dari Outlet Kecil, Siap untuk Berkembang/i })).toBeInTheDocument();
+
+    const showcase = screen.getByTestId('reference-device-showcase');
+    fireEvent.click(within(showcase).getByRole('button', { name: /^HPP Resep$/i }));
+    expect(within(showcase).getByText(/Kalkulasi Otomatis Bahan Baku per Transaksi/i)).toBeInTheDocument();
+
+    fireEvent.click(within(showcase).getByRole('button', { name: /^Bar KDS$/i }));
+    expect(within(showcase).getByText(/#KP-208/i)).toBeInTheDocument();
   });
 
   it('renders a mobile-first auth surface for web mobile and APK login', () => {

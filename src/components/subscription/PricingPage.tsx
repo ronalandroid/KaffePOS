@@ -102,7 +102,7 @@ export default function PricingPage({
                 key={cycle}
                 type="button"
                 onClick={() => onCycleChange(cycle)}
-                className={`h-11 rounded-xl px-3 text-[10px] font-black uppercase tracking-wider transition-all sm:text-xs ${
+                className={`h-11 rounded-xl px-3 text-[10px] font-black uppercase tracking-wider transition-colors sm:text-xs ${
                   selectedCycle === cycle
                     ? 'bg-[#FF6A00] text-white shadow-sm'
                     : 'text-slate-500 hover:bg-orange-50 hover:text-orange-700'
@@ -128,7 +128,7 @@ export default function PricingPage({
           return (
             <article
               key={planId}
-              className={`relative flex min-w-0 flex-col rounded-[28px] border-2 p-5 transition-all hover:-translate-y-0.5 hover:shadow-[var(--brand-panel-shadow-hover)] ${
+              className={`relative flex min-w-0 flex-col rounded-[28px] border-2 p-5 transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--brand-panel-shadow-hover)] ${
                 isRecommended
                   ? 'border-orange-200 bg-orange-50/50'
                   : isCurrent
@@ -160,9 +160,9 @@ export default function PricingPage({
               </p>
 
               <div className="mt-5">
-                <p className="font-display text-3xl font-extrabold text-slate-900">{formatRupiah(price)}</p>
+                <p className="font-display text-3xl font-extrabold tabular-nums text-slate-900">{formatRupiah(price)}</p>
                 <div className="mt-1 flex flex-wrap items-center gap-2">
-                  <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                  <p className="font-mono text-[10px] font-black uppercase tracking-wider tabular-nums text-slate-400">
                     {plan.isFree ? '14 hari full Signature' : `${formatRupiah(getMonthlyEquivalent(planId, cycle))}/bulan`}
                   </p>
                   <SavingsBadge plan={planId} cycle={cycle} />
@@ -181,7 +181,7 @@ export default function PricingPage({
               <button
                 type="button"
                 onClick={() => onSelectPlan(planId, cycle)}
-                className={`mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-2xl px-4 text-xs font-black uppercase tracking-wider transition-all active:scale-95 ${
+                className={`mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-2xl px-4 text-xs font-black uppercase tracking-wider transition-[transform,background-color,border-color,color] duration-200 active:scale-95 ${
                   isCurrent
                     ? 'border border-emerald-100 bg-emerald-50 text-emerald-700'
                     : planId === 'secangkir'
