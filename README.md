@@ -1,13 +1,30 @@
-# KaffePOS v2
+# ☕ KaffePOS v2 — Cloud-Native Coffee Shop & F&B Operating System
 
-**Modern POS System for Coffee Shops & Small F&B Businesses**
+[![CI](https://github.com/ronalandroid/KaffePOS/actions/workflows/ci.yml/badge.svg)](https://github.com/ronalandroid/KaffePOS/actions/workflows/ci.yml)
+[![InsForge Cloud](https://img.shields.io/badge/Backend-InsForge_Cloud_PostgreSQL-0F766E?style=flat-square)](https://insforge.dev)
+[![Mayar API v2](https://img.shields.io/badge/Payments-Mayar_API_v2-EA580C?style=flat-square)](https://docs.mayar.id)
+[![Platform](https://img.shields.io/badge/Platform-Web_PWA_%7C_Android_APK-2563EB?style=flat-square)](https://kaffepos.my.id)
+[![Commercial Readiness](https://img.shields.io/badge/Commercial_Readiness-9.8%2F10-16A34A?style=flat-square)](docs/PRODUCTION_READINESS_REPORT_2026_05_14.md)
 
-> **🚀 Production Upgrade Complete (2026-05-14)**  
-> KaffePOS v2 upgraded from 7.5/10 to **9.5/10 production readiness**. Performance optimized, security hardened, monitoring operational. [See upgrade summary →](UPGRADE_SUMMARY_2026_05_14.md)
+**Modern Cloud-Native Point of Sale (POS), Kitchen Display System (KDS), Recipe-Driven Inventory, Customer Loyalty & SaaS Billing Platform for Coffee Shops, Roasteries, Bakeries & F&B Outlets.**
 
+---
 
+## 📖 About KaffePOS v2
 
-KaffePOS is a full-stack point-of-sale system designed for coffee shops, cafes, bakeries, and small F&B businesses. Built with React, TypeScript, Express, and PostgreSQL, it provides fast cashier operations, inventory management, kitchen display, loyalty programs, and subscription billing.
+**KaffePOS v2** adalah sistem kasir (Point of Sale) dan manajemen operasional F&B berstandar komersial yang dirancang khusus untuk kedai kopi (coffee shop), kafe, bakery, dan bisnis kuliner modern di Indonesia. KaffePOS menggabungkan kecepatan operasional kasir **offline-first** dengan sinkronisasi real-time ke **InsForge Cloud PostgreSQL** dan pembayaran digital otomatis melalui **Mayar Headless API v2**.
+
+### ✨ Fitur Utama (Core Capabilities)
+
+| Modul | Fitur & Kapabilitas Utama |
+|---|---|
+| **🛒 Smart Cashier (POS)** | Checkout cepat (Tunai, QRIS, Virtual Account, E-Wallet), modifier & varian minuman (ukuran, gula, es, topping), diskon/voucher, cetak struk thermal Bluetooth/USB (58mm/80mm), serta antrean sinkronisasi offline-first (`OfflineSyncQueue`). |
+| **🍳 Kitchen Display System (KDS)** | Layar pesanan dapur/barista real-time berbasis Server-Sent Events (SSE), routing stasiun otomatis (*Barista*, *Kitchen*, *Pastry*), pelacakan SLA waktu penyajian, dan sinkronisasi status item per transaksi. |
+| **📦 Recipe-Driven Inventory & COGS** | Manajemen bahan baku dengan konversi multi-satuan (`kg ↔ gram`, `liter ↔ ml`), pemotongan stok otomatis berdasarkan resep (`product_recipes`) setiap kali transaksi lunas, kalkulasi HPP/COGS otomatis, *Stock Opname*, dan *Bulk Import* CSV/Excel. |
+| **📊 Financial & AI Analytics** | Laporan Laba/Rugi (Gross/Net Profit), arus kas (*Cash Register* & *Shift Cashier*), pencatatan pengeluaran operasional, ekspor laporan PDF/CSV profesional, dan **KopiScore AI Insights** berbasis Google Gemini. |
+| **🎁 Customer Loyalty & Staff Gamification** | Digital Stamp Passport untuk pelanggan setia, penukaran reward otomatis, serta sistem *Staff Challenges & Leaderboard* untuk meningkatkan motivasi upselling barista/kasir. |
+| **💳 SaaS Subscription & Mayar Billing** | Manajemen paket langganan (*Secangkir*, *Kopi Susu*, *Signature*, *Founder/Lifetime*) yang terhubung langsung ke **Mayar Headless API v2** (`/hl/v2/payments/create` & webhook `/api/webhooks/mayar`) dengan aktivasi lisensi idempoten otomatis. |
+| **🔐 Multi-Outlet & RBAC Security** | Pemisahan hak akses ketat antara **Owner/Admin** dan **Cashier** per outlet, enkripsi PII AES-256-GCM, autentikasi sesi SHA-256 + bcrypt, MFA Admin, serta proteksi Row-Level Security (RLS) di seluruh 46 tabel PostgreSQL. |
 
 ---
 
@@ -196,15 +213,13 @@ The repair command reads ignored local staging env files, requires `STAGING_PROF
 - **Password Hashing:** bcrypt
 - **Session Management:** Custom (SHA-256 token hashing)
 
-### Infrastructure
-- **Database:** PostgreSQL (self-hosted)
-- **CDN:** Cloudflare (static assets)
-- **Images:** Cloudflare Images
-- **Email:** Resend
-- **Payment:** DOKU Checkout
-- **Analytics:** Google Analytics 4, Microsoft Clarity
-- **Error Tracking:** Sentry
-- **AI:** Gemini (backend proxy)
+### Infrastructure & Cloud Services
+- **Cloud Backend & Database:** InsForge Cloud PostgreSQL (`6x4q2bgn.ap-southeast.insforge.app`, 46 tables with full RLS + 160+ indexes) & InsForge Edge Functions (`@insforge/sdk`)
+- **Payment Gateway:** Mayar Headless API v2 (`https://api.mayar.id/hl/v2` production / `https://api.mayar.club/hl/v2` sandbox)
+- **CDN & Storage:** Cloudflare CDN & R2 / InsForge Storage
+- **Transactional Email:** Resend
+- **Analytics & Observability:** Google Analytics 4, Microsoft Clarity, Sentry Error Tracking & Custom Database APM
+- **AI Engine:** Google Gemini (backend proxy)
 
 ### Development
 - **Package Manager:** npm
@@ -478,15 +493,17 @@ KaffePOS uses PostgreSQL with a custom migration system.
 **Database Documentation:** [`docs/architecture/DATABASE.md`](docs/architecture/DATABASE.md)
 **QA Checklist:** [`docs/engineering/DATABASE_QA_CHECKLIST.md`](docs/engineering/DATABASE_QA_CHECKLIST.md)
 
-## DOKU Payment Gateway
+## 💳 Mayar Payment Gateway (Headless API v2)
 
-- Payment gateway runs as `doku` or `disabled` via `PAYMENT_GATEWAY_PROVIDER` (DOKU Checkout, hosted page). Both POS checkout and subscription billing go through it.
-- Register the DOKU notification (webhook) URL `https://api.kaffepos.my.id/api/webhooks/doku` in the DOKU Back Office — it must equal `DOKU_NOTIFICATION_PATH` (it is part of the verified signature).
-- Customer return URL: `https://kaffepos.my.id/settings?billing=doku-return`.
-- Frontend return URL never marks payment paid; success requires a verified server webhook or status check.
-- `DOKU_CLIENT_ID` / `DOKU_SECRET_KEY` stay backend-only and must not be added to `VITE_*` env.
-- Setup details: [`docs/engineering/DEPLOY_COOLIFY.md`](docs/engineering/DEPLOY_COOLIFY.md). Provider code: `backend/src/payments/providers/doku.provider.ts`.
-
-## DOKU Payment Start
-
-Frontend subscription checkout calls `POST /api/payments/start`; POS calls `POST /api/payment/create`. Run database migrations with `npm --prefix backend run migrate` before going live.
+- Payment gateway default menggunakan **Mayar (`PAYMENT_GATEWAY_PROVIDER=mayar`)** berbasis REST API v2 resmi (`https://api.mayar.id/hl/v2` untuk production dan `https://api.mayar.club/hl/v2` untuk sandbox).
+- Mendukung baik **Subscription Billing** (`POST /api/payments/start` dan `POST /api/subscriptions/payments/create`) maupun **POS Online Checkout** (`POST /api/payment/create`).
+- Daftarkan URL Webhook Mayar pada **Mayar Dashboard → Integration → Webhook**:
+  - `https://api.kaffepos.my.id/api/webhooks/mayar`
+- Customer redirect URL setelah pembayaran:
+  - `https://kaffepos.my.id/settings?billing=mayar-return`
+- Verifikasi pembayaran dilakukan sepenuhnya di sisi server melalui webhook terautentikasi (`x-callback-token` / `x-mayar-signature` / `HMAC-SHA256`) atau pengecekan status server (`POST /api/payments/:paymentId/check` → `GET /hl/v2/payments/:id`).
+- `MAYAR_API_KEY` dan `MAYAR_WEBHOOK_TOKEN` bersifat **backend-only** dan tidak pernah diekspos ke bundle frontend (`VITE_*`).
+- Smoke test integrasi Mayar & InsForge:
+  - `npm run smoke:insforge`
+  - `MAYAR_API_KEY=... MAYAR_ENVIRONMENT=sandbox npm run smoke:staging:mayar`
+- Implementasi provider: [`backend/src/payments/providers/mayar.provider.ts`](backend/src/payments/providers/mayar.provider.ts) & skill referensi: [`.agent/skills/mayar/SKILL.md`](.agent/skills/mayar/SKILL.md).
