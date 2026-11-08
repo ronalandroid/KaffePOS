@@ -6,12 +6,15 @@ import { Browser } from '@capacitor/browser';
 import {
   AlertCircle,
   ArrowLeft,
+  ArrowRight,
   CheckCircle,
+  Coffee,
   ExternalLink,
   Eye,
   EyeOff,
   Lock,
   RefreshCw,
+  ShieldCheck,
   Store,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -166,16 +169,20 @@ export default function AuthPage() {
     setResending(true);
     setErr('');
     setOk('');
-    const result = await resendVerification(email.trim());
-    setResending(false);
+    try {
+      const result = await resendVerification(email.trim());
+      if (result.error) {
+        setErr(result.error || 'Gagal mengirim ulang email verifikasi.');
+        return;
+      }
 
-    if (result.error) {
-      setErr(result.error || 'Gagal mengirim ulang email verifikasi.');
-      return;
+      setOk('Kode verifikasi baru sudah dikirim lewat email.');
+      setResendCooldown(60);
+    } catch (error) {
+      setErr(normalizeUserFacingError(error, 'Gagal mengirim ulang email verifikasi.'));
+    } finally {
+      setResending(false);
     }
-
-    setOk('Kode verifikasi baru sudah dikirim lewat email.');
-    setResendCooldown(60);
   }, [email, resendCooldown, resendVerification]);
 
   const handleVerificationCheck = useCallback(async () => {
@@ -307,6 +314,30 @@ export default function AuthPage() {
     }
   };
 
+  const handleInstantDemoLogin = useCallback(async (demoRole: 'owner' | 'cashier') => {
+    const demoEmail = demoRole === 'owner' ? 'demo@kaffepos.my.id' : 'kasir@kaffepos.my.id';
+    const demoPassword = 'DemoPassword123';
+    setEmail(demoEmail);
+    setPass(demoPassword);
+    setErr('');
+    setOk(`Menyiapkan sesi Demo ${demoRole === 'owner' ? 'Owner' : 'Kasir'}...`);
+    setBusy(true);
+    try {
+      const res = await signIn(demoEmail, demoPassword);
+      if (res.error) {
+        setErr(res.error);
+        setOk('');
+      } else {
+        navigate(redirectUrl, { replace: true });
+      }
+    } catch (e: any) {
+      setErr(normalizeUserFacingError(e, 'Login demo gagal.'));
+      setOk('');
+    } finally {
+      setBusy(false);
+    }
+  }, [navigate, redirectUrl, signIn]);
+
   const openInbox = async () => {
     const domain = email.split('@')[1];
     if (domain) {
@@ -432,7 +463,7 @@ export default function AuthPage() {
 
             <AuthMobilePreviewStrip />
 
-            <div className="kaffe-panel min-w-0 rounded-[24px] p-6 sm:p-7 relative transition-all duration-300 hover:border-[#FF6A00]/20">
+            <div className="kaffe-panel min-w-0 rounded-[24px] p-6 sm:p-7 relative transition-[border-color,box-shadow] duration-300 hover:border-[#FF6A00]/20">
               <div className="text-center mb-8">
                 <div className="flex justify-center mb-6">
                   <div className="w-16 h-16 bg-[#FFF4EA] rounded-lg flex items-center justify-center p-3 shadow-sm border border-orange-50">
@@ -456,7 +487,7 @@ export default function AuthPage() {
                       key={value}
                       type="button"
                       onClick={() => switchMode(value)}
-                    className={`flex-1 rounded-[14px] py-3 text-[14px] font-bold transition-all ${
+                    className={`flex-1 rounded-[14px] py-3 text-[14px] font-bold transition-colors ${
                         mode === value
                           ? 'bg-white text-slate-900 shadow-soft border border-slate-100'
                           : 'text-slate-400 hover:text-slate-600'
@@ -536,7 +567,7 @@ export default function AuthPage() {
                     type="button"
                     onClick={handleCancelVerification}
                     aria-label="Kembali ke form daftar"
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-orange-100 bg-orange-50 px-4 text-[12px] font-black uppercase tracking-widest text-[#9A3412] transition-all hover:border-[#FF6A00]/40 hover:bg-orange-100"
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-orange-100 bg-orange-50 px-4 text-[12px] font-bold text-[#9A3412] transition-colors hover:border-[#FF6A00]/40 hover:bg-orange-100"
                   >
                     <ArrowLeft size={16} aria-hidden="true" />
                     Kembali
@@ -550,7 +581,7 @@ export default function AuthPage() {
                         return (
                           <div
                             key={idx}
-                            className={`kaffe-otp-cell flex h-12 w-12 sm:h-14 sm:w-12 items-center justify-center rounded-xl border text-[24px] font-black transition-all duration-300 ${
+                            className={`kaffe-otp-cell flex h-12 w-12 sm:h-14 sm:w-12 items-center justify-center rounded-xl border text-[24px] font-black transition-[border-color,box-shadow] duration-200 ${
                               isActive
                                 ? 'border-[#FF6A00] bg-white ring-4 ring-[#FF6A00]/10 text-slate-900'
                                 : val
@@ -581,9 +612,9 @@ export default function AuthPage() {
                     type="button"
                     disabled={confirming || verificationCode.length !== 6}
                     onClick={handleVerificationCheck}
-                    className="w-full flex items-center justify-center gap-3 rounded-2xl py-4 mt-6 text-[16px] font-black text-white transition-all shadow-premium disabled:opacity-50 disabled:pointer-events-none bg-[#FF6A00] uppercase italic tracking-widest"
+                    className="w-full flex items-center justify-center gap-3 rounded-2xl py-4 mt-6 text-[15px] font-extrabold text-white transition-colors shadow-premium disabled:opacity-50 disabled:pointer-events-none bg-[#FF6A00] hover:bg-[#FF8A1C]"
                   >
-                    {confirming ? <RefreshCw size={22} className="animate-spin" aria-hidden="true" /> : 'Verifikasi Akun'}
+                    {confirming ? <RefreshCw size={20} className="animate-spin" aria-hidden="true" /> : 'Verifikasi Akun'}
                   </button>
 
                   <div className="flex items-center justify-between gap-4 pt-6 border-t border-slate-100 mt-6">
@@ -591,7 +622,7 @@ export default function AuthPage() {
                       type="button"
                       onClick={openInbox}
                       aria-label="Buka inbox email di tab baru"
-                      className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-slate-50 border border-slate-200 px-3 py-3 text-[12px] font-black text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all uppercase italic"
+                      className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-slate-50 border border-slate-200 px-3 py-3 text-[12px] font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
                     >
                       Buka Inbox <ExternalLink size={14} aria-hidden="true" className="opacity-70" />
                     </button>
@@ -599,7 +630,7 @@ export default function AuthPage() {
                       type="button"
                       disabled={resending || resendCooldown > 0}
                       onClick={handleResendVerification}
-                      className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-slate-50 border border-slate-200 px-3 py-3 text-[12px] font-black text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all disabled:opacity-50 uppercase italic"
+                      className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-slate-50 border border-slate-200 px-3 py-3 text-[12px] font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors disabled:opacity-50"
                     >
                       <RefreshCw size={14} className={`${resending ? 'animate-spin' : ''} opacity-70`} aria-hidden="true" />
                       {resendCooldown > 0 ? `Tunggu ${resendCooldown}s` : 'Kirim Ulang'}
@@ -669,7 +700,7 @@ export default function AuthPage() {
                           <button
                             type="button"
                             onClick={() => switchMode('forgot')}
-                            className="text-[11px] font-black text-slate-300 hover:text-[#FF6A00] transition-all outline-none uppercase tracking-widest italic"
+                            className="text-[12px] font-bold text-slate-400 hover:text-[#FF6A00] transition-colors outline-none"
                           >
                             Lupa password?
                           </button>
@@ -684,7 +715,7 @@ export default function AuthPage() {
                           onChange={(e) => setPass(e.target.value)}
                           aria-invalid={!!formErrors.pass}
                           aria-describedby={formErrors.pass ? 'auth-pass-error' : undefined}
-                          className={`w-full h-14 rounded-2xl bg-slate-50/50 border px-5 pr-12 text-[16px] font-bold text-slate-900 placeholder-slate-300 outline-none transition-all focus:bg-white focus:ring-4 focus:ring-[#FF6A00]/40 ${
+                          className={`w-full h-14 rounded-2xl bg-slate-50/50 border px-5 pr-12 text-[16px] font-bold text-slate-900 placeholder-slate-300 outline-none transition-[background-color,border-color,box-shadow] focus:bg-white focus:ring-4 focus:ring-[#FF6A00]/40 ${
                             formErrors.pass ? 'border-red-700' : 'border-slate-100 focus:border-[#FF6A00]/20'
                           }`}
                           placeholder="••••••••••"
@@ -693,7 +724,7 @@ export default function AuthPage() {
                           type="button"
                           onClick={() => setShow(!show)}
                           aria-label={show ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 w-10 h-10 flex items-center justify-center hover:text-[#FF6A00] transition outline-none rounded-md"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 w-10 h-10 flex items-center justify-center hover:text-[#FF6A00] transition-colors outline-none rounded-md"
                         >
                           {show ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
                         </button>
@@ -716,7 +747,7 @@ export default function AuthPage() {
                           type={show ? 'text' : 'password'}
                           value={confirmPass}
                           onChange={(e) => setConfirmPass(e.target.value)}
-                          className="w-full h-14 rounded-2xl bg-slate-50/50 border border-slate-100 pl-12 pr-4 text-[16px] font-bold text-slate-900 placeholder-slate-300 outline-none transition-all focus:bg-white focus:ring-4 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]/20"
+                          className="w-full h-14 rounded-2xl bg-slate-50/50 border border-slate-100 pl-12 pr-4 text-[16px] font-bold text-slate-900 placeholder-slate-300 outline-none transition-[background-color,border-color,box-shadow] focus:bg-white focus:ring-4 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]/20"
                           placeholder="••••••••••"
                         />
                       </div>
@@ -726,70 +757,77 @@ export default function AuthPage() {
                   <button
                     type="submit"
                     disabled={busy || isInvalid || invalidResetLink}
-                    className="w-full mt-6 flex items-center justify-center gap-3 rounded-2xl h-14 text-[16px] font-black text-white transition-all shadow-premium disabled:opacity-50 disabled:pointer-events-none bg-[#FF6A00] uppercase italic tracking-widest"
+                    className="w-full mt-6 flex items-center justify-center gap-3 rounded-2xl h-13 text-[15px] font-extrabold text-white transition-colors shadow-[0_12px_24px_rgba(255,106,0,0.22)] hover:bg-[#FF8A1C] active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none bg-[#FF6A00] tracking-tight"
                   >
                     {busy ? (
                       <>
-                        <RefreshCw size={22} className="animate-spin" aria-hidden="true" />
-                        {mode === 'login' ? 'Memproses...' : mode === 'register' ? 'Mendaftarkan...' : mode === 'forgot' ? 'Mengirim...' : 'Menyimpan...'}
+                        <RefreshCw size={20} className="animate-spin" aria-hidden="true" />
+                        <span>{mode === 'login' ? 'Memproses...' : mode === 'register' ? 'Mendaftarkan...' : mode === 'forgot' ? 'Mengirim...' : 'Menyimpan...'}</span>
                       </>
                     ) : (
-                      <>
-                        {mode === 'login' ? 'Masuk' : mode === 'register' ? 'Daftar Gratis' : mode === 'forgot' ? 'Reset Password' : 'Update Password'}
-                      </>
+                      <span>{mode === 'login' ? 'Masuk' : mode === 'register' ? 'Daftar Gratis' : mode === 'forgot' ? 'Reset Password' : 'Update Password'}</span>
                     )}
                   </button>
 
                   {mode === 'login' && !registered && (
                     <div className="mt-5 pt-4 border-t border-slate-100">
                       <div className="flex items-center justify-between mb-2.5">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
                           Akun Demo Siap Pakai
                         </span>
-                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60 flex items-center gap-1">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                           Database Live
                         </span>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <button
                           type="button"
+                          disabled={busy}
                           onClick={() => {
                             setEmail('demo@kaffepos.my.id');
                             setPass('DemoPassword123');
                             setErr('');
                             setOk('');
                           }}
-                          className="group relative flex flex-col items-start p-2.5 rounded-xl border border-orange-100 bg-orange-50/40 hover:bg-orange-50 hover:border-[#FF6A00]/40 transition-colors text-left"
+                          className="group relative flex flex-col items-start p-2.5 rounded-xl border border-orange-200/70 bg-orange-50/50 hover:bg-orange-100/60 hover:border-[#FF6A00]/60 transition-colors text-left disabled:opacity-50"
                         >
-                          <div className="flex items-center gap-1.5 mb-0.5">
-                            <span className="text-sm">👑</span>
-                            <span className="text-xs font-extrabold text-slate-900 group-hover:text-[#FF6A00] transition-colors">
-                              Demo Owner
-                            </span>
+                          <div className="flex items-center justify-between w-full mb-0.5">
+                            <div className="flex items-center gap-1.5">
+                              <ShieldCheck size={14} className="text-[#FF6A00]" />
+                              <span className="text-xs font-extrabold text-slate-900 group-hover:text-[#FF6A00] transition-colors">
+                                Demo Owner
+                              </span>
+                            </div>
+                            <ArrowRight size={11} className="text-[#FF6A00] opacity-0 group-hover:opacity-100 transition-opacity" />
                           </div>
                           <span className="text-[10px] font-medium text-slate-500">
-                            Akses Signature
+                            Fitur Lengkap (Signature Pro)
                           </span>
                         </button>
 
                         <button
                           type="button"
+                          disabled={busy}
                           onClick={() => {
                             setEmail('kasir@kaffepos.my.id');
                             setPass('DemoPassword123');
                             setErr('');
                             setOk('');
                           }}
-                          className="group relative flex flex-col items-start p-2.5 rounded-xl border border-slate-200 bg-slate-50/60 hover:bg-slate-100 hover:border-slate-300 transition-colors text-left"
+                          className="group relative flex flex-col items-start p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-slate-100 hover:border-slate-300 transition-colors text-left disabled:opacity-50"
                         >
-                          <div className="flex items-center gap-1.5 mb-0.5">
-                            <span className="text-sm">☕</span>
-                            <span className="text-xs font-extrabold text-slate-900 group-hover:text-[#FF6A00] transition-colors">
-                              Demo Kasir
-                            </span>
+                          <div className="flex items-center justify-between w-full mb-0.5">
+                            <div className="flex items-center gap-1.5">
+                              <Coffee size={14} className="text-slate-700 group-hover:text-[#FF6A00] transition-colors" />
+                              <span className="text-xs font-extrabold text-slate-900 group-hover:text-[#FF6A00] transition-colors">
+                                Demo Kasir
+                              </span>
+                            </div>
+                            <ArrowRight size={11} className="text-slate-700 opacity-0 group-hover:opacity-100 transition-opacity" />
                           </div>
                           <span className="text-[10px] font-medium text-slate-500">
-                            Mode Kasir & POS
+                            Mode Bar & Kasir POS
                           </span>
                         </button>
                       </div>

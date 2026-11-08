@@ -18,6 +18,7 @@ import { initAnalytics, trackPageView } from '@/lib/analytics';
 import GlobalErrorBoundary from './components/ui/GlobalErrorBoundary';
 import { isAdminCommissionEnabled } from '@/lib/config/feature-flags';
 import Modal from './components/ui/Modal';
+import { Coffee, WifiOff } from 'lucide-react';
 
 const AuthPage = lazy(() => import('./components/auth/AuthPage'));
 const AppShell = lazy(() => import('./components/AppShell'));
@@ -72,8 +73,10 @@ function SplashScreen() {
 function AuthLoading() {
   return (
     <div style={{ position:'fixed', inset:0, background:'#ffffff', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:16 }}>
-      <div style={{ fontSize:42 }}>☕</div>
-      <div style={{ width:32, height:32, border:'4px solid #FF6A0010', borderTopColor:'#FF6A00', borderRadius:'50%', animation:'spin 0.8s linear infinite' }} />
+      <div style={{ width: 48, height: 48, borderRadius: 16, background: 'rgba(255,106,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FF6A00' }}>
+        <Coffee size={24} strokeWidth={2.2} />
+      </div>
+      <div style={{ width:24, height:24, border:'2.5px solid rgba(255,106,0,0.15)', borderTopColor:'#FF6A00', borderRadius:'50%', animation:'spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite' }} />
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
@@ -85,13 +88,15 @@ function OfflineBanner({ show }: { show: boolean }) {
   return (
     <div style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999,
-      background: '#1e293b', color: '#fff',
+      background: '#0f172a', color: '#f8fafc',
       padding: '8px 16px',
       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
       fontSize: 12, fontWeight: 700,
       paddingTop: 'calc(8px + env(safe-area-inset-top, 0px))',
+      borderBottom: '1px solid rgba(255,255,255,0.1)'
     }}>
-      <span>📶</span> Mode Offline — Data disimpan lokal, sync saat online kembali
+      <WifiOff size={14} style={{ color: '#fb923c' }} />
+      <span>Mode Offline — Data tersimpan aman di perangkat, sinkron otomatis saat online kembali</span>
     </div>
   );
 }

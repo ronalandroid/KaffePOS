@@ -713,6 +713,15 @@ export async function bootstrapMajooFnbSchema() {
     create index if not exists idx_open_bills_store_status
       on public.open_bills (store_id, status, updated_at desc);
 
+    alter table public.open_bills
+      add column if not exists service_charge numeric not null default 0,
+      add column if not exists discount_label text;
+
+    alter table public.open_bills
+      alter column bill_number drop not null;
+    alter table public.open_bills
+      alter column bill_number set default '';
+
     create table if not exists public.purchase_orders (
       id uuid primary key default gen_random_uuid(),
       store_id uuid not null references public.stores(id) on delete cascade,
@@ -731,6 +740,11 @@ export async function bootstrapMajooFnbSchema() {
 
     create index if not exists idx_purchase_orders_store_created
       on public.purchase_orders (store_id, created_at desc);
+
+    alter table public.purchase_orders
+      add column if not exists total_amount numeric not null default 0,
+      add column if not exists notes text,
+      add column if not exists ordered_at timestamptz default now();
 
     create table if not exists public.shift_closings (
       id uuid primary key default gen_random_uuid(),
@@ -752,6 +766,13 @@ export async function bootstrapMajooFnbSchema() {
 
     create index if not exists idx_shift_closings_store_closed
       on public.shift_closings (store_id, closed_at desc);
+
+    alter table public.shift_closings
+      add column if not exists cashier_id uuid references public.profiles(id) on delete set null,
+      add column if not exists total_sales numeric not null default 0,
+      add column if not exists total_non_cash numeric not null default 0,
+      add column if not exists transactions_count integer not null default 0,
+      add column if not exists notes text;
   `);
 }
 

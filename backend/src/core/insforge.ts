@@ -30,11 +30,9 @@ type InsforgeSdkModule = {
   createAdminClient: typeof createAdminClient;
 };
 
-// Preserve native ESM import() in CommonJS build output because @insforge/shared-schemas
-// only defines ESM exports.
-const importEsm = new Function('specifier', 'return import(specifier)') as (
-  specifier: string,
-) => Promise<InsforgeSdkModule>;
+async function importEsm(specifier: string): Promise<InsforgeSdkModule> {
+  return (await import(specifier)) as unknown as InsforgeSdkModule;
+}
 
 let cachedClientPromise: Promise<ReturnType<typeof createClient>> | null = null;
 let cachedAdminClientPromise: Promise<ReturnType<typeof createAdminClient>> | null = null;

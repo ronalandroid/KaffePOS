@@ -355,7 +355,7 @@ export default function LandingPage() {
               <div className="mb-5 inline-flex flex-wrap items-center gap-2 rounded-full border border-orange-200/80 bg-white/90 px-3.5 py-1.5 shadow-sm">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse-soft" />
                 <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-700">
-                  InsForge Cloud &bull; Mayar API v2 &bull; Offline-First
+                  POS Coffee Shop &amp; Roastery &bull; Offline-First
                 </span>
               </div>
 
@@ -363,7 +363,7 @@ export default function LandingPage() {
                 Sistem Kasir Cafe yang Rapi, Cepat, dan <span className="text-[#FF6A00]">Siap Tumbuh</span>
               </h1>
               <p className="mt-5 max-w-[340px] break-words text-base font-medium leading-7 text-slate-600 sm:max-w-[560px] md:text-[17px] md:leading-8">
-                Kelola transaksi kasir, gramasi resep HPP, layar dapur (KDS), Kopi Passport loyalty, performa barista, dan printer thermal dalam satu platform cloud yang tetap berjalan saat internet putus. Mulai <span className="font-mono font-bold text-slate-900">Rp49.000/bulan</span>, gratis trial <span className="font-mono font-bold text-slate-900">14 hari</span>.
+                Kelola kasir cepat, kalkulasi gramasi resep HPP otomatis, Kitchen Display (KDS), Kopi Passport loyalty, dan laporan omzet real-time dalam satu platform cloud yang tetap berjalan saat koneksi internet putus. Mulai <span className="font-mono font-bold text-slate-900">Rp49.000/bulan</span>, gratis trial <span className="font-mono font-bold text-slate-900">14 hari</span>.
               </p>
 
               {/* Island CTA Buttons */}
@@ -373,32 +373,33 @@ export default function LandingPage() {
                   onClick={() => navigate('/register')}
                   className="group inline-flex h-12 w-full items-center justify-between gap-3 rounded-full bg-[#FF6A00] pl-6 pr-2 text-sm font-extrabold text-white shadow-[0_14px_30px_rgba(255,106,0,0.24)] transition-transform duration-200 hover:bg-[#FF8A1C] active:scale-[0.98] sm:w-auto"
                 >
-                  <span>Mulai Trial Gratis</span>
+                  <span>Mulai Trial 14 Hari</span>
                   <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 transition-transform duration-200 group-hover:translate-x-0.5">
                     <ArrowRight size={15} />
                   </span>
                 </button>
+                <button
+                  type="button"
+                  onClick={() => navigate('/login?demo=1')}
+                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 text-sm font-extrabold text-slate-800 shadow-sm transition-colors hover:border-orange-200 hover:bg-orange-50/50 hover:text-[#FF6A00] sm:w-auto"
+                >
+                  <Coffee size={15} className="text-[#FF6A00]" />
+                  <span>Coba Demo Live</span>
+                </button>
                 <a
                   href="#features"
                   onClick={(e) => scrollToSection(e, '#features')}
-                  className="inline-flex h-12 w-full items-center justify-center rounded-full border border-slate-200 bg-white px-6 text-sm font-extrabold text-slate-800 shadow-sm transition-colors hover:border-orange-200 hover:bg-orange-50/50 hover:text-[#FF6A00] sm:w-auto"
+                  className="inline-flex h-12 w-full items-center justify-center rounded-full border border-slate-200 bg-white px-5 text-sm font-extrabold text-slate-700 shadow-sm transition-colors hover:border-orange-200 hover:bg-orange-50/50 hover:text-[#FF6A00] sm:w-auto"
                 >
                   Lihat Fitur
                 </a>
                 <button
                   type="button"
-                  onClick={() => navigate('/login?demo=1')}
-                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-orange-200 bg-orange-50/50 px-5 text-sm font-extrabold text-[#FF6A00] shadow-sm transition-colors hover:bg-orange-100/60 sm:w-auto"
-                >
-                  <span>☕ Coba Demo Live</span>
-                </button>
-                <button
-                  type="button"
                   onClick={handleDownload}
-                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-orange-200/80 bg-orange-50/60 px-5 text-xs font-extrabold text-[#FF6A00] transition-colors hover:bg-orange-100/70 sm:w-auto"
+                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-slate-200/80 bg-slate-50/80 px-4 text-xs font-bold text-slate-600 transition-colors hover:bg-slate-100 sm:w-auto"
                 >
-                  <Smartphone size={15} />
-                  <span>APK Android Kasir</span>
+                  <Smartphone size={14} className="text-slate-500" />
+                  <span>APK Android</span>
                 </button>
               </div>
 
@@ -641,8 +642,8 @@ export default function LandingPage() {
                   'Ekspor laporan PDF dan cadangan data JSON sekali klik untuk owner',
                 ].map((item) => (
                   <div key={item} className="flex items-start gap-3 text-sm font-semibold text-slate-700">
-                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#FF6A00] bg-orange-50 text-[11px] font-bold text-[#FF6A00]">
-                      ✓
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-50 text-[#FF6A00] ring-1 ring-orange-200/60">
+                      <CheckCircle2 size={13} />
                     </span>
                     <span>{item}</span>
                   </div>

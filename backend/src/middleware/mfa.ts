@@ -68,7 +68,11 @@ export function verifyTotp(secret: string, token: string, now = Date.now()) {
 }
 
 export function createBackupCodes() {
-  return Array.from({ length: 10 }, () => randomBytes(5).toString('hex').toUpperCase().match(/.{1,5}/g)!.join('-'));
+  return Array.from({ length: 10 }, () => {
+    const raw = randomBytes(5).toString('hex').toUpperCase();
+    const parts = raw.match(/.{1,5}/g);
+    return parts ? parts.join('-') : raw;
+  });
 }
 
 export function hashBackupCode(code: string) {

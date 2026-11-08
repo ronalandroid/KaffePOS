@@ -38,7 +38,10 @@ export async function compressImage(
         qualityJpeg,
       );
     };
-    img.onerror = () => reject(new Error('Gagal membaca gambar'));
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('Gagal membaca gambar'));
+    };
     img.src = url;
   });
 }

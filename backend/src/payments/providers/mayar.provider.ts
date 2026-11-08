@@ -401,7 +401,7 @@ export class MayarPaymentProvider implements PaymentProvider {
     const lookupId = input.providerReference?.trim() || input.merchantOrderId;
     const prefix = env.MAYAR_STATUS_PATH_PREFIX.replace(/\/$/, '');
     const targetPath = `${prefix.startsWith('/') ? prefix : `/${prefix}`}/${encodeURIComponent(lookupId)}`;
-    const { response, body } = await mayarCircuitBreaker.execute(async () => {
+    const { body } = await mayarCircuitBreaker.execute(async () => {
       const res = await fetch(`${this.baseUrl}${targetPath}`, {
         method: 'GET',
         headers: {
@@ -410,12 +410,12 @@ export class MayarPaymentProvider implements PaymentProvider {
         },
         signal: AbortSignal.timeout(15_000),
       });
+      if (!res.ok) {
+        throw new ApiError(502, `Mayar check status gagal (${res.status}).`);
+      }
       const parsed = (await res.json().catch(() => ({}))) as Record<string, unknown>;
       return { response: res, body: parsed };
     });
-    if (!response.ok) {
-      throw new ApiError(502, `Mayar check status gagal (${response.status}).`);
-    }
 
     const data = ((body.data && typeof body.data === 'object' ? body.data : body) ?? {}) as Record<
       string,

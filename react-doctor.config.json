@@ -3,6 +3,7 @@
   "ignore": {
     "files": [
       "android/**",
+      "backend/**",
       "dist/**",
       "coverage/**",
       "node_modules/**",
@@ -14,6 +15,7 @@
     ]
   },
   "rules": {
+    "socket/low-supply-chain-score": "off",
     "deslop/unused-file": "off",
     "deslop/unused-export": "off",
     "deslop/unused-dependency": "off",

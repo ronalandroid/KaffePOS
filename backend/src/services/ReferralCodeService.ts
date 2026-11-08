@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
 import { ApiError, env } from '../core';
 
@@ -7,7 +7,8 @@ export type ReferralCodeType = 'customer_referral' | 'affiliate';
 type Db = Pool | PoolClient;
 
 function buildCode(prefix: string, userId: string) {
-  const token = createHash('sha256').update(`${prefix}:${userId}:${Date.now()}:${Math.random()}`).digest('hex').slice(0, 7).toUpperCase();
+  const entropy = randomBytes(16).toString('hex');
+  const token = createHash('sha256').update(`${prefix}:${userId}:${Date.now()}:${entropy}`).digest('hex').slice(0, 7).toUpperCase();
   return `${prefix}${token}`;
 }
 

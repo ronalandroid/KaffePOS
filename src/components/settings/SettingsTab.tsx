@@ -151,7 +151,9 @@ export default function SettingsTab({ toast, isPro, profile, subscriptionAccess 
   // Keep the latest doSave in a ref so the debounced save always runs the current closure
   // (toast/saveStoreSettings/storeId), never a stale one captured when triggerSave was built.
   const doSaveRef = useRef(doSave);
-  doSaveRef.current = doSave;
+  useEffect(() => {
+    doSaveRef.current = doSave;
+  });
 
   const triggerSave = useCallback((newForm: ReceiptSettings) => {
     saveToLS(storeId, newForm);

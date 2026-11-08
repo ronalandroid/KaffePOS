@@ -252,7 +252,14 @@ export default function SyncConflictCenter({ open, onClose, storeId, role, onRet
           </button>
           <button
             type="button"
-            onClick={() => void onRetryAll().then(refresh)}
+            onClick={async () => {
+              try {
+                await onRetryAll();
+                await refresh();
+              } catch {
+                // error handled in onRetryAll
+              }
+            }}
             className="rounded-2xl bg-[#FF6A00] px-5 py-3 text-xs font-black uppercase tracking-widest text-white shadow-premium transition hover:bg-[#c8742f]"
           >
             Sinkronkan Sekarang
