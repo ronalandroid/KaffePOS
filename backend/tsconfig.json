@@ -14,5 +14,5 @@
     "types": ["node", "pg"]
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.spec.ts"]
+  "exclude": ["src/**/*.test.ts", "src/**/*.spec.ts", "src/test/**/*"]
 }
