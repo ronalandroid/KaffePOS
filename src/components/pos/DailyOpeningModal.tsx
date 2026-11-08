@@ -138,7 +138,7 @@ export default function DailyOpeningModal({ cashierName, toast, onDone }: Props)
         localStorage.setItem(LS_OFFLINE_KEY, JSON.stringify(queue));
       } catch { /* ignore */ }
       setLastOpeningDate();
-      toast.showToast(`💾 Saldo ${fRp(numVal)} disimpan (offline, sync otomatis)`, 'success');
+      toast.showToast(`Saldo ${fRp(numVal)} disimpan (offline, sync otomatis)`, 'success');
       setSaving(false);
       saveInFlight.current = false;
       onDone();
@@ -152,12 +152,12 @@ export default function DailyOpeningModal({ cashierName, toast, onDone }: Props)
         opened_by:  cashierName,
       });
       setLastOpeningDate();
-      toast.showToast(`✅ Saldo awal ${fRp(numVal)} tercatat!`, 'success');
+      toast.showToast(`Saldo awal ${fRp(numVal)} tercatat!`, 'success');
       onDone();
     } catch (e:any) {
       // Rollback LS jika gagal
       try { localStorage.removeItem(LS_KEY); } catch { /* ignore */ }
-      toast.showToast('⚠ Gagal simpan: ' + (e?.message || ''), 'warning');
+      toast.showToast('Gagal simpan: ' + (e?.message || ''), 'warning');
     }
     setSaving(false);
     saveInFlight.current = false;

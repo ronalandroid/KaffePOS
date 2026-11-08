@@ -146,8 +146,8 @@ export default function LegalPage({ kind }: { kind: LegalKind }) {
   const legalDocument = LEGAL_CONTENT[kind];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-5 py-6 sm:px-8 sm:py-10">
+    <div className="min-h-[100dvh] bg-slate-950 text-slate-100">
+      <div className="mx-auto flex min-h-[100dvh] w-full max-w-5xl flex-col px-5 py-6 sm:px-8 sm:py-10">
         <div className="flex items-center justify-between gap-3">
           <button
             type="button"
@@ -164,7 +164,7 @@ export default function LegalPage({ kind }: { kind: LegalKind }) {
         </div>
 
         <div className="mt-8 max-w-3xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-400">
+          <p className="text-sm font-semibold tracking-[0.24em] text-amber-400">
             {legalDocument.eyebrow}
           </p>
           <h1 className="mt-3 text-3xl font-black text-white sm:text-4xl">

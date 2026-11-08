@@ -8,7 +8,7 @@
 // Bottom sheet pilihan cetak: Bluetooth, USB, WhatsApp (PDF)
 // REMOVED: Browser Print, Simpan PDF (tidak dibutuhkan di Android)
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { Bluetooth, Usb, X } from 'lucide-react';
+import { Bluetooth, MessageCircle, Usb, X } from 'lucide-react';
 import { usePrinter } from '@/hooks/usePrinter';
 import { type PrintData } from '@/utils/thermalPrinter';
 import { Share } from '@capacitor/share';
@@ -220,7 +220,7 @@ export default function PrintActionSheet({
       }
       const { printReceiptClassicBt } = await import('@/utils/thermalPrinter');
       await printReceiptClassicBt(makePrintData());
-      toast.showToast('🖨️ Struk dicetak via Bluetooth!', 'success');
+      toast.showToast('Struk dicetak via Bluetooth!', 'success');
       doClose();
     } catch (e:any) {
       toast.showToast(e?.message || 'Gagal cetak Bluetooth', 'error');
@@ -237,7 +237,7 @@ export default function PrintActionSheet({
       if (!printer.usbConnected) await printer.connectUsb();
       const { printReceiptUsb } = await import('@/utils/thermalPrinter');
       await printReceiptUsb(makePrintData());
-      toast.showToast('🖨️ Struk dicetak via USB!', 'success');
+      toast.showToast('Struk dicetak via USB!', 'success');
       doClose();
     } catch (e:any) {
       toast.showToast(e?.message || 'Gagal cetak USB. Cek kabel OTG.', 'error');
@@ -263,13 +263,13 @@ export default function PrintActionSheet({
   };
 
   const btStatus = printer.btReconnecting
-    ? { label: 'Menghubungkan...', color: 'text-yellow-500', dot: '🟡' }
+    ? { label: 'Menghubungkan...', color: 'text-yellow-500', dot: 'bg-amber-400' }
     : printer.btConnected
-      ? { label: printer.btName || 'Terhubung',  color: 'text-green-500',  dot: '🟢' }
-      : { label: 'Belum terhubung', color: 'text-slate-400', dot: '🔴' };
+      ? { label: printer.btName || 'Terhubung',  color: 'text-green-500',  dot: 'bg-emerald-500' }
+      : { label: 'Belum terhubung', color: 'text-slate-400', dot: 'bg-slate-300' };
 
   const usbStatus = printer.usbConnected
-    ? { label: printer.usbName || 'USB Terhubung', color: 'text-green-500', dot: '🟢' }
+    ? { label: printer.usbName || 'USB Terhubung', color: 'text-green-500', dot: 'bg-emerald-500' }
     : { label: 'Colok kabel OTG ke printer', color: 'text-slate-400', dot: '' };
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -364,7 +364,7 @@ export default function PrintActionSheet({
             <div className="text-left flex-1">
               <p className="font-black text-slate-800 text-sm">Cetak via Bluetooth</p>
               <p className={`text-xs font-medium mt-0.5 ${btStatus.color}`}>
-                {btStatus.dot} {btStatus.label}
+                <span className="inline-flex items-center gap-1.5"><span aria-hidden="true" className={`h-1.5 w-1.5 rounded-full ${btStatus.dot}`} />{btStatus.label}</span>
               </p>
               {!printer.btConnected && (
                 <p className={`text-[10px] mt-0.5 ${allowThermalPrint ? 'text-orange-400' : 'text-slate-400'}`}>{allowThermalPrint ? 'Tap untuk hubungkan & cetak' : 'Tersedia mulai paket Signature'}</p>
@@ -388,11 +388,11 @@ export default function PrintActionSheet({
             <div className="text-left flex-1">
               <p className="font-black text-slate-800 text-sm">Cetak via USB OTG</p>
               <p className={`text-xs font-medium mt-0.5 ${usbStatus.color}`}>
-                {allowThermalPrint ? `${usbStatus.dot} ${usbStatus.label}` : 'Tersedia mulai paket Signature'}
+                {allowThermalPrint ? <span className="inline-flex items-center gap-1.5">{usbStatus.dot && <span aria-hidden="true" className={`h-1.5 w-1.5 rounded-full ${usbStatus.dot}`} />}{usbStatus.label}</span> : 'Tersedia mulai paket Signature'}
               </p>
             </div>
             {printer.usbConnected && (
-              <span className="text-[10px] font-bold text-green-600 bg-green-100 px-2.5 py-1.5 rounded-xl shrink-0">🟢 Siap</span>
+              <span className="text-[10px] font-bold text-green-600 bg-green-100 px-2.5 py-1.5 rounded-xl shrink-0">Siap</span>
             )}
           </button>
 
@@ -408,7 +408,7 @@ export default function PrintActionSheet({
               style={{ backgroundColor: '#dcfce7' }}>
               {loading === 'wa'
                 ? <Spinner />
-                : <span className="text-2xl">💬</span>
+                : <MessageCircle size={22} strokeWidth={2} className="text-emerald-600" />
               }
             </div>
             <div className="text-left flex-1">
@@ -449,11 +449,11 @@ export default function PrintActionSheet({
 // ── Fallback text format untuk WA jika Share API tidak tersedia ──────────────
 function formatReceiptTextWA(tx:any, storeName: string): string {
   const fR = (n: number) => 'Rp ' + new Intl.NumberFormat('id-ID').format(n || 0);
-  let msg = `🧾 *STRUK PEMBAYARAN*\n`;
+  let msg = `*STRUK PEMBAYARAN*\n`;
   msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-  msg += `🏪 *${storeName}*\n`;
-  msg += `📅 ${new Date(tx.date).toLocaleString('id-ID')}\n`;
-  msg += `🔖 ${tx.id}\n`;
+  msg += `*${storeName}*\n`;
+  msg += `${new Date(tx.date).toLocaleString('id-ID')}\n`;
+  msg += `No. ${tx.id}\n`;
   msg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
   tx.items.forEach((item:any) => {
     msg += `• ${item.name} x${item.qty}\n`;
@@ -466,6 +466,6 @@ function formatReceiptTextWA(tx:any, storeName: string): string {
   msg += `Bayar: ${tx.method}\n`;
   if (tx.method === 'Tunai' && tx.change > 0) msg += `Kembali: ${fR(tx.change)}\n`;
   msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-  msg += `_Terima kasih sudah berkunjung!_ 🙏`;
+  msg += `_Terima kasih sudah berkunjung._`;
   return msg;
 }

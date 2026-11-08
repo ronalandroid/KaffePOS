@@ -1,4 +1,5 @@
 // src/components/report/ReportChartsPanel.tsx
+import { BarChart3, CreditCard, Package, PieChart, type LucideIcon } from 'lucide-react';
 import type { ChartKey } from './reportFormat';
 import { LineChart } from './charts/LineChart';
 import { BarChart } from './charts/BarChart';
@@ -7,11 +8,11 @@ import { HBar } from './charts/HBar';
 import { PaymentBreakdownPanel } from './PaymentBreakdownPanel';
 import { StockUsagePanel, type StockRow } from './StockUsagePanel';
 
-const CHART_TABS: { id: ChartKey; l: string; e: string }[] = [
-  { id: 'trend', l: 'Tren', e: '📈' },
-  { id: 'menu', l: 'Produk', e: '🥧' },
-  { id: 'payment', l: 'Bayar', e: '💳' },
-  { id: 'stock', l: 'Stok', e: '📦' },
+const CHART_TABS: { id: ChartKey; l: string; e: LucideIcon }[] = [
+  { id: 'trend', l: 'Tren', e: BarChart3 },
+  { id: 'menu', l: 'Produk', e: PieChart },
+  { id: 'payment', l: 'Bayar', e: CreditCard },
+  { id: 'stock', l: 'Stok', e: Package },
 ];
 
 type ChartDatum = { label: string; value: number };
@@ -47,7 +48,7 @@ export function ReportChartsPanel({
         <div className="grid grid-cols-4 gap-2">
           {CHART_TABS.map(c=>(
             <button type="button" key={c.id} onClick={()=>onSelectChart(c.id)} className={`flex flex-col items-center py-3 rounded-[20px] text-[11px] font-bold transition-all gap-1.5 border ${activeChart===c.id?'bg-slate-900 text-white border-slate-900 shadow-premium':'bg-slate-50 text-slate-500 border-slate-100 hover:border-slate-200'}`}>
-              <span>{c.e}</span><span>{c.l}</span>
+              <c.e size={14} strokeWidth={2} aria-hidden="true" /><span>{c.l}</span>
             </button>
           ))}
         </div>
@@ -62,11 +63,11 @@ export function ReportChartsPanel({
         {activeChart==='menu'&&(
           <div className="space-y-4">
             <div>
-              <p className="text-xs font-bold text-slate-400 mb-3">🥧 Proporsi Penjualan Produk</p>
+              <p className="text-xs font-bold text-slate-400 mb-3">Proporsi penjualan produk</p>
               {menuPieData.length===0?<p className="text-center text-slate-400 text-sm font-semibold py-8">Belum ada menu terjual pada periode ini.</p>:<DonutChart data={menuPieData}/>}
             </div>
             {menuRanking.length>0&&<div>
-              <p className="text-xs font-bold text-slate-400 mb-3">🏆 Ranking Terjual</p>
+              <p className="text-xs font-bold text-slate-400 mb-3">Ranking terjual</p>
               <HBar items={menuRanking} max={menuRanking[0]?.value||1}/>
             </div>}
           </div>

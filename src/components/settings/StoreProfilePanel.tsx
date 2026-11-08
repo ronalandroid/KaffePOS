@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/settings/StoreProfilePanel.tsx — Brand & store identity settings
 import type { ChangeEvent, RefObject } from 'react';
-import { Image, RotateCcw } from 'lucide-react';
+import { Coffee, Image, RotateCcw } from 'lucide-react';
 import { Inp, Sel } from './SettingsControls';
 
 interface StoreProfilePanelProps {
@@ -20,7 +20,7 @@ export default function StoreProfilePanel({ form, update, setForm, triggerSave, 
         <p className="text-xs font-black text-slate-400 mb-3">LOGO TOKO</p>
         <div className="flex items-center gap-4 mb-3">
           <div className="w-20 h-20 rounded-2xl border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden bg-slate-50 shrink-0">
-            {form.logo_url?<img src={form.logo_url} alt="logo" className="w-full h-full object-contain"/>:<div className="text-center"><div className="text-3xl">☕</div><p className="text-[10px] text-slate-400 mt-1">Belum ada</p></div>}
+            {form.logo_url?<img src={form.logo_url} alt="logo" className="w-full h-full object-contain"/>:<div className="text-center"><Coffee size={26} strokeWidth={2} className="mx-auto text-slate-300" /><p className="text-[10px] text-slate-400 mt-1">Belum ada</p></div>}
           </div>
           <div className="flex-1 space-y-2">
             <button type="button" onClick={()=>logoRef.current?.click()}

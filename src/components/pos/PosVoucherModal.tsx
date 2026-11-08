@@ -56,7 +56,7 @@ export default function PosVoucherModal({ voucherModal, onClose, toast }: Props)
         <div className="mt-7 pt-6 border-t border-stone-100 flex flex-col gap-4">
           <p className="text-[10px] font-black text-stone-400 uppercase text-center tracking-[0.3em]">Atau input manual di halaman checkout</p>
           <button type="button" onClick={onClose}
-            className="w-full py-5 bg-stone-900 text-white font-black rounded-2xl uppercase tracking-widest text-sm shadow-xl active:scale-95 transition-all">
+            className="w-full py-5 bg-stone-900 text-white font-black rounded-2xl text-sm shadow-xl active:scale-95 transition-all">
             Konfirmasi Pilihan
           </button>
         </div>

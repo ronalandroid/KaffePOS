@@ -136,9 +136,9 @@ export default function AdminPanel() {
   if (!isAdminEmail(user?.email)) {
     if (!user) return <Navigate to="/login" replace />;
     return (
-      <div className="min-h-screen bg-slate-100 px-4 py-12">
+      <div className="min-h-[100dvh] bg-slate-100 px-4 py-12">
         <div className="mx-auto max-w-xl rounded-3xl border border-red-200 bg-white p-8 text-center shadow-sm">
-          <p className="text-sm font-black uppercase tracking-[0.2em] text-red-500">Akses Ditolak</p>
+          <p className="text-sm font-black tracking-[0.2em] text-red-500">Akses Ditolak</p>
           <h1 className="mt-3 text-2xl font-black text-slate-900">Halaman ini khusus admin.</h1>
           <p className="mt-3 text-sm text-slate-500">
             Email kamu belum ada di whitelist admin. Tambahkan email di konfigurasi jika perlu akses internal.
@@ -210,7 +210,7 @@ export default function AdminPanel() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 px-4 py-8">
+    <div className="min-h-[100dvh] bg-slate-100 px-4 py-8">
       <div className="mx-auto max-w-7xl space-y-5">
         <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

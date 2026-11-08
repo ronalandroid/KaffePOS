@@ -70,7 +70,7 @@ export default function ReceiptSettingsPanel({ form, update, previewOpen, setPre
       </button>
       {previewOpen&&<div className="bg-white rounded-2xl border border-slate-100 p-4">
         <ReceiptPreview s={form}/>
-        <button type="button" onClick={handleTestPrint} className="mt-3 w-full py-2.5 border border-slate-200 text-slate-600 font-bold rounded-xl text-sm flex items-center justify-center gap-2 active:scale-95">🖨️ Test Cetak</button>
+        <button type="button" onClick={handleTestPrint} className="mt-3 w-full py-2.5 border border-slate-200 text-slate-600 font-bold rounded-xl text-sm flex items-center justify-center gap-2 active:scale-95">Test cetak</button>
       </div>}
 
       <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-4">
@@ -104,7 +104,7 @@ export default function ReceiptSettingsPanel({ form, update, previewOpen, setPre
           <div>
             <p className="text-xs font-bold text-slate-600 mb-2">Posisi Logo</p>
             <div className="flex gap-2">
-              {[{v:'left',l:'⬅ Kiri'},{v:'center',l:'Tengah'},{v:'right',l:'Kanan ➡'}].map(o=>(
+              {[{v:'left',l:'Kiri'},{v:'center',l:'Tengah'},{v:'right',l:'Kanan'}].map(o=>(
                 <button type="button" key={o.v} onClick={()=>update('logo_position',o.v)}
                   className={`flex-1 py-2 rounded-xl border-2 text-xs font-bold ${form.logo_position===o.v?'border-orange-500 bg-orange-50 text-orange-600':'border-slate-200 text-slate-500'}`}>{o.l}</button>
               ))}

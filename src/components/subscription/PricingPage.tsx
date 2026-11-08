@@ -39,15 +39,15 @@ const COMPARISON_ROWS: Array<{
   signature: string;
 }> = [
   { feature: 'POS', secangkir: 'Full akses 14 hari', kopi_susu: 'Unlimited', signature: 'Unlimited' },
-  { feature: 'Inventory + Resep', secangkir: 'Full akses 14 hari', kopi_susu: '✓', signature: '✓' },
-  { feature: 'KDS', secangkir: 'Full akses 14 hari', kopi_susu: '✓', signature: '✓' },
-  { feature: 'Cetak Browser', secangkir: 'Full akses 14 hari', kopi_susu: '✓', signature: '✓' },
-  { feature: 'Printer Thermal', secangkir: 'Full akses 14 hari', kopi_susu: '-', signature: '✓' },
+  { feature: 'Inventory + Resep', secangkir: 'Full akses 14 hari', kopi_susu: 'yes', signature: 'yes' },
+  { feature: 'KDS', secangkir: 'Full akses 14 hari', kopi_susu: 'yes', signature: 'yes' },
+  { feature: 'Cetak Browser', secangkir: 'Full akses 14 hari', kopi_susu: 'yes', signature: 'yes' },
+  { feature: 'Printer Thermal', secangkir: 'Full akses 14 hari', kopi_susu: '-', signature: 'yes' },
   { feature: 'Gamification', secangkir: 'Full Signature 14 hari', kopi_susu: 'Dasar', signature: 'Full Kopi Score' },
   { feature: 'Kopi Passport Loyalty', secangkir: 'Advanced 14 hari', kopi_susu: 'Dasar', signature: 'Advanced' },
-  { feature: 'AI Insights', secangkir: 'Full akses 14 hari', kopi_susu: '-', signature: '✓' },
-  { feature: 'Notification Center', secangkir: 'Full akses 14 hari', kopi_susu: '-', signature: '✓' },
-  { feature: 'Multi Kasir', secangkir: 'Full akses 14 hari', kopi_susu: '-', signature: '✓' },
+  { feature: 'AI Insights', secangkir: 'Full akses 14 hari', kopi_susu: '-', signature: 'yes' },
+  { feature: 'Notification Center', secangkir: 'Full akses 14 hari', kopi_susu: '-', signature: 'yes' },
+  { feature: 'Multi Kasir', secangkir: 'Full akses 14 hari', kopi_susu: '-', signature: 'yes' },
   { feature: 'Support', secangkir: 'Trial support', kopi_susu: 'Standar', signature: 'Prioritas' },
 ];
 
@@ -226,10 +226,10 @@ export default function PricingPage({
                   <td className="border-b border-slate-100 px-4 py-3 font-black text-slate-800">{row.feature}</td>
                   {PRICING_ORDER.map((planId) => {
                     const value = row[planId];
-                    const included = value === '✓';
+                    const included = value === 'yes';
                     return (
                       <td key={planId} className={`border-b border-slate-100 px-4 py-3 text-center font-bold ${included ? 'text-[#FF6A00]' : value === '-' ? 'text-slate-300' : 'text-slate-500'}`}>
-                        {value}
+                        {included ? <Check size={16} strokeWidth={2.5} className="mx-auto" aria-label="Termasuk" /> : value}
                       </td>
                     );
                   })}

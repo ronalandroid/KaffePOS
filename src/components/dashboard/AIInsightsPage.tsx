@@ -310,7 +310,7 @@ export default function AIInsightsPage({ storeId, canUseAiInsight, hasBusinessDa
                     </div>
                   </div>
                   <div className="min-w-0">
-                    <span className="text-sm font-black uppercase tracking-wider" style={{ color: scoreColor }}>{data.kopiScore.label}</span>
+                    <span className="text-sm font-black" style={{ color: scoreColor }}>{data.kopiScore.label}</span>
                     <p className="mt-2 text-xs font-semibold leading-relaxed text-orange-950">{data.kopiScore.explanation}</p>
                   </div>
                 </div>

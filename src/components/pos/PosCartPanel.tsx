@@ -271,7 +271,7 @@ export default function PosCartPanel({
               </div>
             )}
             <div className="flex justify-between items-center pt-4 border-t border-stone-200 mt-2">
-              <span className="text-sm font-black text-stone-700 uppercase tracking-wider">Total Tagihan</span>
+              <span className="text-sm font-black text-stone-700">Total Tagihan</span>
               <span className="text-3xl font-black tracking-tight" style={{color:'var(--brand-orange-text)'}}>{fRp(total)}</span>
             </div>
           </div>

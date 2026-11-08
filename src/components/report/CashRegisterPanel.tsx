@@ -18,7 +18,7 @@ export function CashRegisterPanel({ totalCashRegister, entries }: CashRegisterPa
         <p className="text-orange-500 font-black text-sm">{fRp(totalCashRegister)}</p>
       </div>
       {entries.length===0
-        ? <p className="px-4 py-3 text-xs text-slate-400 italic">Belum ada saldo kasir untuk periode ini. Buka kasir harian untuk mulai mencatat modal dan closing.</p>
+        ? <p className="px-4 py-3 text-xs text-slate-400">Belum ada saldo kasir untuk periode ini. Buka kasir harian untuk mulai mencatat modal dan closing.</p>
         : <div className="divide-y divide-slate-50">
             {entries.map((c,i)=>(
               <div key={i} className="flex items-center justify-between px-4 py-2.5">

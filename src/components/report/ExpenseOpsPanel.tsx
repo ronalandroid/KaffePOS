@@ -18,7 +18,7 @@ export function ExpenseOpsPanel({ totalExpOps, entries }: ExpenseOpsPanelProps) 
         <p className="text-red-500 font-black text-sm">{fRp(totalExpOps)}</p>
       </div>
       {entries.length===0
-        ? <p className="px-4 py-3 text-xs text-slate-400 italic">Belum ada pengeluaran untuk periode ini. Catat biaya operasional agar laba bersih lebih akurat.</p>
+        ? <p className="px-4 py-3 text-xs text-slate-400">Belum ada pengeluaran untuk periode ini. Catat biaya operasional agar laba bersih lebih akurat.</p>
         : <div className="divide-y divide-slate-50">
             {entries.slice(0,10).map((e,i)=>(
               <div key={i} className="flex items-center justify-between px-4 py-2.5">

@@ -228,7 +228,7 @@ export default function KitchenTab({ toast, profile }: Props) {
             <div className="w-24 h-24 bg-slate-100 rounded-[40px] flex items-center justify-center mb-6">
               <ChefHat size={48} className="text-slate-300" />
             </div>
-            <p className="text-lg font-black text-slate-800 uppercase italic tracking-tighter">Dapur siap</p>
+            <p className="text-lg font-black text-slate-800 tracking-tight">Dapur siap</p>
             <p className="mt-1 text-xs font-bold text-slate-400 uppercase tracking-widest">Pesanan baru dari kasir akan muncul di sini.</p>
           </div>
         ) : (
@@ -253,7 +253,7 @@ export default function KitchenTab({ toast, profile }: Props) {
                         <div>
                           <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Order ID</p>
                           <div className="flex items-center gap-3">
-                            <h3 className="font-display text-2xl font-extrabold text-slate-800 tracking-tight uppercase leading-none">
+                            <h3 className="font-display text-2xl font-extrabold text-slate-800 tracking-tight leading-none">
                               {order.order_number}
                             </h3>
                             {isFresh && (

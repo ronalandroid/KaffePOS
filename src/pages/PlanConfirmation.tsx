@@ -24,7 +24,7 @@ export default function PlanConfirmation() {
   const amount = getPlanPrice(plan.id, billingCycle);
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,#fff7ed_0%,#f8fafc_46%,#e2e8f0_100%)] px-4 py-8">
+    <div className="min-h-[100dvh] bg-[radial-gradient(circle_at_top,#fff7ed_0%,#f8fafc_46%,#e2e8f0_100%)] px-4 py-8">
       <div className="mx-auto max-w-2xl">
         <div className="mb-5">
           <Link

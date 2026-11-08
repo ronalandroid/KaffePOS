@@ -351,7 +351,7 @@ export default function SubscriptionCheckoutFlow({ open, plan, billingCycle, onC
                   <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-100 text-orange-600">
                     <Wallet size={18} />
                   </div>
-                  <h4 className="text-sm font-black uppercase tracking-widest text-slate-800">QRIS (Otomatis & Cepat)</h4>
+                  <h4 className="text-sm font-black text-slate-800">QRIS (Otomatis & Cepat)</h4>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {methods.qris.map((method) => (
@@ -384,7 +384,7 @@ export default function SubscriptionCheckoutFlow({ open, plan, billingCycle, onC
                   <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
                     <CreditCard size={18} />
                   </div>
-                  <h4 className="text-sm font-black uppercase tracking-widest text-slate-800">Virtual Account</h4>
+                  <h4 className="text-sm font-black text-slate-800">Virtual Account</h4>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {methods.virtualAccount.map((method) => (
@@ -483,7 +483,7 @@ export default function SubscriptionCheckoutFlow({ open, plan, billingCycle, onC
                       </div>
                       {quote.voucher && (
                         <div className="flex flex-col gap-2 px-1 sm:flex-row sm:items-center sm:justify-between">
-                          <p className="break-words text-[10px] font-black uppercase tracking-widest text-orange-800">✓ Voucher Aktif: {quote.voucher.code}</p>
+                          <p className="break-words text-xs font-semibold text-orange-800">Voucher aktif: {quote.voucher.code}</p>
                           <button type="button"
                             onClick={() => {
                               setVoucherInput('');

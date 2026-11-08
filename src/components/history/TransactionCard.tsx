@@ -40,7 +40,7 @@ export const TransactionCard = memo(function TransactionCard({
           </div>
         </div>
         <div className="flex flex-col items-end gap-3 ml-4 shrink-0">
-          <p className={`font-black text-lg tracking-tighter italic ${tx.is_void?'text-rose-300 line-through':'text-slate-900'}`}>
+          <p className={`font-black text-lg tracking-tight tabular-nums ${tx.is_void?'text-rose-300 line-through':'text-slate-900'}`}>
             {fRp(tx.total).replace('Rp', '').trim()}
           </p>
           <button

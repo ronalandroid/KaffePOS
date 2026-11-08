@@ -74,10 +74,10 @@ export default function ExpenseModal({ onClose, cashierName, toast }: Props) {
     setSaving(true);
     saveExpense({ amount: numVal, description: description.trim(), category, cashier: cashierName })
       .then(() => {
-        toast.showToast(`💸 ${fRp(numVal)} dicatat sebagai pengeluaran`, 'success');
+        toast.showToast(`${fRp(numVal)} dicatat sebagai pengeluaran`, 'success');
         onClose();
       })
-      .catch((e:any) => toast.showToast('⚠ Gagal simpan: ' + (e?.message || ''), 'warning'))
+      .catch((e:any) => toast.showToast('Gagal simpan: ' + (e?.message || ''), 'warning'))
       .finally(() => { setSaving(false); saveInFlight.current = false; });
   };
 
@@ -139,7 +139,7 @@ export default function ExpenseModal({ onClose, cashierName, toast }: Props) {
             </div>
             {!todayCash && (
               <p className="text-[10px] text-slate-400 mt-2 text-center">
-                💡 Belum ada saldo awal hari ini — pengeluaran tetap bisa dicatat
+                Belum ada saldo awal hari ini — pengeluaran tetap bisa dicatat
               </p>
             )}
             <p className="text-[10px] text-slate-400 mt-2 text-center">
@@ -150,7 +150,7 @@ export default function ExpenseModal({ onClose, cashierName, toast }: Props) {
           {/* Riwayat singkat hari ini */}
           {todayExpenses.length > 0 && (
             <div className="bg-red-50 border border-red-100 rounded-2xl p-3">
-              <p className="text-xs text-red-600 font-black mb-2">📋 Pengeluaran Hari Ini</p>
+              <p className="text-xs text-red-600 font-black mb-2">Pengeluaran hari ini</p>
               <div className="space-y-1">
                 {todayExpenses.slice(0, 4).map((e, i) => (
                   <div key={i} className="flex justify-between items-center">

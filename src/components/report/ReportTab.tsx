@@ -1,6 +1,6 @@
 // src/components/report/ReportTab.tsx — v5 + Gemini AI Insight
 import { useState, useMemo, useCallback } from 'react';
-import { Download, TrendingUp, ShoppingBag, DollarSign, CreditCard, Wallet, Receipt } from 'lucide-react';
+import { Download, FileText, TrendingUp, ShoppingBag, DollarSign, CreditCard, Wallet, Receipt } from 'lucide-react';
 import { useStore } from '@/hooks/useStore';
 import { useAuth } from '@/contexts/AuthContext';
 import { generateProfessionalPDF, type ReportData } from '@/utils/pdfReport';
@@ -398,10 +398,10 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
     const subject = encodeURIComponent(`Insight Bisnis KaffePOS - ${period}`);
     const body = encodeURIComponent(
       `Halo,\nBerikut adalah hasil analisis AI bisnis Anda:\n\n` +
-      `📊 Ringkasan: ${aiData.summary}\n\n` +
-      `⭐ Menu Terbaik: ${aiData.bestMenu}\n\n` +
-      `📦 Status Stok: ${aiData.stockAlert}\n\n` +
-      `🔮 Prediksi: ${aiData.prediction}\n\n` +
+      `Ringkasan: ${aiData.summary}\n\n` +
+      `Menu terbaik: ${aiData.bestMenu}\n\n` +
+      `Status stok: ${aiData.stockAlert}\n\n` +
+      `Prediksi: ${aiData.prediction}\n\n` +
       `Tips Aksi:\n- ${aiData.tips.join('\n- ')}\n\n` +
       `-- Dikirim OTOMATIS oleh KaffePOS AI`
     );
@@ -415,7 +415,7 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
       <div className="bg-white border-b border-slate-100 px-4 sm:px-6 pt-6 pb-4 z-10">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
           <div className="min-w-0">
-            <h2 className="font-black text-xl text-slate-800 italic uppercase tracking-tighter">Laporan & Analitik</h2>
+            <h2 className="text-xl font-bold tracking-tight text-slate-900">Laporan & Analitik</h2>
             <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Performa Bisnis Realtime</p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
@@ -434,7 +434,7 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
               <Receipt size={18} />
             </button>
             <button type="button" onClick={handleDownload} disabled={downloading}
-              className={`flex items-center gap-2 h-10 px-5 rounded-2xl text-[12px] font-black uppercase italic tracking-widest active:scale-95 disabled:opacity-50 transition-all shadow-premium ${canExportReports ? 'bg-[#FF6A00] text-white' : 'bg-slate-100 text-slate-400'}`}>
+              className={`flex items-center gap-2 h-10 px-5 rounded-2xl text-[12px] font-black active:scale-95 disabled:opacity-50 transition-all shadow-premium ${canExportReports ? 'bg-[#FF6A00] text-white' : 'bg-slate-100 text-slate-400'}`}>
               {downloading?<div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/>:<Download size={16}/>}
               {downloading?'Proses...':canExportReports?'Ekspor PDF':'Premium'}
             </button>
@@ -502,7 +502,7 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
             <div className="w-20 h-20 bg-slate-50 rounded-[32px] flex items-center justify-center mx-auto mb-6 text-slate-200">
                <Receipt size={40} />
             </div>
-            <p className="font-display text-lg font-extrabold text-slate-800 mb-2 uppercase tracking-tight italic">Belum ada data laporan</p>
+            <p className="font-display text-lg font-extrabold text-slate-800 mb-2 tracking-tight">Belum ada data laporan</p>
             <p className="mx-auto max-w-md text-sm font-semibold leading-relaxed text-slate-500">
               Laporan akan terisi otomatis setelah transaksi, saldo kasir, atau pengeluaran dicatat pada periode ini.
             </p>
@@ -579,7 +579,7 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
         <ExpenseOpsPanel totalExpOps={totalExpOps} entries={filteredExpOps} />
 
         <div className="bg-orange-50 border border-orange-100 rounded-2xl p-3 flex items-center gap-3">
-          <span className="text-xl shrink-0">📄</span>
+          <FileText size={20} strokeWidth={2} className="shrink-0 text-orange-500" aria-hidden="true" />
           <div><p className="font-bold text-orange-700 text-sm">PDF lengkap dengan semua chart</p><p className="text-orange-400 text-xs">{filtered.length} transaksi + pie chart + inventaris</p></div>
         </div>
       </div>

@@ -127,13 +127,13 @@ export default function HistoryTab({
       <div className="bg-white border-b border-slate-100 px-4 sm:px-6 pt-6 pb-4 z-10">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
           <div className="min-w-0">
-            <h2 className="font-black text-xl text-slate-800 italic uppercase tracking-tighter">Riwayat Transaksi</h2>
+            <h2 className="text-xl font-bold tracking-tight text-slate-900">Riwayat Transaksi</h2>
             <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">
               {totalCount} SUKSES {totalVoid > 0 && <span className="text-rose-400 ml-1">· {totalVoid} VOID</span>}
             </p>
           </div>
           <div className="shrink-0 text-left sm:text-right">
-            <p className="font-black text-2xl text-[#FF6A00] tracking-tighter italic">{fRp(totalRev)}</p>
+            <p className="font-black text-2xl text-[#FF6A00] tracking-tight tabular-nums">{fRp(totalRev)}</p>
             <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest mt-1">Total Pendapatan</p>
           </div>
         </div>
@@ -212,7 +212,7 @@ export default function HistoryTab({
           >
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h3 id="history-detail-title" className="font-black text-2xl text-slate-800 italic uppercase tracking-tighter">Detail Pesanan 🧾</h3>
+                <h3 id="history-detail-title" className="text-xl font-semibold tracking-tight text-slate-900">Detail pesanan</h3>
                 <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">ID: {detail.id}</p>
               </div>
               <button type="button" onClick={closeDetailModal} className="p-3 bg-slate-100 rounded-full text-slate-500 hover:bg-slate-200 transition-colors"><X size={24}/></button>
@@ -226,7 +226,7 @@ export default function HistoryTab({
                       <p className="font-bold text-slate-800 text-[15px]">{i.name}</p>
                       <p className="text-slate-400 text-[12px] font-bold uppercase tracking-wider">x{i.qty} · {fRp(i.price)}</p>
                     </div>
-                    <span className="font-black text-slate-800 text-[15px] italic">{fRp(i.subtotal)}</span>
+                    <span className="font-black text-slate-800 text-[15px]">{fRp(i.subtotal)}</span>
                   </div>
                 ))}
               </div>
@@ -236,8 +236,8 @@ export default function HistoryTab({
                 {detail.discount > 0 && <div className="flex justify-between text-xs font-black text-rose-500 uppercase tracking-widest"><span>Diskon</span><span>-{fRp(detail.discount)}</span></div>}
                 {detail.tax > 0 && <div className="flex justify-between text-xs font-bold text-slate-400 uppercase tracking-widest"><span>Pajak</span><span>{fRp(detail.tax)}</span></div>}
                 <div className="flex justify-between items-center pt-3 border-t border-slate-200/60 mt-2">
-                  <span className="text-[16px] font-black text-slate-900 uppercase italic tracking-tighter">Total Akhir</span>
-                  <span className="text-2xl font-black text-[#FF6A00] italic tracking-tighter">{fRp(detail.total)}</span>
+                  <span className="text-[16px] font-black text-slate-900 tracking-tight">Total Akhir</span>
+                  <span className="text-2xl font-black text-[#FF6A00] tracking-tight tabular-nums">{fRp(detail.total)}</span>
                 </div>
               </div>
             </div>
@@ -256,19 +256,19 @@ export default function HistoryTab({
             <div className="space-y-3">
               <button type="button"
                 onClick={() => handlePrint(detail)}
-                className="w-full py-5 bg-white border-2 border-slate-100 text-slate-700 font-black text-[15px] uppercase italic tracking-wider rounded-[24px] flex items-center justify-center gap-3 active:scale-95 transition-all hover:border-[#FF6A00]/30 hover:bg-orange-50/30">
+                className="w-full py-5 bg-white border-2 border-slate-100 text-slate-700 font-black text-[15px] rounded-[24px] flex items-center justify-center gap-3 active:scale-95 transition-all hover:border-[#FF6A00]/30 hover:bg-orange-50/30">
                 <Printer size={20}/> Cetak Struk
               </button>
 
               {!detail.is_void ? (
                 <button type="button" onClick={() => setShowVoid(detail)}
-                  className="w-full py-5 text-rose-400 font-black text-[15px] uppercase italic tracking-wider rounded-[24px] flex items-center justify-center gap-3 active:scale-95 transition-all hover:bg-rose-50">
+                  className="w-full py-5 text-rose-400 font-black text-[15px] rounded-[24px] flex items-center justify-center gap-3 active:scale-95 transition-all hover:bg-rose-50">
                   <Ban size={20}/> Void Transaksi
                 </button>
               ) : (
                 <div className="bg-rose-50 rounded-[24px] p-6 text-center border border-rose-100">
-                  <p className="text-rose-500 font-black text-sm uppercase tracking-widest">Transaksi Telah Di-Void</p>
-                  {detail.void_reason && <p className="text-rose-400 text-xs font-bold mt-2 italic">&quot;{detail.void_reason}&quot;</p>}
+                  <p className="text-rose-500 font-black text-sm">Transaksi Telah Di-Void</p>
+                  {detail.void_reason && <p className="text-rose-400 text-xs font-bold mt-2">&quot;{detail.void_reason}&quot;</p>}
                 </div>
               )}
             </div>

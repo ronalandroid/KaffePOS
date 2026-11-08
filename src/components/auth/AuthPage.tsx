@@ -380,7 +380,7 @@ export default function AuthPage() {
           : `Atur password baru untuk ${resetParams.email}.`;
 
   return (
-    <div data-testid="reference-auth-shell" className="kaffe-app-bg min-h-screen text-slate-700 selection:bg-[#FF6A00]/20 font-sans relative">
+    <div data-testid="reference-auth-shell" className="kaffe-app-bg min-h-[100dvh] text-slate-700 selection:bg-[#FF6A00]/20 font-sans relative">
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.05] hidden lg:block"
         style={{
@@ -389,7 +389,7 @@ export default function AuthPage() {
         }}
       />
       
-      <div className="mx-auto min-h-screen w-full max-w-[1280px] lg:grid lg:grid-cols-2 relative z-10">
+      <div className="mx-auto min-h-[100dvh] w-full max-w-[1280px] lg:grid lg:grid-cols-2 relative z-10">
         
         {/* Left Side - Reference mobile-first brand panel */}
         <section className="relative hidden lg:flex flex-col justify-center px-10 xl:px-16 py-8 animate-in" style={{ animationDuration: '0.6s' }}>
@@ -439,7 +439,7 @@ export default function AuthPage() {
         </section>
 
         {/* Right Side - Auth Forms */}
-        <section className="relative flex min-h-screen items-center justify-center py-8 px-4 sm:px-6 lg:items-start lg:px-8 lg:pt-14">
+        <section className="relative flex min-h-[100dvh] items-center justify-center py-8 px-4 sm:px-6 lg:items-start lg:px-8 lg:pt-14">
           <div className="w-full min-w-0 max-w-[calc(100vw_-_2rem)] sm:max-w-[460px] lg:max-w-[420px] animate-in" style={{ animationDuration: '0.5s' }}>
              
             {/* Mobile Title */}
@@ -504,7 +504,7 @@ export default function AuthPage() {
                   type="button"
                   onClick={() => switchMode('login')}
                   aria-label="Kembali ke halaman login"
-                  className="mb-8 flex items-center gap-2 text-[12px] font-black text-[#FF6A00] transition hover:gap-3 outline-none uppercase tracking-widest italic"
+                  className="mb-8 flex items-center gap-2 text-[12px] font-black text-[#FF6A00] transition hover:gap-3 outline-none"
                 >
                   <ArrowLeft size={16} aria-hidden="true" />
                   KEMBALI KE LOGIN
@@ -785,10 +785,7 @@ export default function AuthPage() {
                           type="button"
                           disabled={busy}
                           onClick={() => {
-                            setEmail('demo@kaffepos.my.id');
-                            setPass('DemoPassword123');
-                            setErr('');
-                            setOk('');
+                            void handleInstantDemoLogin('owner');
                           }}
                           className="group relative flex flex-col items-start p-2.5 rounded-xl border border-orange-200/70 bg-orange-50/50 hover:bg-orange-100/60 hover:border-[#FF6A00]/60 transition-colors text-left disabled:opacity-50"
                         >
@@ -810,10 +807,7 @@ export default function AuthPage() {
                           type="button"
                           disabled={busy}
                           onClick={() => {
-                            setEmail('kasir@kaffepos.my.id');
-                            setPass('DemoPassword123');
-                            setErr('');
-                            setOk('');
+                            void handleInstantDemoLogin('cashier');
                           }}
                           className="group relative flex flex-col items-start p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-slate-100 hover:border-slate-300 transition-colors text-left disabled:opacity-50"
                         >
@@ -847,7 +841,7 @@ export default function AuthPage() {
                         <button
                           type="button"
                           onClick={() => switchMode('register')}
-                          className="text-[#FF6A00] font-black hover:underline italic"
+                          className="text-[#FF6A00] font-black hover:underline"
                         >
                           Daftar sekarang
                         </button>
@@ -858,7 +852,7 @@ export default function AuthPage() {
                         <button
                           type="button"
                           onClick={() => switchMode('login')}
-                          className="text-[#FF6A00] font-black hover:underline italic"
+                          className="text-[#FF6A00] font-black hover:underline"
                         >
                           Masuk sekarang
                         </button>

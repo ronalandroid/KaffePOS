@@ -63,7 +63,7 @@ export default function SystemStatusPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 px-4 py-10 text-slate-100">
+    <div className="min-h-[100dvh] bg-slate-950 px-4 py-10 text-slate-100">
       <div className="mx-auto max-w-5xl space-y-6">
         <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -76,7 +76,7 @@ export default function SystemStatusPage() {
             </p>
             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Last Checked: {new Date().toLocaleTimeString()}</p>
           </div>
-          <h1 className="mt-3 max-w-full break-words text-2xl font-black text-white italic uppercase sm:text-3xl">Production Readiness Audit</h1>
+          <h1 className="mt-3 max-w-full break-words text-2xl font-black text-white sm:text-3xl">Production Readiness Audit</h1>
           <p className="mt-3 max-w-2xl text-sm text-slate-400">
             Halaman ini menarik status backend production, koneksi database, provider email, dan matriks sinkronisasi fitur inti.
           </p>

@@ -58,7 +58,9 @@ describe('KaffePOS reference experience', () => {
     expect(within(showcase).getByText(/#KP-208/i)).toBeInTheDocument();
   });
 
-  it('renders a mobile-first auth surface for web mobile and APK login', () => {
+  it('renders a mobile-first auth surface for web mobile and APK login', async () => {
+    mocks.auth.signIn.mockReset();
+    mocks.auth.signIn.mockResolvedValue({ error: null });
     render(
       <MemoryRouter initialEntries={['/login']}>
         <AuthPage />
@@ -83,13 +85,17 @@ describe('KaffePOS reference experience', () => {
     expect(screen.queryByRole('button', { name: /Masuk dengan Google/i })).not.toBeInTheDocument();
     expect(screen.queryByText(/atau masuk dengan/i)).not.toBeInTheDocument();
 
+    // Demo buttons are true one-click logins: fill credentials, sign in, then redirect.
     fireEvent.click(screen.getByRole('button', { name: /Demo Owner/i }));
     expect(screen.getByLabelText(/Email atau No. HP/i)).toHaveValue('demo@kaffepos.my.id');
     expect(screen.getByLabelText(/^Password$/i)).toHaveValue('DemoPassword123');
+    await waitFor(() => expect(mocks.auth.signIn).toHaveBeenCalledWith('demo@kaffepos.my.id', 'DemoPassword123'));
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalled());
 
+    await waitFor(() => expect(screen.getByRole('button', { name: /Demo Kasir/i })).not.toBeDisabled());
     fireEvent.click(screen.getByRole('button', { name: /Demo Kasir/i }));
     expect(screen.getByLabelText(/Email atau No. HP/i)).toHaveValue('kasir@kaffepos.my.id');
-    expect(screen.getByLabelText(/^Password$/i)).toHaveValue('DemoPassword123');
+    await waitFor(() => expect(mocks.auth.signIn).toHaveBeenCalledWith('kasir@kaffepos.my.id', 'DemoPassword123'));
   });
 
   it('auto-fills demo credentials when opening login with demo search param', () => {

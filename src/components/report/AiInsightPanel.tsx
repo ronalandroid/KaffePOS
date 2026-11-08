@@ -104,7 +104,7 @@ export function AiInsightPanel({
       {aiError && (
         <div className="px-4 pb-3">
           <div className="bg-red-50 rounded-xl px-3 py-2.5 space-y-1">
-            <p className="text-xs text-red-600 font-bold">⚠️ {aiError}</p>
+            <p className="text-xs text-red-600 font-bold">{aiError}</p>
             {aiError.includes('Kuota') || aiError.includes('quota') || aiError.includes('billing') ? (
               <p className="text-[10px] text-red-400">
                 Layanan AI sedang tidak tersedia. Coba lagi beberapa saat lagi atau hubungi admin internal.

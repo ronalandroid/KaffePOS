@@ -54,9 +54,9 @@ function SplashScreen() {
       `}</style>
       <div style={{ textAlign:'center', padding:'0 36px' }}>
         <div style={{ marginBottom:6 }}>
-          <span className="s-w1" style={{ display:'inline-block', fontSize:42, fontStyle: 'italic', fontWeight:900, color:'#1e293b', lineHeight:1.15, textTransform: 'uppercase', letterSpacing: 0 }}>Kaffe</span>
+          <span className="s-w1" style={{ display:'inline-block', fontSize:42, fontWeight:900, color:'#1e293b', lineHeight:1.15, letterSpacing: '-0.03em' }}>Kaffe</span>
           {' '}
-          <span className="s-w2" style={{ display:'inline-block', fontSize:42, fontStyle: 'italic', fontWeight:900, color:'#FF6A00', lineHeight:1.15, textTransform: 'uppercase', letterSpacing: 0 }}>POS</span>
+          <span className="s-w2" style={{ display:'inline-block', fontSize:42, fontWeight:900, color:'#FF6A00', lineHeight:1.15, letterSpacing: '-0.03em' }}>POS</span>
         </div>
         <div style={{ marginBottom:20 }}>
         <div className="s-dw" style={{ display:'flex', gap:9, justifyContent:'center' }}>

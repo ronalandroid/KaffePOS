@@ -45,14 +45,14 @@ export default function CashRegisterModal({ onClose, cashierName, toast, existin
       toast.showToast('Saldo kasir berhasil diperbarui!', 'success');
       onClose();
       updateCashRegister(existingEntry.id, { amount: amt, note: note.trim() || null, opened_by: cashierName })
-        .catch((e:any) => toast.showToast('⚠ Gagal simpan: ' + (e?.message || ''), 'warning'));
+        .catch((e:any) => toast.showToast('Gagal simpan: ' + (e?.message || ''), 'warning'));
       return;
     }
 
     toast.showToast('Saldo kasir disimpan!', 'success');
     onClose();
     saveCashRegister({ amount: amt, note: note.trim() || null, opened_by: cashierName })
-      .catch((e:any) => toast.showToast('⚠ Gagal simpan: ' + (e?.message || ''), 'warning'));
+      .catch((e:any) => toast.showToast('Gagal simpan: ' + (e?.message || ''), 'warning'));
   };
 
   const { panelRef, onBackdropClick, dialogProps } = useModalBehavior<HTMLDivElement>({

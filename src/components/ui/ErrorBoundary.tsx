@@ -5,6 +5,7 @@
  
  
 import { Component, ErrorInfo, ReactNode } from 'react';
+import { AlertTriangle } from 'lucide-react';
 
 interface Props { children: ReactNode; name?: string; }
 interface State { hasError: boolean; error: Error | null; }
@@ -16,14 +17,17 @@ export class ErrorBoundary extends Component<Props, State> {
   handleReset = () => this.setState({ hasError: false, error: null });
   render() {
     if (this.state.hasError) return (
-      <div className="flex-1 flex flex-col items-center justify-center p-6 bg-slate-50">
-        <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mb-4 text-2xl">⚠️</div>
-        <h3 className="font-black text-slate-800 text-lg mb-1">Ups, ada yang error</h3>
-        <p className="text-slate-400 text-sm text-center mb-3">{this.props.name ? `Tab ${this.props.name} bermasalah.` : 'Halaman ini bermasalah.'}</p>
-        <p className="text-xs text-slate-500 bg-white rounded-xl px-3 py-2 mb-4 text-center">
-          Coba muat ulang bagian ini. Jika masih berulang, hubungi admin KaffePOS.
+      <div role="alert" className="flex-1 flex flex-col items-center justify-center px-6 py-12 text-center bg-[#FAFAF9]">
+        <div className="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-rose-50 text-rose-500 ring-1 ring-rose-100">
+          <AlertTriangle size={22} strokeWidth={2} />
+        </div>
+        <h3 className="text-base font-semibold tracking-tight text-zinc-800">
+          {this.props.name ? `Bagian ${this.props.name} gagal dimuat` : 'Halaman ini gagal dimuat'}
+        </h3>
+        <p className="mt-1 mb-5 max-w-[42ch] text-sm leading-relaxed text-zinc-500">
+          Muat ulang bagian ini. Jika masih berulang, hubungi tim KaffePOS.
         </p>
-        <button type="button" onClick={this.handleReset} className="px-6 py-3 bg-orange-500 text-white font-bold rounded-2xl active:scale-95">Coba Lagi</button>
+        <button type="button" onClick={this.handleReset} className="rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-zinc-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/60">Coba lagi</button>
       </div>
     );
     return this.props.children;

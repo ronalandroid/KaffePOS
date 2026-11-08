@@ -39,43 +39,38 @@ export class GlobalErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="fixed inset-0 bg-[#0b0f19] flex flex-col items-center justify-center p-8 text-center z-[99999]">
-          {/* Decorative background blur */}
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-orange-500/10 blur-[120px] rounded-full" />
-          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-500/10 blur-[120px] rounded-full" />
-
-          <div className="relative z-10 max-w-md w-full">
-            <div className="w-24 h-24 bg-orange-500/10 border border-orange-500/20 rounded-[32px] flex items-center justify-center mx-auto mb-10 shadow-2xl">
-              <AlertTriangle size={48} className="text-orange-500" />
+        <div role="alert" className="fixed inset-0 z-[200] flex min-h-[100dvh] items-center justify-center overflow-y-auto bg-[#FAFAF9] px-5 py-10">
+          <div className="w-full max-w-md">
+            <div className="flex items-center gap-2 text-zinc-500">
+              <Coffee size={16} strokeWidth={2} className="text-[#FF6A00]" />
+              <span className="text-sm font-semibold tracking-tight text-zinc-700">KaffePOS</span>
             </div>
-            
-            <h2 className="text-4xl font-black text-white italic tracking-tighter uppercase mb-6 leading-none">
-              Sesuatu <br />Bermasalah. 🛠️
+
+            <div className="mt-8 grid h-12 w-12 place-items-center rounded-2xl bg-amber-50 text-amber-600 ring-1 ring-amber-100">
+              <AlertTriangle size={22} strokeWidth={2} />
+            </div>
+
+            <h2 className="mt-5 text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl">
+              Aplikasi perlu dimuat ulang
             </h2>
-            
-            <p className="text-slate-400 text-lg font-medium leading-relaxed mb-10">
-              Jangan khawatir, data transaksi Anda biasanya tetap aman. Sistem butuh penyegaran singkat untuk sinkronisasi ulang.
+            <p className="mt-3 max-w-[48ch] text-[15px] leading-relaxed text-zinc-600">
+              Transaksi yang sudah tersimpan tetap aman di perangkat dan akan disinkronkan otomatis setelah halaman dimuat ulang.
             </p>
 
-            <div className="bg-white/5 border border-white/10 rounded-3xl p-4 mb-10 text-left overflow-hidden">
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Error Detail</p>
-                <code className="text-xs text-orange-200/70 font-mono break-all line-clamp-3">
-                    {this.state.error?.message || 'Unknown runtime error'}
-                </code>
-            </div>
+            <details className="mt-6 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-left">
+              <summary className="cursor-pointer text-xs font-semibold text-zinc-500">Detail teknis</summary>
+              <code className="mt-2 block break-all font-mono text-xs leading-relaxed text-zinc-600">
+                {this.state.error?.message || 'Unknown runtime error'}
+              </code>
+            </details>
 
             <button type="button"
               onClick={this.handleReload}
-              className="w-full py-6 bg-orange-500 text-slate-950 rounded-[24px] font-black text-xl flex items-center justify-center gap-4 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_20px_40px_rgba(216,130,59,0.3)] uppercase italic"
+              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-900 px-5 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-zinc-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/60 sm:w-auto"
             >
-              <RefreshCw size={24} strokeWidth={3} /> 
-              Segarkan Halaman
+              <RefreshCw size={16} strokeWidth={2} />
+              Muat ulang halaman
             </button>
-            
-            <div className="mt-12 flex items-center justify-center gap-3 text-slate-500">
-                <Coffee size={16} />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em]">KaffePOS Recovery Engine</span>
-            </div>
           </div>
         </div>
       );

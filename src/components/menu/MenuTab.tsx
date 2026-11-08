@@ -147,7 +147,7 @@ export default function MenuTab({ toast }:any) {
     try {
       await saveMenuItem({ ...form, variants: cleanVariants, modifiers: cleanModifiers });
       setShowModal(false);
-      toast.showToast(form.id ? '✅ Menu diperbarui!' : '✅ Menu ditambahkan!', 'success');
+      toast.showToast(form.id ? 'Menu diperbarui!' : 'Menu ditambahkan!', 'success');
     }
     catch (err:any) { toast.showToast(normalizeUserFacingError(err, 'Menu belum bisa disimpan. Periksa kembali data menu.'), 'error'); }
     finally { setSaving(false); }

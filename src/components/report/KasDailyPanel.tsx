@@ -127,16 +127,16 @@ function DayRow({ day, defaultOpen = false }: DayRowProps) {
           {/* Summary bar */}
           <div className="grid grid-cols-3 gap-2 mt-1">
             <div className="bg-orange-50 rounded-xl p-2">
-              <p className="text-[9px] text-orange-500 font-bold">💰 Saldo Awal</p>
+              <p className="text-[9px] text-orange-500 font-bold">Saldo awal</p>
               <p className="text-xs font-black text-orange-700 mt-0.5">{fRp(saldoAwal)}</p>
             </div>
             <div className="bg-red-50 rounded-xl p-2">
-              <p className="text-[9px] text-red-500 font-bold">💸 Pengeluaran</p>
+              <p className="text-[9px] text-red-500 font-bold">Pengeluaran</p>
               <p className="text-xs font-black text-red-700 mt-0.5">-{fRp(totalExp)}</p>
             </div>
             <div className={`rounded-xl p-2 ${selisih >= 0 ? 'bg-green-50' : 'bg-amber-50'}`}>
               <p className={`text-[9px] font-bold ${selisih >= 0 ? 'text-green-500' : 'text-amber-500'}`}>
-                {selisih >= 0 ? '✅ Sisa Kasir' : '⚠ Defisit'}
+                {selisih >= 0 ? 'Sisa kasir' : 'Defisit'}
               </p>
               <p className={`text-xs font-black mt-0.5 ${selisih >= 0 ? 'text-green-700' : 'text-amber-700'}`}>
                 {fRp(Math.abs(selisih))}
@@ -246,21 +246,21 @@ export default function KasDailyPanel({ cashRegister, expenses, transactions, pe
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <p className="text-white/60 text-[10px] font-bold">💰 Total Saldo Awal</p>
+            <p className="text-white/60 text-[10px] font-bold">Total saldo awal</p>
             <p className="text-orange-400 font-black text-base">{fRp(totalSaldoAwal)}</p>
           </div>
           <div>
-            <p className="text-white/60 text-[10px] font-bold">💸 Total Pengeluaran</p>
+            <p className="text-white/60 text-[10px] font-bold">Total pengeluaran</p>
             <p className="text-red-400 font-black text-base">-{fRp(totalExp)}</p>
           </div>
           <div>
-            <p className="text-white/60 text-[10px] font-bold">{totalSelisih >= 0 ? '✅ Sisa Saldo Kasir' : '⚠ Total Defisit'}</p>
+            <p className="text-white/60 text-[10px] font-bold">{totalSelisih >= 0 ? 'Sisa saldo kasir' : 'Total defisit'}</p>
             <p className={`font-black text-base ${totalSelisih >= 0 ? 'text-green-400' : 'text-amber-400'}`}>
               {fRp(Math.abs(totalSelisih))}
             </p>
           </div>
           <div>
-            <p className="text-white/60 text-[10px] font-bold">🔄 Dari Penjualan</p>
+            <p className="text-white/60 text-[10px] font-bold">Dari penjualan</p>
             <p className="text-blue-400 font-black text-base">{fRp(totalFromSales)}</p>
           </div>
         </div>

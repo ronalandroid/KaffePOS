@@ -361,7 +361,7 @@ export default function PosPaymentModal({
             </div>
             {effectivePaid >= effectiveTotal && effectivePaid > 0 && (
               <div className="mt-4 flex justify-between items-center bg-emerald-50 p-4 rounded-2xl border border-emerald-100">
-                <span className="text-sm font-bold text-emerald-700 uppercase tracking-widest">Kembalian</span>
+                <span className="text-sm font-bold text-emerald-700">Kembalian</span>
                 <span className="text-2xl font-black text-emerald-600 tabular-nums">{fRp(effectiveChange)}</span>
               </div>
             )}
@@ -380,7 +380,7 @@ export default function PosPaymentModal({
           type="button"
           onClick={() => onCheckout(splitMode === 'items' && selectedSplitIds.length > 0 ? selectedSplitIds : undefined)}
           disabled={checkingOut || !cart.length || (method === 'Tunai' && effectivePaid < effectiveTotal) || paymentPhase === 'creating' || paymentPhase === 'pending'}
-          className="w-full py-5 text-white font-black text-base rounded-2xl active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3 transition-transform hover:scale-[1.01] uppercase tracking-wider bg-gradient-to-r from-[#FF6A00] to-[#FF8A1C] shadow-[0_8px_24px_rgba(255,106,0,0.4)] hover:shadow-[0_12px_32px_rgba(255,106,0,0.5)]"
+          className="w-full py-5 text-white font-black text-base rounded-2xl active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3 transition-transform hover:scale-[1.01] bg-gradient-to-r from-[#FF6A00] to-[#FF8A1C] shadow-[0_8px_24px_rgba(255,106,0,0.4)] hover:shadow-[0_12px_32px_rgba(255,106,0,0.5)]"
         >
           {checkingOut
             ? <><RefreshCw size={22} className="animate-spin" /> MEMPROSES...</>

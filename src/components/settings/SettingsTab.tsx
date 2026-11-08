@@ -133,13 +133,13 @@ export default function SettingsTab({ toast, isPro, profile, subscriptionAccess 
       await saveStoreSettings(payload);
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
-      toast.showToast('✅ Pengaturan berhasil disimpan!', 'success');
+      toast.showToast('Pengaturan berhasil disimpan!', 'success');
     } catch (e: unknown) {
       const msg = (e instanceof Error && e.message) || '';
       if (msg.includes('column') || msg.includes('schema') || msg.includes('Store belum dimuat') || !storeId) {
         setSaved(true);
         setTimeout(() => { setSaved(false); setSaveErr(''); }, 3000);
-        toast.showToast('✅ Pengaturan disimpan (mode offline)', 'success');
+        toast.showToast('Pengaturan disimpan (mode offline)', 'success');
       } else {
         const friendly = normalizeUserFacingError(e, 'Pengaturan belum bisa disimpan. Coba lagi beberapa saat.');
         setSaveErr(friendly);
@@ -245,7 +245,7 @@ export default function SettingsTab({ toast, isPro, profile, subscriptionAccess 
           items: [{ name: 'Kopi Susu', qty: 1, price: 25000, subtotal: 25000 }],
           subtotal: 25000, discount: 0, tax: 0, total: 25000, paid: 25000, change: 0,
         }));
-        toast.showToast('✅ Test print berhasil! Cek printer.', 'success');
+        toast.showToast('Test print berhasil! Cek printer.', 'success');
       } else {
         if (!canBrowserPrint) {
           dispatchUpgradePrompt({
@@ -265,7 +265,7 @@ export default function SettingsTab({ toast, isPro, profile, subscriptionAccess 
             items: [{ name: 'Kopi Susu', qty: 1, price: 25000, subtotal: 25000 }],
             subtotal: 25000, discount: 0, tax: 0, total: 25000, paid: 25000, change: 0,
           }));
-        toast.showToast('🖨️ Test print dibuka di browser', 'success');
+        toast.showToast('Test print dibuka di browser', 'success');
       }
     } catch (e: unknown) {
       toast.showToast((e instanceof Error && e.message) || 'Gagal test print', 'error');
@@ -279,14 +279,14 @@ export default function SettingsTab({ toast, isPro, profile, subscriptionAccess 
       <div className="bg-white border-b border-slate-100 px-4 sm:px-6 pt-6 pb-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
           <div className="min-w-0">
-            <h2 className="font-black text-xl text-slate-800 italic uppercase tracking-tighter">Pengaturan</h2>
+            <h2 className="text-xl font-bold tracking-tight text-slate-900">Pengaturan</h2>
             <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Konfigurasi & Akun</p>
           </div>
           <div className="flex shrink-0 items-center gap-3">
             {saving&&<div className="w-5 h-5 border-2 border-[#FF6A00] border-t-transparent rounded-full animate-spin"/>}
             {saved&&!saving&&<div className="flex items-center gap-1.5 text-emerald-500 text-[10px] font-black uppercase tracking-widest"><CheckCircle2 size={14}/>Tersimpan</div>}
             <button type="button" onClick={handleSaveNow} disabled={saving}
-              className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6A00] text-white rounded-2xl text-[12px] font-black uppercase italic tracking-widest active:scale-95 disabled:opacity-50 shadow-premium transition-all">
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6A00] text-white rounded-2xl text-[12px] font-black active:scale-95 disabled:opacity-50 shadow-premium transition-all">
               <Save size={14}/>{saving?'Memproses...':'Simpan'}
             </button>
           </div>

@@ -305,11 +305,11 @@ function openDownloadTab(data: string, fileName: string, mimeType: DownloadMimeT
         </style>
       </head>
       <body>
-        <div class="icon">☕</div>
+        <div class="icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FF6A00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/></svg></div>
         <h2>KaffePOS</h2>
         <div class="filename">${fileName}</div>
         <p>Tap tombol di bawah untuk mendownload file ini ke HP kamu.</p>
-        <a class="btn" href="${dataUri}" download="${fileName}">⬇️ Download Sekarang</a>
+        <a class="btn" href="${dataUri}" download="${fileName}">Download sekarang</a>
         <p class="note">Android: file tersimpan di folder Downloads<br>iOS: tap Share → Save to Files</p>
       </body>
       </html>

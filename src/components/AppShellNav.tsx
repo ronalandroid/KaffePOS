@@ -46,7 +46,7 @@ export function AppSidebarNav({ role, tab, changeTab, syncing, hasOpenChallenge 
 
 export function AppBottomNav({ role, tab, changeTab, syncing, hasOpenChallenge }: AppNavProps) {
   return (
-    <nav aria-label="Navigasi utama" className="kaffe-bottom-nav lg:hidden flex items-stretch justify-start overflow-x-auto bg-white/95 backdrop-blur-xl border-t border-orange-100/80 z-40 px-1 shadow-[0_-12px_32px_rgba(255,106,0,0.10)]"
+    <nav aria-label="Navigasi utama" className="kaffe-bottom-nav lg:hidden flex items-stretch justify-start overflow-x-auto no-scrollbar bg-white/95 backdrop-blur-xl border-t border-orange-100/80 z-40 px-1 shadow-[0_-12px_32px_rgba(255,106,0,0.10)]"
       style={{ height: 'calc(64px + env(safe-area-inset-bottom,0px))', paddingBottom: 'env(safe-area-inset-bottom,0px)' }}>
       {NAV.filter((entry) => getVisibleTabs(role).includes(entry.id)).map(({ id, label, icon: Icon }) => {
         const active = tab === id;
@@ -54,7 +54,7 @@ export function AppBottomNav({ role, tab, changeTab, syncing, hasOpenChallenge }
           <button type="button"
             key={id}
             onClick={() => changeTab(id)}
-            className={`flex h-full w-[74px] flex-none flex-col items-center justify-center transition-all relative min-w-0 ${
+            className={`flex h-full w-[74px] flex-none flex-col items-center justify-center transition-all relative min-w-0 active:scale-[0.96] ${
               active ? 'text-[#FF6A00]' : 'text-slate-400 hover:text-slate-600'
             }`}
             aria-label={`Buka tab ${label}`}

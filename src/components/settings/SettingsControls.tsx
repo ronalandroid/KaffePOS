@@ -18,7 +18,7 @@ export const Inp = ({ label, value, onChange, placeholder, note }: InpProps) => 
       placeholder={placeholder}
       className="w-full h-12 border border-slate-100 rounded-2xl px-4 text-[15px] font-bold focus:outline-none focus:ring-4 focus:ring-[#FF6A00]/5 focus:border-[#FF6A00]/20 bg-slate-50/50 transition-all placeholder:text-slate-300 shadow-sm"
     />
-    {note&&<p className="text-[10px] text-slate-400 font-bold italic pl-0.5 opacity-80">{note}</p>}
+    {note&&<p className="text-[10px] text-slate-400 font-bold pl-0.5 opacity-80">{note}</p>}
   </div>
 );
 
@@ -36,7 +36,7 @@ export const Toggle = ({ label, value, onChange, note }: ToggleProps) => (
   >
     <div className="flex-1 min-w-0 pr-3">
       <p className="text-[14px] font-bold text-slate-800">{label}</p>
-      {note&&<p className="text-[10px] text-slate-400 font-bold mt-0.5 italic">{note}</p>}
+      {note&&<p className="text-[10px] text-slate-400 font-bold mt-0.5">{note}</p>}
     </div>
     <div
       className={`h-[26px] w-12 rounded-full transition-all relative shrink-0 ${value?'bg-[#FF6A00] shadow-[0_0_15px_rgba(255,106,0,0.25)]':'bg-slate-200'}`}

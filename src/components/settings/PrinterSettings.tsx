@@ -54,12 +54,12 @@ export default function PrinterSettings({ toast }: Props) {
       await connectPrinter(saved.address, 2);
       setConnectedPrinter(saved);
       setConnStatus('connected');
-      toast.showToast(`✅ Terhubung ke ${saved.name}`, 'success');
+      toast.showToast(`Terhubung ke ${saved.name}`, 'success');
     } catch (err:any) {
       const msg = err instanceof Error ? err.message : 'Gagal connect';
       setConnStatus('error');
       setErrorMsg(msg);
-      toast.showToast(`❌ ${msg}`, 'error');
+      toast.showToast(`${msg}`, 'error');
     }
   }, [toast]);
 
@@ -97,12 +97,12 @@ export default function PrinterSettings({ toast }: Props) {
       savePrinterToStorage(saved);
       setConnectedPrinter(saved);
       setConnStatus('connected');
-      toast.showToast(`✅ Terhubung ke ${device.name}`, 'success');
+      toast.showToast(`Terhubung ke ${device.name}`, 'success');
     } catch (err:any) {
       const msg = err instanceof Error ? err.message : 'Gagal connect';
       setConnStatus('error');
       setErrorMsg(msg);
-      toast.showToast(`❌ ${msg}`, 'error');
+      toast.showToast(`${msg}`, 'error');
     }
   }, [connectedPrinter, toast]);
 
@@ -121,10 +121,10 @@ export default function PrinterSettings({ toast }: Props) {
     setTesting(true);
     try {
       await testPrint(paperSize);
-      toast.showToast('✅ Test print berhasil!', 'success');
+      toast.showToast('Test print berhasil!', 'success');
     } catch (err:any) {
       const msg = err instanceof Error ? err.message : 'Test print gagal';
-      toast.showToast(`❌ ${msg}`, 'error');
+      toast.showToast(`${msg}`, 'error');
     } finally { setTesting(false); }
   }, [connStatus, paperSize, toast]);
 
@@ -316,7 +316,7 @@ export default function PrinterSettings({ toast }: Props) {
 
       {/* Panduan */}
       <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4">
-        <p className="text-blue-700 text-xs font-black mb-2">📋 Cara Hubungkan Printer</p>
+        <p className="text-blue-700 text-xs font-black mb-2">Cara menghubungkan printer</p>
         {[
           'Aktifkan Bluetooth di HP kamu',
           'Nyalakan printer thermal',

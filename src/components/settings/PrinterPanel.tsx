@@ -59,8 +59,8 @@ export default function PrinterPanel({ printer, toast, canThermalPrint, canBrows
               printer.reconnecting ? 'text-yellow-500' :
               printer.connected    ? 'text-green-500' : 'text-slate-400'
             }`}>
-              {printer.reconnecting ? '🟡 Sedang menghubungkan ulang...' :
-               printer.connected    ? '🟢 Terhubung' : '🔴 Belum terhubung'}
+              {printer.reconnecting ? 'Sedang menghubungkan ulang...' :
+               printer.connected    ? 'Terhubung' : 'Belum terhubung'}
             </p>
           </div>
           {printer.connected && <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"/>}
@@ -88,7 +88,7 @@ export default function PrinterPanel({ printer, toast, canThermalPrint, canBrows
                 }
                 try {
                   const n = await printer.connectClassic();
-                  toast.showToast('✅ Terhubung: ' + n, 'success');
+                  toast.showToast('Terhubung: ' + n, 'success');
                 } catch (e:any) {
                   toast.showToast(e?.message || 'Gagal terhubung', 'error');
                 }
@@ -113,7 +113,7 @@ export default function PrinterPanel({ printer, toast, canThermalPrint, canBrows
       {/* Web BT tidak tersedia */}
       {!printer.btSupported && (
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
-          <p className="text-amber-700 font-bold text-xs mb-1">⚠ Web Bluetooth tidak tersedia</p>
+          <p className="text-amber-700 font-bold text-xs mb-1">Web Bluetooth tidak tersedia</p>
           <p className="text-amber-600 text-xs">Gunakan Chrome Android, atau aktifkan di chrome://flags → #enable-web-bluetooth → Enabled.</p>
         </div>
       )}
@@ -128,11 +128,11 @@ export default function PrinterPanel({ printer, toast, canThermalPrint, canBrows
       <div className="bg-white rounded-[32px] border border-slate-100 p-6 shadow-soft">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-8 h-8 bg-orange-50 rounded-xl flex items-center justify-center"><Wifi size={18} className="text-[#FF6A00]"/></div>
-          <div><p className="font-black text-slate-800 text-[14px] italic uppercase tracking-tighter">Cetak via Browser</p><p className={`text-[10px] font-black uppercase tracking-widest ${canBrowserPrint ? 'text-emerald-500' : 'text-slate-300'}`}>{canBrowserPrint ? 'Tersedia' : 'Butuh Kopi Susu'}</p></div>
+          <div><p className="font-black text-slate-800 text-[14px] tracking-tight">Cetak via Browser</p><p className={`text-[10px] font-black uppercase tracking-widest ${canBrowserPrint ? 'text-emerald-500' : 'text-slate-300'}`}>{canBrowserPrint ? 'Tersedia' : 'Butuh Kopi Susu'}</p></div>
         </div>
         <p className="text-xs font-bold text-slate-400 mb-6 leading-relaxed">Printer WiFi atau browser print cocok untuk operasional ringan dan review struk dari desktop.</p>
         <button type="button" onClick={handleTestPrint}
-          className={`w-full py-4 border-2 font-black uppercase italic tracking-widest rounded-2xl flex items-center justify-center gap-3 active:scale-95 text-[12px] transition-all ${canBrowserPrint ? 'border-orange-100 text-[#FF6A00] hover:bg-orange-50' : 'border-slate-100 text-slate-300'}`}>
+          className={`w-full py-4 border-2 font-black rounded-2xl flex items-center justify-center gap-3 active:scale-95 text-[12px] transition-all ${canBrowserPrint ? 'border-orange-100 text-[#FF6A00] hover:bg-orange-50' : 'border-slate-100 text-slate-300'}`}>
           <Printer size={18}/> {canBrowserPrint ? 'Test Cetak Browser' : 'Upgrade Browser Print'}
         </button>
       </div>

@@ -152,7 +152,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
     try {
       await saveInventoryItem(form as unknown as InventoryItemUpdate);
       setShowModal(false);
-      const msg = form.type==='new' ? '✅ Bahan ditambahkan!' : form.type==='edit' ? '✅ Bahan diperbarui!' : '✅ Stok diperbarui!';
+      const msg = form.type==='new' ? 'Bahan ditambahkan!' : form.type==='edit' ? 'Bahan diperbarui!' : 'Stok diperbarui!';
       toast.showToast(msg, 'success');
     } catch (e: unknown) {
       toast.showToast(normalizeUserFacingError(e, 'Bahan baku belum bisa disimpan. Periksa kembali isian stok.'), 'error');
@@ -368,7 +368,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
       <div className="bg-white border-b border-slate-100 px-4 sm:px-6 pt-6 pb-4 z-10">
         <div className="flex min-w-0 items-center justify-between gap-3 mb-4">
           <div className="min-w-0">
-            <h2 className="font-black text-xl text-slate-800 italic uppercase tracking-tighter">Stok</h2>
+            <h2 className="text-xl font-bold tracking-tight text-slate-900">Stok</h2>
             <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Bahan, Konversi, Resep, HPP</p>
           </div>
           <div className={`shrink-0 gap-2 ${section === 'ingredients' || section === 'summary' ? 'flex' : 'hidden md:flex'}`}>
@@ -406,7 +406,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
             <AlertTriangle size={18} className="text-rose-500 shrink-0 mt-0.5"/>
             <div>
               <p className="text-rose-600 text-[11px] font-black uppercase tracking-widest">{lowStock.length} BAHAN STOK KRITIS!</p>
-              <p className="text-rose-400 text-xs font-bold mt-0.5 italic">{lowStock.map(i=>i.name).join(', ')}</p>
+              <p className="text-rose-400 text-xs font-bold mt-0.5">{lowStock.map(i=>i.name).join(', ')}</p>
             </div>
           </div>
         )}
@@ -826,13 +826,13 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
                   <input type="number" value={form.minStock} onChange={e=>setForm(f=>({...f,minStock:e.target.value}))}
                     placeholder="5"
                     className="w-full h-12 border border-slate-200 rounded-2xl px-4 text-[16px] focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 bg-white transition-all" />
-                  <p className="text-[11px] text-slate-400 pl-0.5 font-medium">Notifikasi ⚠ muncul saat stok ≤ nilai ini</p>
+                  <p className="text-[11px] text-slate-400 pl-0.5 font-medium">Peringatan muncul saat stok ≤ nilai ini</p>
                 </div>
               )}
               <button 
                 type="submit" 
                 disabled={saving}
-                className="w-full h-14 bg-[#FF6A00] text-white font-black rounded-2xl active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3 shadow-premium transition-all italic uppercase tracking-wider"
+                className="w-full h-14 bg-[#FF6A00] text-white font-black rounded-2xl active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3 shadow-premium transition-all uppercase tracking-wider"
               >
                 {saving&&<div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"/>}
                 {saving?'Menyimpan...':'Simpan Perubahan'}
@@ -897,7 +897,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
               <button
                 type="submit"
                 disabled={opnameSaving}
-                className="w-full h-14 bg-[#FF6A00] text-white font-black rounded-2xl active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3 shadow-premium transition-all italic uppercase tracking-wider"
+                className="w-full h-14 bg-[#FF6A00] text-white font-black rounded-2xl active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3 shadow-premium transition-all uppercase tracking-wider"
               >
                 {opnameSaving&&<div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"/>}
                 {opnameSaving?'Menyimpan...':'Simpan Opname'}
