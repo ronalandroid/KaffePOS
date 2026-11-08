@@ -59,6 +59,7 @@ import {
   requestLoggingMiddleware,
   startApmMonitoring,
 } from './middleware/apm';
+import { microserviceGatewayMiddleware } from './architecture/serviceRegistry';
 import { errorHandler } from './core/errorHandler';
 
 type AuthenticatedUser = {
@@ -113,6 +114,7 @@ app.use(express.json({
 app.use(express.urlencoded({ extended: false, limit: '1mb' }));
 app.use(compression);
 app.use(requestContextMiddleware());
+app.use(microserviceGatewayMiddleware());
 app.use(requestLoggingMiddleware());
 
 app.use(

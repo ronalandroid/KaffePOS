@@ -20,6 +20,7 @@ import {
   isMayarConfigured,
   resolveSubscriptionPaymentConfig,
 } from '../core/billing';
+import { getServiceTopologySnapshot } from '../architecture/serviceRegistry';
 
 const router = Router();
 
@@ -346,6 +347,25 @@ router.get('/health/db', async (_req, res) => {
       time: new Date().toISOString(),
     });
   }
+});
+
+router.get('/health/services', (_req, res) => {
+  res.json({
+    ok: true,
+    service: env.SERVICE_NAME,
+    version: env.APP_VERSION,
+    uptimeSeconds: Math.round((Date.now() - _serviceStartedAt) / 1000),
+    time: new Date().toISOString(),
+    ...getServiceTopologySnapshot(),
+  });
+});
+
+router.get('/api/architecture/topology', (_req, res) => {
+  res.json({
+    ok: true,
+    time: new Date().toISOString(),
+    ...getServiceTopologySnapshot(),
+  });
 });
 
 router.get('/system-status', async (_req, res) => {

@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { ApiError, env, log, serializeError } from '../../core';
+import { mayarCircuitBreaker } from '../../architecture/circuitBreaker';
 import type {
   CreatePaymentInput,
   CreatePaymentResult,
@@ -192,18 +193,20 @@ export class MayarPaymentProvider implements PaymentProvider {
     const url = `${this.baseUrl}${targetPath}`;
 
     const sendCreateRequest = async (payloadObj: Record<string, unknown>) => {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payloadObj),
-        signal: AbortSignal.timeout(15_000),
+      return mayarCircuitBreaker.execute(async () => {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payloadObj),
+          signal: AbortSignal.timeout(15_000),
+        });
+        const body = (await response.json().catch(() => ({}))) as Record<string, unknown>;
+        return { response, body };
       });
-      const body = (await response.json().catch(() => ({}))) as Record<string, unknown>;
-      return { response, body };
     };
 
     try {
@@ -398,15 +401,18 @@ export class MayarPaymentProvider implements PaymentProvider {
     const lookupId = input.providerReference?.trim() || input.merchantOrderId;
     const prefix = env.MAYAR_STATUS_PATH_PREFIX.replace(/\/$/, '');
     const targetPath = `${prefix.startsWith('/') ? prefix : `/${prefix}`}/${encodeURIComponent(lookupId)}`;
-    const response = await fetch(`${this.baseUrl}${targetPath}`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${this.apiKey}`,
-        Accept: 'application/json',
-      },
-      signal: AbortSignal.timeout(15_000),
+    const { response, body } = await mayarCircuitBreaker.execute(async () => {
+      const res = await fetch(`${this.baseUrl}${targetPath}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          Accept: 'application/json',
+        },
+        signal: AbortSignal.timeout(15_000),
+      });
+      const parsed = (await res.json().catch(() => ({}))) as Record<string, unknown>;
+      return { response: res, body: parsed };
     });
-    const body = (await response.json().catch(() => ({}))) as Record<string, unknown>;
     if (!response.ok) {
       throw new ApiError(502, `Mayar check status gagal (${response.status}).`);
     }

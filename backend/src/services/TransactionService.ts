@@ -26,6 +26,7 @@ import {
 } from '../lib/stockEngine';
 
 import { checkChallengeCompletionForUser } from '../routes/challenges';
+import { domainEventBus } from '../architecture/eventBus';
 
 async function getStoreNotificationContext(client: PoolClient, storeId: string) {
   const result = await client.query(
@@ -520,6 +521,21 @@ export class TransactionService {
       };
     });
 
+    if (!result.replayed) {
+      domainEventBus.publish({
+        name: 'order.checked_out',
+        boundedContext: 'pos-order-service',
+        storeId: String(payload.store_id),
+        actorId: authUser.id,
+        payload: {
+          transactionId: String(payload.id),
+          orderType: String(payload.order_type ?? 'dine_in'),
+          tableNumber: payload.table_number ?? null,
+          total: toNumber(result.transaction?.total),
+        },
+      });
+    }
+
     return result;
   }
 
@@ -667,6 +683,17 @@ export class TransactionService {
         kitchenOrder: fullKitchenOrder,
         kitchenEvent,
       };
+    });
+
+    domainEventBus.publish({
+      name: 'order.voided',
+      boundedContext: 'pos-order-service',
+      storeId: String(body.store_id),
+      actorId: authUser.id,
+      payload: {
+        transactionId,
+        reason: body.reason ?? null,
+      },
     });
 
     return result;
