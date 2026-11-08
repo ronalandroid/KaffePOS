@@ -82,6 +82,17 @@ export default function AuthPage() {
     if (resolvedMode !== 'register') {
       setRegistered(false);
     }
+
+    const demoParam = params.get('demo');
+    if (demoParam && resolvedMode === 'login') {
+      if (demoParam === 'cashier' || demoParam === 'kasir') {
+        setEmail('kasir@kaffepos.my.id');
+        setPass('DemoPassword123');
+      } else {
+        setEmail('demo@kaffepos.my.id');
+        setPass('DemoPassword123');
+      }
+    }
   }, [pathname, search]);
 
   useEffect(() => {
@@ -728,6 +739,62 @@ export default function AuthPage() {
                       </>
                     )}
                   </button>
+
+                  {mode === 'login' && !registered && (
+                    <div className="mt-5 pt-4 border-t border-slate-100">
+                      <div className="flex items-center justify-between mb-2.5">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                          Akun Demo Siap Pakai
+                        </span>
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                          Database Live
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEmail('demo@kaffepos.my.id');
+                            setPass('DemoPassword123');
+                            setErr('');
+                            setOk('');
+                          }}
+                          className="group relative flex flex-col items-start p-2.5 rounded-xl border border-orange-100 bg-orange-50/40 hover:bg-orange-50 hover:border-[#FF6A00]/40 transition-colors text-left"
+                        >
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <span className="text-sm">👑</span>
+                            <span className="text-xs font-extrabold text-slate-900 group-hover:text-[#FF6A00] transition-colors">
+                              Demo Owner
+                            </span>
+                          </div>
+                          <span className="text-[10px] font-medium text-slate-500">
+                            Akses Signature
+                          </span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEmail('kasir@kaffepos.my.id');
+                            setPass('DemoPassword123');
+                            setErr('');
+                            setOk('');
+                          }}
+                          className="group relative flex flex-col items-start p-2.5 rounded-xl border border-slate-200 bg-slate-50/60 hover:bg-slate-100 hover:border-slate-300 transition-colors text-left"
+                        >
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <span className="text-sm">☕</span>
+                            <span className="text-xs font-extrabold text-slate-900 group-hover:text-[#FF6A00] transition-colors">
+                              Demo Kasir
+                            </span>
+                          </div>
+                          <span className="text-[10px] font-medium text-slate-500">
+                            Mode Kasir & POS
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                 </form>
               )}

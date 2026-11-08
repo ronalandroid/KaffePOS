@@ -52,6 +52,13 @@ import {
   canCashierLogin,
   normalizeCashierStatus,
 } from '../lib/cashierManagement';
+import {
+  ensureDemoAccountsSeeded,
+  isDemoAccountEmail,
+  DEMO_OWNER_EMAIL,
+  DEMO_CASHIER_EMAIL,
+  DEMO_DEFAULT_PASSWORD,
+} from '../services/DemoAccountService';
 
 
 // Helper function untuk detect database connection errors
@@ -490,14 +497,21 @@ router.post('/api/auth/verification/confirm', authVerifyRateLimiter, async (req,
   }
 });
 
-router.post('/api/auth/login', authLoginRateLimiter, async (req, res, next) => {
+async function handleLogin(req: Request, res: any, next: any) {
   try {
     const payload = authLoginSchema.parse(req.body);
     const email = normalizeEmail(payload.email);
+    const isDemo = isDemoAccountEmail(email);
 
-    await assertLoginNotLocked(email);
+    if (!isDemo) {
+      await assertLoginNotLocked(email);
+    }
 
     const authResult = await withTransaction(async (client) => {
+      if (isDemo) {
+        await ensureDemoAccountsSeeded(client);
+      }
+
       const credentialResult = await client.query(
         `
           select
@@ -547,7 +561,9 @@ router.post('/api/auth/login', authLoginRateLimiter, async (req, res, next) => {
       }
 
       await clearFailedLogin(email);
-      await revokeUserSessions(client, credential.user_id as string);
+      if (!isDemo) {
+        await revokeUserSessions(client, credential.user_id as string);
+      }
       const session = await createSession(client, {
         id: credential.user_id as string,
       }, req);
@@ -658,6 +674,17 @@ router.post('/api/auth/login', authLoginRateLimiter, async (req, res, next) => {
     // Otherwise pass original error
     next(error);
   }
+}
+
+router.post('/api/auth/login', authLoginRateLimiter, handleLogin);
+
+router.post('/api/auth/demo-login', async (req, res, next) => {
+  const role = req.body?.role === 'cashier' ? 'cashier' : 'owner';
+  req.body = {
+    email: role === 'cashier' ? DEMO_CASHIER_EMAIL : DEMO_OWNER_EMAIL,
+    password: DEMO_DEFAULT_PASSWORD,
+  };
+  return handleLogin(req, res, next);
 });
 
 router.post('/api/auth/password/forgot', authEmailRateLimiter, async (req, res, next) => {

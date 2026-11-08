@@ -387,6 +387,13 @@ export default function LandingPage() {
                 </a>
                 <button
                   type="button"
+                  onClick={() => navigate('/login?demo=1')}
+                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-orange-200 bg-orange-50/50 px-5 text-sm font-extrabold text-[#FF6A00] shadow-sm transition-colors hover:bg-orange-100/60 sm:w-auto"
+                >
+                  <span>☕ Coba Demo Live</span>
+                </button>
+                <button
+                  type="button"
                   onClick={handleDownload}
                   className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-orange-200/80 bg-orange-50/60 px-5 text-xs font-extrabold text-[#FF6A00] transition-colors hover:bg-orange-100/70 sm:w-auto"
                 >

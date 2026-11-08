@@ -45,6 +45,7 @@ describe('KaffePOS reference experience', () => {
     expect(screen.getByRole('heading', { name: /Sistem Kasir Cafe yang Rapi, Cepat, dan Siap Tumbuh/i })).toBeInTheDocument();
     expect(screen.getByTestId('reference-device-showcase')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /Satu POS untuk Mengelola Operasional Cafe Lebih Rapi/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Coba Demo Live/i })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /Sinkronisasi Cloud Tanpa Kompromi dengan InsForge & Mayar v2/i })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /Ubah Transaksi Harian Jadi Keputusan Bisnis/i })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /Mulai dari Outlet Kecil, Siap untuk Berkembang/i })).toBeInTheDocument();
@@ -77,8 +78,29 @@ describe('KaffePOS reference experience', () => {
     expect(screen.getByTestId('auth-mobile-preview-strip')).toBeInTheDocument();
     expect(screen.getAllByText(/Sinkronisasi outlet/i).length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: /^Masuk$/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Demo Owner/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Demo Kasir/i })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Masuk dengan Google/i })).not.toBeInTheDocument();
     expect(screen.queryByText(/atau masuk dengan/i)).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Demo Owner/i }));
+    expect(screen.getByLabelText(/Email atau No. HP/i)).toHaveValue('demo@kaffepos.my.id');
+    expect(screen.getByLabelText(/^Password$/i)).toHaveValue('DemoPassword123');
+
+    fireEvent.click(screen.getByRole('button', { name: /Demo Kasir/i }));
+    expect(screen.getByLabelText(/Email atau No. HP/i)).toHaveValue('kasir@kaffepos.my.id');
+    expect(screen.getByLabelText(/^Password$/i)).toHaveValue('DemoPassword123');
+  });
+
+  it('auto-fills demo credentials when opening login with demo search param', () => {
+    render(
+      <MemoryRouter initialEntries={['/login?demo=1']}>
+        <AuthPage />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByLabelText(/Email atau No. HP/i)).toHaveValue('demo@kaffepos.my.id');
+    expect(screen.getByLabelText(/^Password$/i)).toHaveValue('DemoPassword123');
   });
 
   it('exposes register validation messages to assistive technology', async () => {

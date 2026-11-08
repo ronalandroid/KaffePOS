@@ -38,7 +38,9 @@ import { buildAllowedCorsOrigins, isOriginAllowed } from './lib/corsOrigins';
 import { env } from './core/env';
 import { resolveSubscriptionPaymentConfig, isActivePaymentGatewayConfigured } from './core/billing';
 import { pool } from './core/db';
+import { withTransaction, type PoolClient } from './core';
 import { bootstrapAllSchemas } from './schema-bootstrap';
+import { ensureDemoAccountsSeeded } from './services/DemoAccountService';
 import { ApiError, log, serializeError } from './core/errors';
 import { initBackendErrorTracking } from './core/errorTracking';
 import {
@@ -312,6 +314,11 @@ async function verifyDependenciesOnStartup() {
   const startedAt = Date.now();
   await bootstrapAllSchemas();
   await pool.query('select 1');
+  await withTransaction(async (client: PoolClient) => {
+    await ensureDemoAccountsSeeded(client);
+  }).catch((err: unknown) => {
+    log('warn', 'startup.demo_accounts_seed_skipped', { error: serializeError(err) });
+  });
   log('info', 'startup.dependencies_ready', {
     database: {
       ok: true,
