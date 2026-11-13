@@ -6,7 +6,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/AppShell.tsx — KaffePOS v5 — FAST INIT: cache storeId, show instantly
 import React, { useState, useEffect, useCallback, useRef, Suspense, lazy, useMemo } from 'react';
-import { WifiOff, RefreshCw, LogOut } from 'lucide-react';
+import { WifiOff, RefreshCw, LogOut, X } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStore } from '@/hooks/useStore';
@@ -77,6 +77,7 @@ export default function AppShell() {
     transactions,
     activeChallenges,
     challengeProgress,
+    storeSettings,
   } = useStore();
 
   const [tab, setTab] = useState<Tab>(() => {
@@ -530,43 +531,75 @@ export default function AppShell() {
       style={{ paddingTop: 'env(safe-area-inset-top,0px)' }}>
 
       {/* ── DESKTOP SIDEBAR ── */}
-      <aside className="kaffe-sidebar hidden lg:flex flex-col w-[232px] backdrop-blur-xl border-r z-50">
-        <div className="px-6 py-6">
-          <div className="flex items-center justify-between gap-3">
-            <button
-              type="button"
-              onClick={() => changeTab('dashboard')}
-              aria-label="Buka Dashboard"
-              className="flex min-w-0 items-center gap-3 group cursor-pointer rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00]"
-            >
-              <img src={LOGO_ICON} alt="" className="h-9 w-9 object-contain" />
-              <span className="text-[18px] font-extrabold tracking-tight text-slate-900">
+      <aside className="kaffe-sidebar hidden lg:flex flex-col w-[76px] xl:w-[248px] shrink-0 border-r z-50">
+        <div className="flex flex-col items-center gap-3 px-3 pt-5 pb-3 xl:flex-row xl:justify-between xl:gap-2 xl:px-4 xl:pb-4">
+          <button
+            type="button"
+            onClick={() => changeTab('dashboard')}
+            aria-label="Buka Dashboard"
+            className="flex min-w-0 items-center gap-2.5 rounded-xl px-1 text-left"
+          >
+            <img src={LOGO_ICON} alt="" className="h-9 w-9 shrink-0 object-contain" />
+            <span className="hidden min-w-0 xl:block">
+              <span className="block whitespace-nowrap font-display text-[17px] font-extrabold leading-tight tracking-tight text-slate-900">
                 Kaffe<span className="text-[#FF6A00]">POS</span>
               </span>
-            </button>
-            <NotificationBell onOpen={() => setNotificationsOpen(true)} className="h-10 w-10 rounded-xl" />
-          </div>
+              <span className="block truncate text-[11px] font-semibold text-slate-500">
+                {storeSettings?.store_name || 'Toko kamu'}
+              </span>
+            </span>
+          </button>
+          <NotificationBell onOpen={() => setNotificationsOpen(true)} className="h-11 w-11 shrink-0 rounded-xl" />
         </div>
 
         <AppSidebarNav role={role} tab={tab} changeTab={changeTab} syncing={syncing} hasOpenChallenge={hasOpenChallenge} />
 
-        <div className="p-4 border-t border-slate-100">
-           <button type="button"
-             onClick={() => {
+        <div className="border-t border-[var(--brand-hairline)] p-3">
+          <div className="flex flex-col items-center gap-2 rounded-xl px-0 py-2 xl:flex-row xl:gap-3 xl:px-2">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-50 font-display text-sm font-extrabold text-[var(--brand-orange-text)]">
+              {(profile?.display_name || profile?.username || user?.email || 'K').trim().charAt(0).toUpperCase()}
+            </div>
+            <div className="hidden min-w-0 flex-1 xl:block">
+              <p className="truncate text-[13px] font-bold text-slate-900">{profile?.display_name || profile?.username || user?.email?.split('@')[0] || 'Pengguna'}</p>
+              <p className="truncate text-[11px] font-semibold text-slate-500">{role === 'cashier' ? 'Kasir' : 'Owner / Admin'}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
                 localStorage.setItem(EXPLICIT_SIGNOUT_KEY, '1');
                 void signOut();
-             }}
-             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 hover:bg-rose-50 hover:text-rose-500 transition-all font-bold text-[13px]"
-           >
-             <LogOut size={18} /> Keluar
-           </button>
+              }}
+              aria-label="Keluar"
+              title="Keluar"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-500 hover:bg-rose-50 hover:text-rose-600"
+            >
+              <LogOut size={17} />
+            </button>
+          </div>
         </div>
       </aside>
 
       <div className="kaffe-responsive-surface flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        <div className="pointer-events-none absolute right-3 top-3 z-50 lg:hidden">
-          <NotificationBell onOpen={() => setNotificationsOpen(true)} className="pointer-events-auto" />
-        </div>
+        {/* ── MOBILE / TABLET TOP BAR ── */}
+        <header className="flex h-14 flex-shrink-0 items-center justify-between gap-3 border-b border-[var(--brand-panel-border)] bg-white px-3 sm:px-4 lg:hidden">
+          <button
+            type="button"
+            onClick={() => changeTab('dashboard')}
+            aria-label="Buka Dashboard"
+            className="flex min-w-0 items-center gap-2 rounded-xl text-left"
+          >
+            <img src={LOGO_ICON} alt="" className="h-8 w-8 shrink-0 object-contain" />
+            <span className="min-w-0">
+              <span className="block whitespace-nowrap font-display text-[15px] font-extrabold leading-tight tracking-tight text-slate-900">
+                Kaffe<span className="text-[#FF6A00]">POS</span>
+              </span>
+              <span className="block truncate text-[11px] font-semibold leading-tight text-slate-500">
+                {storeSettings?.store_name || 'Toko kamu'}
+              </span>
+            </span>
+          </button>
+          <NotificationBell onOpen={() => setNotificationsOpen(true)} />
+        </header>
 
         <AppVersionSync
           ready={ready}
@@ -577,26 +610,23 @@ export default function AppShell() {
         />
 
         {postUpdateNotice && (postUpdateNotice.firstLaunchAfterUpdate || postUpdateNotice.recoveredKeys.length > 0) ? (
-          <div className="px-3 pt-2 flex-shrink-0">
-            <div className="rounded-2xl border border-emerald-100 bg-emerald-50/90 px-4 py-3 text-sm text-emerald-900 shadow-sm">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="font-semibold">Update berhasil dipulihkan</p>
-                  <p className="mt-1 text-emerald-800/90">
-                    {postUpdateSyncing
-                      ? 'Kami sedang menyelaraskan ulang data lama kamu dengan server agar aplikasi langsung siap dipakai.'
-                      : 'Pengaturan penting, tema, dan konteks toko lama sudah dibaca kembali dengan aman.'}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setPostUpdateNotice(null)}
-                  className="shrink-0 rounded-full px-2 py-1 text-emerald-700 transition hover:bg-emerald-100"
-                  aria-label="Tutup notifikasi update"
-                >
-                  ×
-                </button>
-              </div>
+          <div className="flex-shrink-0 border-b border-emerald-100 bg-emerald-50 px-3 py-2 sm:px-5" role="status">
+            <div className="mx-auto flex max-w-7xl items-center gap-3">
+              <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" aria-hidden="true" />
+              <p className="min-w-0 flex-1 text-[12.5px] font-semibold leading-snug text-emerald-900">
+                <span className="font-extrabold">Update berhasil dipulihkan.</span>{' '}
+                {postUpdateSyncing
+                  ? 'Data lama sedang diselaraskan dengan server.'
+                  : 'Pengaturan, tema, dan konteks toko lama sudah dibaca kembali.'}
+              </p>
+              <button
+                type="button"
+                onClick={() => setPostUpdateNotice(null)}
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-emerald-800 hover:bg-emerald-100"
+                aria-label="Tutup notifikasi update"
+              >
+                <X size={16} />
+              </button>
             </div>
           </div>
         ) : null}
@@ -632,7 +662,7 @@ export default function AppShell() {
 
         {/* ── Status Banner ───────────────────────────── */}
         {(!isOnline || syncStatus === 'syncing' || syncStatus === 'sync_failed' || syncStatus === 'sync_success') && (
-          <div className={`kaffe-status-banner px-3 sm:px-4 py-2 flex items-center justify-center gap-2 sm:gap-3 flex-shrink-0 shadow-sm z-50 animate-in slide-up ${
+          <div className={`kaffe-status-banner px-3 sm:px-4 py-1.5 flex items-center justify-center gap-2 sm:gap-3 flex-shrink-0 z-50 ${
             syncStatus === 'sync_failed'
               ? 'bg-rose-500'
               : syncStatus === 'sync_success'
@@ -642,7 +672,7 @@ export default function AppShell() {
                   : 'bg-amber-500'
           }`}>
             {syncStatus === 'syncing' ? <RefreshCw size={12} className="text-white animate-spin" /> : <WifiOff size={12} className="text-white" />}
-            <p className="min-w-0 break-words text-white text-[10px] font-black uppercase tracking-[0.16em] sm:tracking-widest leading-tight">
+            <p className="min-w-0 break-words text-white text-[12px] font-bold leading-tight">
               {syncStatus === 'sync_failed'
                 ? `${failedSyncCount || pendingSyncCount} data gagal sinkron`
                 : syncStatus === 'sync_success'
@@ -656,14 +686,14 @@ export default function AppShell() {
                 <button
                   type="button"
                   onClick={() => setShowSyncCenter(true)}
-                  className="rounded-lg bg-white/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-white hover:bg-white/30 transition-all"
+                  className="rounded-lg bg-white/20 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-white/30 transition-colors"
                 >
                   Detail
                 </button>
                 <button
                   type="button"
                   onClick={() => void flushPending()}
-                  className="rounded-lg bg-white/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-white hover:bg-white/30 transition-all"
+                  className="rounded-lg bg-white/20 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-white/30 transition-colors"
                 >
                   Ulangi
                 </button>
@@ -673,7 +703,7 @@ export default function AppShell() {
               <button
                 type="button"
                 onClick={() => setShowSyncCenter(true)}
-                className="rounded-lg bg-white/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-white hover:bg-white/30 transition-all"
+                className="rounded-lg bg-white/20 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-white/30 transition-colors"
               >
                 Lihat
               </button>
@@ -731,7 +761,7 @@ export default function AppShell() {
         storeId={storeId}
       />
       <CelebrationHost />
-      <BetaFeedbackButton storeId={storeId} toast={toast} />
+      <BetaFeedbackButton storeId={storeId} toast={toast} hideTrigger={tab === 'pos' || tab === 'kitchen'} />
 
       {/* Dialog saldo kasir harian wajib */}
       {showOpening && (

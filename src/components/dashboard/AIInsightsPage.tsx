@@ -126,7 +126,7 @@ function LockedState({ onUpgrade }: { onUpgrade: () => void }) {
         <button
           type="button"
           onClick={onUpgrade}
-          className="kaffe-gradient-button inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-2xl px-5 text-xs font-black uppercase tracking-wider text-white transition-all active:scale-95"
+          className="kaffe-gradient-cta inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl px-5 text-[14px] font-bold"
         >
           <Sparkles size={16} />
           Lihat Signature
@@ -280,7 +280,7 @@ export default function AIInsightsPage({ storeId, canUseAiInsight, hasBusinessDa
           type="button"
           onClick={() => void loadInsights(true)}
           disabled={!storeId || refreshing}
-          className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-orange-100 bg-white px-4 text-xs font-black uppercase tracking-wider text-[#FF6A00] shadow-sm transition-all active:scale-95 hover:bg-orange-50 disabled:opacity-60"
+          className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-[var(--brand-panel-border)] bg-white px-4 text-[13px] font-bold text-[var(--brand-orange-text)] transition-colors hover:bg-[var(--brand-orange-soft)] disabled:opacity-60"
         >
           <RefreshCw size={15} className={refreshing ? 'animate-spin' : ''} />
           Refresh Insights

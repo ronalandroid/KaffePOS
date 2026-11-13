@@ -30,6 +30,11 @@ type Props = {
   savingOpenBill?: boolean;
 };
 
+const COMPACT_ORDER_LABEL: Partial<Record<OrderType, string>> = {
+  grabfood: 'Grab',
+  shopeefood: 'Shopee',
+};
+
 function PosOrderTypeAndTableBar({
   orderType,
   onChangeOrderType,
@@ -46,8 +51,8 @@ function PosOrderTypeAndTableBar({
   onOpenTableModal?: (() => void) | undefined;
 }) {
   return (
-    <div className="border-b border-stone-200/60 bg-white px-4 py-3 space-y-2.5">
-      <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-0.5">
+    <div className="space-y-2.5 border-b border-[var(--brand-panel-border)] bg-white px-4 py-3">
+      <div className="kaffe-segmented grid w-full grid-cols-5" role="group" aria-label="Tipe pesanan">
         {(['dine_in', 'takeaway', 'gofood', 'grabfood', 'shopeefood'] as const).map((type) => {
           const meta = ORDER_TYPE_META[type];
           const isActive = orderType === type;
@@ -56,40 +61,37 @@ function PosOrderTypeAndTableBar({
               key={type}
               type="button"
               onClick={() => onChangeOrderType?.(type)}
-              className={`shrink-0 rounded-xl px-2.5 py-1.5 text-[11px] font-black uppercase tracking-wider border transition-colors ${
-                isActive
-                  ? 'border-[#FF6A00] bg-[#FF6A00] text-white shadow-sm'
-                  : 'border-stone-200 bg-stone-50 text-stone-600 hover:border-stone-300'
-              }`}
+              aria-pressed={isActive}
+              title={meta.label}
+              className="min-w-0 truncate whitespace-nowrap !px-1 !text-[12px]"
             >
-              {meta.shortLabel}
+              {COMPACT_ORDER_LABEL[type] ?? meta.shortLabel}
             </button>
           );
         })}
       </div>
 
       {onOpenTableModal && (
-        <div className="flex items-center justify-between gap-2">
-          <button
-            type="button"
-            onClick={onOpenTableModal}
-            className="flex flex-1 items-center justify-between rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-bold text-stone-700 transition-colors hover:border-[#FF6A00] hover:bg-orange-50/40"
-          >
-            <span className="flex items-center gap-1.5 truncate">
-              <Utensils size={13} className="text-[#FF6A00] shrink-0" />
-              {tableNumber ? (
-                <span className="font-black text-stone-900">
-                  Meja {tableNumber} • {pax} Pax
-                </span>
-              ) : (
-                <span className="text-stone-500">Pilih Meja / Denah</span>
-              )}
-            </span>
-            <span className="ml-2 rounded-lg bg-white px-2 py-0.5 text-[10px] font-black uppercase text-[#FF6A00] border border-orange-200">
-              {openBillsCount > 0 ? `${openBillsCount} Open Bill` : 'Denah'}
-            </span>
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={onOpenTableModal}
+          className="flex w-full items-center justify-between gap-2 rounded-xl border border-[var(--brand-panel-border)] bg-white px-3 text-[13px] font-semibold text-slate-700 transition-colors hover:border-orange-200 hover:bg-[var(--brand-orange-soft)]"
+        >
+          <span className="flex min-w-0 items-center gap-2 truncate">
+            <Utensils size={15} className="shrink-0 text-[var(--brand-orange-text)]" />
+            {tableNumber ? (
+              <span className="font-bold text-slate-900">
+                Meja {tableNumber} · {pax} pax
+              </span>
+            ) : (
+              <span className="text-slate-600">Pilih meja</span>
+            )}
+          </span>
+          <span className="flex shrink-0 items-center gap-1 text-[12px] font-bold text-[var(--brand-orange-text)]">
+            {openBillsCount > 0 ? `${openBillsCount} open bill` : 'Denah'}
+            <ChevronRight size={14} />
+          </span>
+        </button>
       )}
     </div>
   );
@@ -141,25 +143,30 @@ export default function PosCartPanel({
   );
 
   return (
-    <div className={`kaffe-checkout-panel min-w-0 flex-col bg-stone-50 border-stone-200/60 z-[60] md:z-20
+    <div className={`kaffe-checkout-panel min-w-0 flex-col border-[var(--brand-panel-border)] z-[60] md:z-20
       ${showMobileCart
         ? 'fixed inset-0 w-full h-full flex animate-in slide-in-from-bottom duration-300'
-        : 'hidden md:flex w-[340px] lg:w-[420px] border-l shadow-[-10px_0_30px_rgba(0,0,0,0.02)] relative'
+        : 'hidden md:flex w-[340px] xl:w-[380px] 2xl:w-[400px] border-l relative'
       }`}
     >
       {/* Sidebar header */}
-      <div className="px-5 py-4 border-b border-stone-200/60 flex items-center justify-between bg-white/80 backdrop-blur-sm">
-        <div className="flex items-center gap-3">
+      <div className="flex h-16 shrink-0 items-center justify-between gap-3 border-b border-[var(--brand-panel-border)] bg-white px-4" style={showMobileCart ? { paddingTop: 'env(safe-area-inset-top,0px)', height: 'calc(4rem + env(safe-area-inset-top,0px))' } : undefined}>
+        <div className="flex min-w-0 items-center gap-2">
           <button type="button" onClick={onCloseMobileCart}
-            className="md:hidden size-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 hover:bg-stone-200 hover:text-stone-800 min-w-0 min-h-0 kaffe-btn-compact transition-colors"
-            aria-label="Tutup keranjang"><X size={16} /></button>
-          <h2 className="font-black text-stone-800 tracking-tight">Pesanan Hari Ini</h2>
+            className="md:hidden flex h-11 w-11 items-center justify-center rounded-xl text-slate-600 hover:bg-slate-100"
+            aria-label="Tutup keranjang"><X size={18} /></button>
+          <div className="min-w-0">
+            <h2 className="font-display text-[17px] font-extrabold leading-tight text-slate-900">Pesanan</h2>
+            <p className="text-[12px] font-semibold text-slate-500 kaffe-num">
+              {cart.length === 0 ? 'Belum ada item' : `${cart.reduce((n, c) => n + c.qty, 0)} item`}
+            </p>
+          </div>
         </div>
         {cart.length > 0 && (
           <button type="button" onClick={handleClearCart}
             aria-label={clearConfirm ? 'Konfirmasi kosongkan keranjang' : 'Kosongkan keranjang'}
-            className={`text-[10px] uppercase tracking-wider font-black transition-colors ${clearConfirm ? 'text-rose-600' : 'text-stone-400 hover:text-rose-500'}`}>
-            {clearConfirm ? 'Yakin? Ketuk lagi' : 'Kosongkan'}
+            className={`rounded-xl px-3 text-[12.5px] font-bold transition-colors ${clearConfirm ? 'bg-rose-50 text-rose-700' : 'text-slate-500 hover:bg-rose-50 hover:text-rose-700'}`}>
+            {clearConfirm ? 'Ketuk lagi untuk hapus' : 'Kosongkan'}
           </button>
         )}
       </div>
@@ -176,7 +183,7 @@ export default function PosCartPanel({
 
       {/* Kitchen orders strip */}
       {activeKitchenOrders.length > 0 && (
-        <div className="border-b border-stone-100 bg-white px-4 py-3">
+        <div className="border-b border-[var(--brand-panel-border)] bg-white px-4 py-3">
           <div className="mb-2 flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-stone-500">
               <ChefHat size={13} />
@@ -204,103 +211,92 @@ export default function PosCartPanel({
       {/* Empty cart state — atmospheric */}
       {cart.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
-          <div className="size-28 bg-gradient-to-b from-stone-50 to-stone-100 rounded-[40px] flex items-center justify-center mb-7 relative shadow-inner">
-            <div className="absolute inset-0 bg-stone-200/40 rounded-[40px] animate-ping" style={{ animationDuration: '3s' }} />
-            <CoffeeCupIcon className="w-12 h-12 text-stone-200 relative z-10"/>
+          <div className="mb-4 flex size-16 items-center justify-center rounded-2xl bg-[var(--brand-canvas)]">
+            <CoffeeCupIcon className="h-8 w-8 text-stone-300"/>
           </div>
-          <p className="font-black text-stone-700 text-lg tracking-tight">Belum ada pesanan</p>
-          <p className="mt-2 max-w-[200px] text-xs font-medium leading-relaxed text-stone-400">
-            Ketuk menu di sebelah kiri untuk memulai
+          <p className="font-display text-base font-extrabold text-slate-800">Belum ada pesanan</p>
+          <p className="mt-1 max-w-[220px] text-[13px] font-medium leading-relaxed text-slate-500">
+            Ketuk menu di katalog untuk mulai mencatat pesanan.
           </p>
         </div>
       ) : (
         /* Cart items */
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        <ul className="flex-1 divide-y divide-[var(--brand-hairline)] overflow-y-auto px-4">
           {cart.map(c => (
-            <div
-              key={c.id}
-              className="flex gap-4 bg-white p-4 rounded-2xl border border-stone-100 shadow-sm transition-all hover:border-[#FF6A00]/20 hover:shadow-[0_4px_16px_rgba(255,106,0,0.06)]"
-            >
-              <div className="flex-1 overflow-hidden">
-                <div className="flex justify-between items-start gap-2 mb-1">
-                  <p className="font-bold text-stone-800 text-[14px] truncate">{c.name}</p>
-                    <button type="button" onClick={() => updateQty(c.id, 0)}
-                    className="text-stone-300 hover:text-rose-500 transition-colors kaffe-btn-compact shrink-0"
-                    aria-label="Hapus item"><X size={14} /></button>
+            <li key={c.id} className="py-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[14px] font-bold text-slate-900">{c.name}</p>
+                  <p className="mt-0.5 text-[12px] font-medium text-slate-500 kaffe-num">{fRp(c.price)} / item</p>
                 </div>
-                <p className="text-stone-400 text-[12px] font-medium mb-3 tabular-nums">{fRp(c.price)}</p>
+                <p className="shrink-0 text-[14px] font-extrabold text-slate-900 kaffe-num">{fRp(c.price * c.qty)}</p>
+              </div>
+              <div className="mt-2 flex items-center gap-2">
                 <input
                   value={c.note || ''}
                   onChange={(e) => setCartItemNote(c.id, e.target.value)}
                   aria-label={`Catatan untuk ${c.name}`}
-                  placeholder="Catatan…"
-                  className="w-full rounded-xl border border-stone-100 bg-stone-50 px-3 py-2 text-[12px] font-semibold text-stone-600 outline-none transition focus:border-[#FF6A00]/60 focus:bg-white focus:ring-4 focus:ring-[#FF6A00]/40"
+                  placeholder="Tambah catatan"
+                  className="h-10 min-w-0 flex-1 rounded-xl border border-transparent bg-[var(--brand-canvas)] px-3 font-medium text-slate-700 placeholder:text-slate-500 outline-none transition focus:border-[#FF6A00]/60 focus:bg-white focus:ring-4 focus:ring-[#FF6A00]/15"
+                  style={{ fontSize: 13 }}
                 />
-              </div>
-              <div className="flex flex-col items-end justify-between py-1">
-                <p className="font-black text-stone-800 text-[14px] tabular-nums">{fRp(c.price * c.qty)}</p>
-                <div className="flex items-center gap-2 mt-2 bg-stone-50 rounded-xl border border-stone-200/60 p-1 shadow-inner">
-                  <button type="button" onClick={() => updateQty(c.id, c.qty - 1)} className="size-10 flex items-center justify-center text-stone-500 hover:bg-white hover:text-stone-800 rounded-lg shadow-sm transition-all kaffe-btn-compact" aria-label={`Kurangi ${c.name}`}><Minus size={16} strokeWidth={3}/></button>
-                  <span className="font-black text-sm w-5 text-center text-stone-800 tabular-nums">{c.qty}</span>
-                  <button type="button" onClick={() => updateQty(c.id, c.qty + 1)} className="size-10 flex items-center justify-center text-stone-500 hover:bg-white hover:text-stone-800 rounded-lg shadow-sm transition-all kaffe-btn-compact" aria-label={`Tambah ${c.name}`}><Plus size={16} strokeWidth={3}/></button>
+                <div className="flex shrink-0 items-center rounded-xl border border-[var(--brand-panel-border)] bg-white">
+                  <button type="button" onClick={() => updateQty(c.id, c.qty - 1)} className="flex h-11 w-11 items-center justify-center rounded-l-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900" aria-label={c.qty <= 1 ? `Hapus ${c.name}` : `Kurangi ${c.name}`}>
+                    {c.qty <= 1 ? <X size={15} strokeWidth={2.6} /> : <Minus size={15} strokeWidth={2.6}/>}
+                  </button>
+                  <span className="w-7 text-center text-[14px] font-extrabold text-slate-900 kaffe-num">{c.qty}</span>
+                  <button type="button" onClick={() => updateQty(c.id, c.qty + 1)} className="flex h-11 w-11 items-center justify-center rounded-r-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900" aria-label={`Tambah ${c.name}`}><Plus size={15} strokeWidth={2.6}/></button>
                 </div>
               </div>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
 
       {/* Bottom checkout panel */}
       {cart.length > 0 && (
-        <div className="bg-white border-t border-stone-200/60 p-5 shadow-[0_-12px_40px_rgba(0,0,0,0.03)]">
-          <div className="space-y-3 mb-5">
-            <div className="flex justify-between text-sm font-medium text-stone-400">
-              <span>Subtotal ({cart.length} item)</span>
-              <span>{fRp(subtotal)}</span>
+        <div className="shrink-0 border-t border-[var(--brand-panel-border)] bg-white px-4 pt-3" style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom,0px))' }}>
+          <dl className="space-y-1.5 text-[13px]">
+            <div className="flex justify-between font-medium text-slate-600">
+              <dt>Subtotal</dt>
+              <dd className="kaffe-num">{fRp(subtotal)}</dd>
             </div>
             {discAmt > 0 && (
-              <div className="flex justify-between text-sm font-bold text-rose-500">
-                <span>Diskon</span>
-                <span>-{fRp(discAmt)}</span>
+              <div className="flex justify-between font-semibold text-rose-700">
+                <dt>Diskon</dt>
+                <dd className="kaffe-num">-{fRp(discAmt)}</dd>
               </div>
             )}
             {taxAmt > 0 && (
-              <div className="flex justify-between text-sm font-medium text-stone-400">
-                <span>Pajak ({taxPct}%)</span>
-                <span>{fRp(taxAmt)}</span>
+              <div className="flex justify-between font-medium text-slate-600">
+                <dt>Pajak ({taxPct}%)</dt>
+                <dd className="kaffe-num">{fRp(taxAmt)}</dd>
               </div>
             )}
-            <div className="flex justify-between items-center pt-4 border-t border-stone-200 mt-2">
-              <span className="text-sm font-black text-stone-700">Total Tagihan</span>
-              <span className="text-3xl font-black tracking-tight" style={{color:'var(--brand-orange-text)'}}>{fRp(total)}</span>
+            <div className="flex items-baseline justify-between border-t border-dashed border-[var(--brand-panel-border)] pt-2.5">
+              <dt className="text-[14px] font-bold text-slate-800">Total</dt>
+              <dd className="font-display text-[26px] font-extrabold leading-none tracking-tight text-slate-900 kaffe-num">{fRp(total)}</dd>
             </div>
-          </div>
+          </dl>
 
-          <div className="flex gap-2.5">
-            <button
-              type="button"
-              onClick={handleClearCart}
-              className="h-14 px-4 rounded-2xl border border-stone-200 text-stone-400 text-xs font-bold hover:bg-stone-50 hover:border-stone-300 transition-colors"
-            >
-              Batal
-            </button>
+          <div className="mt-3 flex gap-2">
             {onSaveOpenBill && (
               <button
                 type="button"
                 onClick={onSaveOpenBill}
                 disabled={savingOpenBill}
-                className="flex-1 h-14 rounded-2xl border-2 border-[#FF6A00]/30 bg-orange-50/80 px-3 text-xs font-black uppercase tracking-wider text-[#FF6A00] hover:bg-orange-100/80 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+                className="flex h-14 flex-1 items-center justify-center gap-1.5 rounded-2xl border border-[var(--brand-panel-border)] bg-white px-3 text-[13px] font-bold text-slate-700 transition-colors hover:border-orange-200 hover:bg-[var(--brand-orange-soft)] disabled:opacity-50"
               >
-                <BookmarkCheck size={16} />
+                <BookmarkCheck size={16} className="text-[var(--brand-orange-text)]" />
                 <span>{activeOpenBillId ? 'Update Bill' : 'Simpan Bill'}</span>
               </button>
             )}
             <button
               type="button"
               onClick={onOpenPay}
-              className="flex-[1.5] h-14 rounded-2xl bg-gradient-to-r from-[#FF6A00] to-[#FF8A1C] text-white font-black uppercase tracking-wider shadow-[0_8px_24px_rgba(255,106,0,0.35)] hover:shadow-[0_12px_32px_rgba(255,106,0,0.45)] hover:scale-[1.02] active:scale-100 transition-transform flex items-center justify-center gap-2"
+              className="kaffe-gradient-cta flex h-14 flex-[1.6] items-center justify-center gap-2 rounded-2xl text-[19px] font-extrabold"
             >
-              BAYAR <ChevronRight size={20} />
+              Bayar <ChevronRight size={20} />
             </button>
           </div>
         </div>

@@ -77,20 +77,19 @@ function DashboardCard({
   color: string;
 }) {
   return (
-    <div className="kaffe-metric-card p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[var(--brand-panel-shadow-hover)]">
-      <div className="flex items-center gap-3 mb-3">
-        <div
-          className="w-9 h-9 rounded-lg flex items-center justify-center border"
-          style={{ backgroundColor: `${color}10`, borderColor: `${color}20`, color }}
+    <div className="kaffe-metric-card kaffe-card-interactive flex min-w-0 flex-col p-4 sm:p-5">
+      <div className="flex items-center justify-between gap-2">
+        <p className="line-clamp-2 text-[12.5px] font-semibold leading-snug text-slate-600 sm:truncate">{title}</p>
+        <span
+          className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-lg sm:flex"
+          style={{ backgroundColor: `${color}14`, color }}
+          aria-hidden="true"
         >
           {icon}
-        </div>
-        <p className="text-[11px] font-semibold text-slate-400">{title}</p>
+        </span>
       </div>
-      <p className="font-display text-xl font-extrabold text-slate-900 leading-tight">{value}</p>
-      <div className="mt-2 flex items-center gap-2">
-         <span className="text-[11px] text-slate-500 font-semibold">{sub}</span>
-      </div>
+      <p className="mt-2 truncate font-display text-[20px] font-extrabold leading-tight text-slate-900 kaffe-num sm:mt-3 sm:text-[26px]">{value}</p>
+      <p className="mt-1 line-clamp-2 text-[12px] font-medium leading-snug text-slate-500">{sub}</p>
     </div>
   );
 }
@@ -318,21 +317,16 @@ export default function Dashboard() {
 
   return (
     <div className="kaffe-app-bg kaffe-responsive-surface flex-1 min-h-0 overflow-y-auto">
-      <div className="min-w-0 p-4 md:p-6 pb-6 lg:pb-6 max-w-7xl mx-auto space-y-5">
-        <div className="flex flex-col gap-4">
-          <div className="flex min-w-0 items-center justify-between gap-3">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="font-display text-2xl font-extrabold text-slate-900">Dashboard</h1>
-              </div>
-              <p className="text-slate-500 font-semibold text-[12px] mt-1 flex items-center gap-2">
-                <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-rose-500'} animate-pulse`} />
-                {storeSettings?.store_name || 'KaffePOS'} · {isOnline ? 'Terhubung Cloud' : 'Offline Mode'}
-              </p>
-            </div>
-            <div className="flex shrink-0 items-center gap-2">
+      <div className="min-w-0 p-4 sm:p-5 md:p-6 lg:p-8 pb-24 lg:pb-8 max-w-7xl mx-auto space-y-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-[13px] font-semibold text-slate-500">
+              {new Intl.DateTimeFormat('id-ID', { weekday: 'long', day: 'numeric', month: 'long' }).format(now)}
+            </p>
+            <div className="mt-0.5 flex flex-wrap items-center gap-2">
+              <h1 className="font-display text-2xl font-extrabold text-slate-900 sm:text-[28px]">Dashboard</h1>
               {showBetaBadge ? (
-                <span className="inline-flex h-8 items-center gap-1.5 rounded-full border border-orange-100 bg-orange-50 px-3 text-[10px] font-black uppercase tracking-wider text-[#FF6A00]">
+                <span className="inline-flex h-7 items-center gap-0.5 rounded-full border border-orange-200 bg-[var(--brand-orange-soft)] pl-2.5 text-[11px] font-bold text-[var(--brand-orange-text)]">
                   Closed Beta
                   <button
                     type="button"
@@ -344,7 +338,7 @@ export default function Dashboard() {
                       }
                       setShowBetaBadge(false);
                     }}
-                    className="ml-0.5 flex h-6 min-h-0 w-6 min-w-0 items-center justify-center rounded-full text-orange-700 hover:bg-orange-100"
+                    className="kaffe-btn-compact flex h-7 w-7 items-center justify-center rounded-full hover:bg-orange-100"
                     aria-label="Sembunyikan badge beta"
                     title="Sembunyikan badge beta"
                   >
@@ -352,41 +346,45 @@ export default function Dashboard() {
                   </button>
                 </span>
               ) : null}
-              <button type="button"
-                onClick={handleRefresh}
-                disabled={!storeId || refreshing || syncing}
-                aria-label="Segarkan data"
-                className="w-10 h-10 shrink-0 rounded-lg bg-white border border-slate-200/80 shadow-sm text-slate-500 flex items-center justify-center disabled:opacity-50 active:scale-95 transition-all hover:bg-orange-50 hover:text-[#FF6A00]"
-              >
-                <RefreshCw size={20} aria-hidden="true" className={refreshing || syncing ? 'animate-spin text-[#FF6A00]' : ''} />
-              </button>
             </div>
+            <p className="mt-1 flex items-center gap-2 text-[13px] font-semibold text-slate-600">
+              <span className={`h-1.5 w-1.5 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-rose-500'}`} aria-hidden="true" />
+              {storeSettings?.store_name || 'KaffePOS'} · {isOnline ? 'Terhubung cloud' : 'Mode offline'}
+            </p>
           </div>
 
-          <div className="kaffe-scroll-tabs flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4">
-            {[
-              { id: 'today', label: 'Hari Ini' },
-              { id: 'week', label: '7 Hari' },
-              { id: 'month', label: '30 Hari' },
-            ].map((item) => (
-              <button type="button"
-                key={item.id}
-                onClick={() => setRange(item.id as RangeKey)}
-                className={`shrink-0 px-5 py-2.5 rounded-lg text-[13px] font-bold transition-all border ${
-                  range === item.id
-                    ? 'bg-[#FF6A00] text-white border-[#FF6A00] shadow-[0_12px_26px_rgba(255,106,0,0.16)]'
-                    : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
+          <div className="flex min-w-0 items-center gap-2">
+            <div className="kaffe-scroll-tabs kaffe-segmented min-w-0 overflow-x-auto no-scrollbar" role="group" aria-label="Periode">
+              {[
+                { id: 'today', label: 'Hari Ini' },
+                { id: 'week', label: '7 Hari' },
+                { id: 'month', label: '30 Hari' },
+              ].map((item) => (
+                <button type="button"
+                  key={item.id}
+                  onClick={() => setRange(item.id as RangeKey)}
+                  aria-pressed={range === item.id}
+                  className="shrink-0"
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+            <button type="button"
+              onClick={handleRefresh}
+              disabled={!storeId || refreshing || syncing}
+              aria-label="Segarkan data"
+              title="Segarkan data"
+              className="kaffe-icon-btn shrink-0 disabled:opacity-50"
+            >
+              <RefreshCw size={18} aria-hidden="true" className={refreshing || syncing ? 'animate-spin text-[var(--brand-orange-text)]' : ''} />
+            </button>
           </div>
         </div>
 
         {!hasAnyBusinessData && (
-          <div className="bg-white border border-dashed border-slate-200 rounded-lg p-10 text-center shadow-sm">
-            <div className="w-16 h-16 bg-slate-50 rounded-lg flex items-center justify-center mx-auto mb-6 text-slate-200">
+          <div className="kaffe-empty-state rounded-[20px] p-10 text-center">
+            <div className="w-14 h-14 bg-[var(--brand-canvas)] rounded-2xl flex items-center justify-center mx-auto mb-4 text-stone-300">
                <Package size={40} />
             </div>
             <p className="font-display text-lg font-extrabold text-slate-800 mb-2">Dashboard masih kosong</p>
@@ -397,30 +395,30 @@ export default function Dashboard() {
         )}
 
         {subscriptionAccess.isTrial && subscriptionAccess.daysRemaining !== null && (
-          <div className="rounded-2xl border border-orange-100 bg-orange-50 px-5 py-4 shadow-sm">
+          <div className="kaffe-card px-5 py-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
-                <p className="text-[10px] font-black uppercase tracking-widest text-[#FF6A00]">Trial Signature</p>
+                <p className="kaffe-eyebrow !text-[var(--brand-orange-text)]">Trial Signature</p>
                 <h2 className="mt-1 font-display text-xl font-extrabold text-slate-900">
                   {subscriptionAccess.daysRemaining} hari full fitur premium tersisa
                 </h2>
-                <p className="mt-1 text-xs font-semibold leading-relaxed text-orange-900">
+                <p className="mt-1 text-[13px] font-medium leading-relaxed text-slate-600">
                   Gratis 14 Hari • Full Akses Signature • Otomatis Rp49.000/bulan setelah trial berakhir
                 </p>
-                <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-white/80 ring-1 ring-orange-100">
+                <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-orange-100">
                   <div
                     className="h-full rounded-full bg-[#FF6A00] transition-all"
                     style={{ width: `${Math.min(100, Math.max(0, ((14 - subscriptionAccess.daysRemaining) / 14) * 100))}%` }}
                   />
                 </div>
-                <p className="mt-2 text-[11px] font-bold text-orange-700">
+                <p className="mt-2 text-[12px] font-semibold text-slate-600">
                   Hari ke-{Math.min(14, Math.max(1, 14 - subscriptionAccess.daysRemaining + 1))} dari 14. Upgrade bisa kapan saja tanpa mengganggu transaksi.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => openDashboardTab('settings')}
-                className="inline-flex h-11 shrink-0 items-center justify-center rounded-2xl bg-white px-4 text-xs font-black uppercase tracking-widest text-orange-700 ring-1 ring-orange-100 transition-all active:scale-95 hover:bg-orange-100"
+                className="kaffe-gradient-cta inline-flex h-11 shrink-0 items-center justify-center rounded-xl px-5 text-[14px] font-bold"
               >
                 Lihat Paket
               </button>
@@ -429,18 +427,18 @@ export default function Dashboard() {
         )}
 
         {!onboarding.complete && (
-          <div className="kaffe-panel rounded-2xl p-5 md:p-6">
+          <div className="kaffe-panel rounded-[20px] p-5 md:p-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <p className="text-[11px] font-black uppercase tracking-widest text-[#FF6A00]">Checklist onboarding</p>
-                <h2 className="mt-1 font-display text-xl font-extrabold text-slate-900">
+                <p className="kaffe-eyebrow !text-[var(--brand-orange-text)]">Checklist onboarding</p>
+                <h2 className="mt-1 font-display text-lg font-extrabold text-slate-900">
                   {onboarding.completedCount}/{onboarding.totalCount} langkah siap dipakai
                 </h2>
                 <p className="mt-1 text-[13px] font-semibold text-slate-500">
                   Selesaikan setup inti agar toko siap transaksi, stok, dan laporan.
                 </p>
               </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100 md:w-44">
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100 md:w-44">
                 <div className="h-full rounded-full bg-[#FF6A00]" style={{ width: `${onboarding.progressPercent}%` }} />
               </div>
             </div>
@@ -450,18 +448,18 @@ export default function Dashboard() {
                   key={step.id}
                   type="button"
                   onClick={() => openDashboardTab(step.targetTab)}
-                  className={`rounded-xl border p-4 text-left transition-all active:scale-[0.98] ${
+                  className={`rounded-2xl border p-4 text-left transition-colors ${
                     step.done
-                      ? 'border-emerald-100 bg-emerald-50'
-                      : 'border-slate-200 bg-white hover:border-orange-200 hover:bg-orange-50/40'
+                      ? 'border-[var(--brand-panel-border)] bg-[var(--brand-canvas)]'
+                      : 'border-[var(--brand-panel-border)] bg-white hover:border-orange-200 hover:bg-[var(--brand-orange-soft)]'
                   }`}
                 >
                   <div className="mb-3 flex items-center justify-between gap-3">
-                    <span className={`text-xs font-black ${step.done ? 'text-emerald-700' : 'text-slate-800'}`}>{step.title}</span>
+                    <span className={`text-[13px] font-bold ${step.done ? 'text-slate-600 line-through decoration-slate-300' : 'text-slate-900'}`}>{step.title}</span>
                     {step.done ? <CheckCircle2 size={18} className="text-emerald-600" /> : <span className="h-4 w-4 rounded-full border-2 border-slate-200" />}
                   </div>
-                  <p className="min-h-[34px] text-[11px] font-semibold leading-relaxed text-slate-500">{step.description}</p>
-                  <p className={`mt-3 text-[10px] font-black uppercase tracking-wider ${step.done ? 'text-emerald-700' : 'text-[#FF6A00]'}`}>
+                  <p className="min-h-[34px] text-[12px] font-medium leading-relaxed text-slate-600">{step.description}</p>
+                  <p className={`mt-3 text-[12px] font-bold ${step.done ? 'text-emerald-700' : 'text-[var(--brand-orange-text)]'}`}>
                     {step.done ? 'Selesai' : step.ctaLabel}
                   </p>
                 </button>
@@ -471,14 +469,14 @@ export default function Dashboard() {
         )}
 
         {lowStockItems.length > 0 && (
-          <div className="rounded-2xl border border-rose-100 bg-rose-50 p-4 md:flex md:items-center md:justify-between md:gap-4">
+          <div className="flex flex-col gap-3 rounded-[20px] border border-rose-200 bg-rose-50 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-rose-500">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-rose-600">
                 <AlertTriangle size={20} />
               </div>
               <div>
-                <p className="text-sm font-black text-rose-700">Stok kritis perlu dicek</p>
-                <p className="mt-1 text-xs font-semibold text-rose-600">
+                <p className="text-[14px] font-bold text-rose-800">Stok kritis perlu dicek</p>
+                <p className="mt-0.5 text-[13px] font-medium text-rose-700">
                   {lowStockItems.slice(0, 3).map((item) => `${item.name} ${item.stock} ${item.unit}`).join(' · ')}
                 </p>
               </div>
@@ -486,41 +484,41 @@ export default function Dashboard() {
             <button
               type="button"
               onClick={() => openDashboardTab('warehouse')}
-              className="mt-4 w-full rounded-xl bg-rose-600 px-4 py-3 text-xs font-black uppercase tracking-wider text-white active:scale-95 md:mt-0 md:w-auto"
+              className="h-11 w-full shrink-0 rounded-xl border border-rose-200 bg-white px-4 text-[13px] font-bold text-rose-700 hover:bg-rose-100 sm:w-auto"
             >
               Buka Stok
             </button>
           </div>
         )}
 
-        <div className="kaffe-card-grid grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="kaffe-card-grid grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <DashboardCard
             title="Penjualan Hari Ini"
             value={fRp(salesToday)}
             sub={`${nonVoidTransactions.filter((t: Transaction) => isSameDay(new Date(t.date), now)).length} transaksi`}
-            icon={<TrendingUp size={22} />}
-            color="#FF6A00"
+            icon={<TrendingUp size={17} />}
+            color="#C44500"
           />
           <DashboardCard
             title="Penjualan Minggu Ini"
             value={fRp(salesWeek)}
             sub="Live dari transaksi toko"
-            icon={<ShoppingCart size={20} />}
-            color="#3b82f6"
+            icon={<ShoppingCart size={17} />}
+            color="#1d4ed8"
           />
           <DashboardCard
             title="Penjualan Bulan Ini"
             value={fRp(salesMonth)}
             sub={`${fRp(avgTransaction)} rata-rata transaksi`}
-            icon={<Wallet size={20} />}
-            color="#10b981"
+            icon={<Wallet size={17} />}
+            color="#047857"
           />
           <DashboardCard
             title="Kasir Aktif"
             value={activeCashier?.opened_by || 'Belum buka kas'}
             sub={activeCashier ? `Modal ${fRp(activeCashier.amount || 0)}` : 'Belum ada sesi hari ini'}
-            icon={<Clock3 size={20} />}
-            color="#8b5cf6"
+            icon={<Clock3 size={17} />}
+            color="#6d28d9"
           />
         </div>
 
@@ -530,44 +528,44 @@ export default function Dashboard() {
           hasBusinessData={hasAnyBusinessData}
         />
 
-        <div className="kaffe-card-grid grid grid-cols-1 xl:grid-cols-3 gap-6">
-          <div className="kaffe-panel xl:col-span-2 rounded-2xl p-5 md:p-6">
+        <div className="kaffe-card-grid grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-5">
+          <div className="kaffe-panel xl:col-span-2 rounded-[20px] p-5 md:p-6">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="font-display text-lg font-extrabold text-slate-800 flex items-center gap-2">
-                  <TrendingUp size={20} className="text-[#FF6A00]" />
+                <h3 className="font-display text-[16px] font-extrabold text-slate-900 flex items-center gap-2">
+                  <TrendingUp size={17} className="text-slate-500" />
                   Grafik Penjualan
                 </h3>
-                <p className="text-[11px] font-semibold text-slate-400 mt-1">Live data transaksi cloud</p>
+                <p className="text-[12px] font-medium text-slate-500 mt-0.5">Live dari transaksi toko</p>
               </div>
               {syncing && <RefreshCw size={18} className="text-[#FF6A00] animate-spin" />}
             </div>
             <div className="h-[280px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={trendData}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <CartesianGrid vertical={false} stroke="#F1EDE9" />
                   <XAxis
                     dataKey="label"
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fontSize: 10, fontWeight: 600, fill: '#94a3b8' }}
+                    tick={{ fontSize: 11, fontWeight: 600, fill: '#64748b' }}
                   />
                   <YAxis
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fontSize: 10, fontWeight: 600, fill: '#94a3b8' }}
+                    tick={{ fontSize: 11, fontWeight: 600, fill: '#64748b' }}
                     tickFormatter={(value) => `${Math.round(value / 1000)}k`}
                   />
                   <Tooltip formatter={(value: number) => [fRp(value), 'Penjualan']} />
-                  <Line type="monotone" dataKey="value" stroke="#FF6A00" strokeWidth={3} dot={{ r: 3, fill: '#FF6A00' }} activeDot={{ r: 5 }} />
+                  <Line type="monotone" dataKey="value" stroke="#FF6A00" strokeWidth={2.5} dot={false} activeDot={{ r: 5, strokeWidth: 2, stroke: '#ffffff', fill: '#FF6A00' }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          <div className="kaffe-panel rounded-2xl p-5 md:p-6">
-            <h3 className="font-display text-lg font-extrabold text-slate-800 mb-6 flex items-center gap-2">
-              <Wallet size={20} className="text-emerald-500" />
+          <div className="kaffe-panel rounded-[20px] p-5 md:p-6">
+            <h3 className="font-display text-[16px] font-extrabold text-slate-900 mb-5 flex items-center gap-2">
+              <Wallet size={17} className="text-slate-500" />
               Metode Bayar
             </h3>
             {paymentData.length === 0 ? (
@@ -585,7 +583,8 @@ export default function Dashboard() {
                         cy="50%"
                         innerRadius={55}
                         outerRadius={80}
-                        paddingAngle={4}
+                        paddingAngle={2}
+                        stroke="none"
                         dataKey="value"
                       >
                         {paymentData.map((entry, index) => (
@@ -596,8 +595,8 @@ export default function Dashboard() {
                     </PieChart>
                   </ResponsiveContainer>
                   <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total</span>
-                    <span className="text-lg font-black text-slate-800">{fRp(totalRangeRevenue)}</span>
+                    <span className="text-[11px] font-semibold text-slate-500">Total</span>
+                    <span className="text-[17px] font-extrabold text-slate-900 kaffe-num">{fRp(totalRangeRevenue)}</span>
                   </div>
                 </div>
                 <div className="space-y-3 mt-4">
@@ -605,9 +604,9 @@ export default function Dashboard() {
                     <div key={p.label} className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: p.color }} />
-                        <span className="text-xs font-semibold text-slate-600">{p.label}</span>
+                        <span className="text-[13px] font-medium text-slate-600">{p.label}</span>
                       </div>
-                      <span className="text-xs font-bold text-slate-800">{fRp(p.value)}</span>
+                      <span className="text-[13px] font-bold text-slate-900 kaffe-num">{fRp(p.value)}</span>
                     </div>
                   ))}
                 </div>
@@ -616,37 +615,37 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="kaffe-card-grid grid grid-cols-1 xl:grid-cols-3 gap-6">
-          <div className="kaffe-panel rounded-2xl p-5 md:p-6">
-            <h3 className="font-display text-lg font-extrabold text-slate-800 mb-6 flex items-center gap-2">
-              <Package size={20} className="text-[#FF6A00]" />
+        <div className="kaffe-card-grid grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-5">
+          <div className="kaffe-panel rounded-[20px] p-5 md:p-6">
+            <h3 className="font-display text-[16px] font-extrabold text-slate-900 mb-5 flex items-center gap-2">
+              <Package size={17} className="text-slate-500" />
               Terlaris
             </h3>
             {topProducts.length === 0 ? (
               <p className="text-sm text-slate-400">Belum ada produk terjual pada periode ini.</p>
             ) : (
-              <div className="space-y-3">
+              <div className="divide-y divide-[var(--brand-hairline)]">
                 {topProducts.map((product, index) => (
-                  <div key={product.label} className="flex items-center justify-between p-3 rounded-lg bg-slate-50">
+                  <div key={product.label} className="flex items-center justify-between py-2.5 first:pt-0 last:pb-0">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 font-black text-xs shrink-0">
-                        #{index + 1}
+                      <div className="w-8 h-8 rounded-lg bg-[var(--brand-canvas)] flex items-center justify-center text-slate-600 font-bold text-[12px] shrink-0 kaffe-num">
+                        {index + 1}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-bold text-slate-800 truncate">{product.label}</p>
-                        <p className="text-[11px] text-slate-400">{product.value} item terjual</p>
+                        <p className="text-[13.5px] font-bold text-slate-900 truncate">{product.label}</p>
+                        <p className="text-[12px] text-slate-500 kaffe-num">{product.value} item terjual</p>
                       </div>
                     </div>
-                    <p className="text-sm font-black text-slate-800 shrink-0 ml-3">{fRp(product.revenue)}</p>
+                    <p className="text-[13.5px] font-extrabold text-slate-900 shrink-0 ml-3 kaffe-num">{fRp(product.revenue)}</p>
                   </div>
                 ))}
               </div>
             )}
           </div>
 
-          <div className="kaffe-panel rounded-2xl p-5 md:p-6">
-            <h3 className="font-display text-lg font-extrabold text-slate-800 mb-6 flex items-center gap-2">
-              <AlertTriangle size={20} className="text-rose-500" />
+          <div className="kaffe-panel rounded-[20px] p-5 md:p-6">
+            <h3 className="font-display text-[16px] font-extrabold text-slate-900 mb-5 flex items-center gap-2">
+              <AlertTriangle size={17} className="text-slate-500" />
               Peringatan Stok
             </h3>
             {lowStockItems.length === 0 ? (
@@ -659,18 +658,18 @@ export default function Dashboard() {
                   return (
                     <div key={item.id} className="space-y-2">
                       <div className="flex justify-between items-end gap-3">
-                        <span className="text-xs font-bold text-slate-700">{item.name}</span>
-                        <span className="text-[10px] font-black text-rose-500 bg-rose-50 px-2 py-0.5 rounded-lg uppercase">
+                        <span className="text-[13px] font-bold text-slate-800">{item.name}</span>
+                        <span className="text-[11px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md kaffe-num">
                           {item.stock} {item.unit}
                         </span>
                       </div>
-                      <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full ${pct < 50 ? 'bg-rose-500' : 'bg-amber-500'}`}
                           style={{ width: `${pct}%` }}
                         />
                       </div>
-                      <p className="text-[10px] text-slate-400">
+                      <p className="text-[11.5px] text-slate-500">
                         Terpakai {Math.round(usage?.used || 0).toLocaleString('id-ID')} {item.unit} dari total tercatat {Math.round(usage?.baseline || item.stock).toLocaleString('id-ID')} {item.unit}
                       </p>
                     </div>
@@ -680,30 +679,30 @@ export default function Dashboard() {
             )}
           </div>
 
-          <div className="kaffe-panel rounded-2xl p-5 md:p-6">
-            <h3 className="font-display text-lg font-extrabold text-slate-800 mb-6 flex items-center gap-2">
-              <TrendingUp size={20} className="text-blue-500" />
+          <div className="kaffe-panel rounded-[20px] p-5 md:p-6">
+            <h3 className="font-display text-[16px] font-extrabold text-slate-900 mb-5 flex items-center gap-2">
+              <TrendingUp size={17} className="text-slate-500" />
               Operasional
             </h3>
-            <div className="space-y-4">
-              <div className="p-4 rounded-lg bg-blue-50 border border-blue-100">
-                <p className="text-[11px] font-black text-blue-500 uppercase tracking-wider">Revenue Periode</p>
-                <p className="text-xl font-black text-slate-800 mt-1">{fRp(totalRangeRevenue)}</p>
+            <div className="divide-y divide-[var(--brand-hairline)]">
+              <div className="flex items-center justify-between gap-3 py-3 first:pt-0">
+                <p className="flex items-center gap-2 text-[13px] font-semibold text-slate-600"><span className="h-2 w-2 rounded-full bg-blue-600" aria-hidden="true" />Revenue periode</p>
+                <p className="text-[15px] font-extrabold text-slate-900 kaffe-num">{fRp(totalRangeRevenue)}</p>
               </div>
-              <div className="p-4 rounded-lg bg-rose-50 border border-rose-100">
-                <p className="text-[11px] font-black text-rose-500 uppercase tracking-wider">Pengeluaran Operasional</p>
-                <p className="text-xl font-black text-slate-800 mt-1">{fRp(totalRangeExpenses)}</p>
+              <div className="flex items-center justify-between gap-3 py-3">
+                <p className="flex items-center gap-2 text-[13px] font-semibold text-slate-600"><span className="h-2 w-2 rounded-full bg-rose-600" aria-hidden="true" />Pengeluaran operasional</p>
+                <p className="text-[15px] font-extrabold text-slate-900 kaffe-num">{fRp(totalRangeExpenses)}</p>
               </div>
-              <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-100">
-                <p className="text-[11px] font-black text-emerald-600 uppercase tracking-wider">Nilai Stok Gudang</p>
-                <p className="text-xl font-black text-slate-800 mt-1">
+              <div className="flex items-center justify-between gap-3 py-3 last:pb-0">
+                <p className="flex items-center gap-2 text-[13px] font-semibold text-slate-600"><span className="h-2 w-2 rounded-full bg-emerald-600" aria-hidden="true" />Nilai stok gudang</p>
+                <p className="text-[15px] font-extrabold text-slate-900 kaffe-num">
                   {fRp(inventory.reduce((sum: number, item: InventoryItem) => sum + (item.stock || 0) * (item.cost_per_unit || 0), 0))}
                 </p>
               </div>
             </div>
           </div>
         </div>
-        <div className="rounded-2xl border border-orange-100 bg-white px-4 py-3 text-center text-[11px] font-bold text-slate-500 shadow-sm">
+        <div className="px-4 py-2 text-center text-[12px] font-medium text-slate-500">
           Terima kasih telah ikut Closed Beta. Feedback kamu membantu KaffePOS makin siap untuk cafe owner Indonesia.
         </div>
       </div>
