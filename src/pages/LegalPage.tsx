@@ -158,7 +158,7 @@ export default function LegalPage({ kind }: { kind: LegalKind }) {
             Kembali
           </button>
           <div className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-emerald-300">
-            {kind === 'terms' ? <FileText size={14} /> : <Shield size={14} />}
+            {kind === 'terms' ? <FileText size={16} /> : <Shield size={16} />}
             Terakhir diperbarui {LAST_UPDATED}
           </div>
         </div>
@@ -212,7 +212,7 @@ export default function LegalPage({ kind }: { kind: LegalKind }) {
                     <p className="text-sm font-semibold text-white">{link.label}</p>
                     <p className="mt-1 text-xs text-slate-400">{link.value}</p>
                   </div>
-                  <ExternalLink size={15} className="mt-0.5 shrink-0 text-slate-400" />
+                  <ExternalLink size={16} className="mt-0.5 shrink-0 text-slate-400" />
                 </a>
               ))}
             </div>

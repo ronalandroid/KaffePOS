@@ -303,7 +303,7 @@ export function LoyaltyPage({ toast, profile, role, subscriptionAccess }: { toas
         <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="min-w-0">
             <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-orange-100 bg-orange-50 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#FF6A00]">
-              <BadgePercent size={13} />
+              <BadgePercent size={16} />
               Kopi Passport
             </div>
             <h2 className="font-display text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
@@ -325,7 +325,7 @@ export function LoyaltyPage({ toast, profile, role, subscriptionAccess }: { toas
               disabled={saving}
               className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-100 bg-white px-4 text-xs font-black uppercase tracking-wider text-slate-600 shadow-sm transition-all active:scale-95 hover:border-orange-100 hover:text-[#FF6A00] disabled:opacity-60"
             >
-              <RefreshCw size={15} className={saving ? 'animate-spin' : ''} />
+              <RefreshCw size={16} className={saving ? 'animate-spin' : ''} />
               Sync
             </button>
           </div>
@@ -335,7 +335,7 @@ export function LoyaltyPage({ toast, profile, role, subscriptionAccess }: { toas
           <div className="kaffe-metric-card p-4" title="Jumlah pelanggan yang sudah memiliki Kopi Passport.">
             <div className="mb-3 flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-orange-100 bg-orange-50 text-[#FF6A00]">
-                <UserRound size={18} />
+                <UserRound size={20} />
               </div>
               <p className="text-[11px] font-semibold text-slate-400">Pelanggan loyalty</p>
             </div>
@@ -345,7 +345,7 @@ export function LoyaltyPage({ toast, profile, role, subscriptionAccess }: { toas
           <div className="kaffe-metric-card p-4" title="Jumlah stamp yang dibutuhkan untuk reward utama.">
             <div className="mb-3 flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-orange-100 bg-orange-50 text-[#FF6A00]">
-                <Stamp size={18} />
+                <Stamp size={20} />
               </div>
               <p className="text-[11px] font-semibold text-slate-400">Aturan stamp</p>
             </div>
@@ -355,7 +355,7 @@ export function LoyaltyPage({ toast, profile, role, subscriptionAccess }: { toas
           <div className="kaffe-metric-card p-4" title="Reward aktif yang bisa dipakai saat pelanggan menukar poin atau stamp.">
             <div className="mb-3 flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-orange-100 bg-orange-50 text-[#FF6A00]">
-                <Gift size={18} />
+                <Gift size={20} />
               </div>
               <p className="text-[11px] font-semibold text-slate-400">Reward aktif</p>
             </div>
@@ -373,7 +373,7 @@ export function LoyaltyPage({ toast, profile, role, subscriptionAccess }: { toas
                   <h3 className="mt-1 text-lg font-black text-slate-900">Tambah stamp</h3>
                 </div>
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-orange-100 bg-orange-50 text-[#FF6A00]">
-                  <Search size={18} />
+                  <Search size={20} />
                 </div>
               </div>
               <div className="space-y-3">
@@ -534,7 +534,7 @@ export function LoyaltyPage({ toast, profile, role, subscriptionAccess }: { toas
                 <div className="kaffe-panel rounded-2xl p-5 md:p-6">
                   <div className="mb-5 flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-orange-100 bg-orange-50 text-[#FF6A00]">
-                      <Settings2 size={18} />
+                      <Settings2 size={20} />
                     </div>
                     <div>
                       <p className="text-[11px] font-black uppercase tracking-wider text-[#FF6A00]">Admin settings</p>
@@ -589,7 +589,7 @@ export function LoyaltyPage({ toast, profile, role, subscriptionAccess }: { toas
                 <div className="kaffe-panel rounded-2xl p-5 md:p-6">
                   <div className="mb-5 flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-orange-100 bg-orange-50 text-[#FF6A00]">
-                      <Gift size={18} />
+                      <Gift size={20} />
                     </div>
                     <div>
                       <p className="text-[11px] font-black uppercase tracking-wider text-[#FF6A00]">Reward builder</p>

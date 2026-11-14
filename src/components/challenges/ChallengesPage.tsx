@@ -62,9 +62,9 @@ function ToggleRow({
         </p>
       </div>
       {challenge.is_active ? (
-        <ToggleRight size={28} className="shrink-0 text-[#FF6A00]" />
+        <ToggleRight size={24} className="shrink-0 text-[#FF6A00]" />
       ) : (
-        <ToggleLeft size={28} className="shrink-0 text-slate-300" />
+        <ToggleLeft size={24} className="shrink-0 text-slate-300" />
       )}
     </button>
   );
@@ -193,7 +193,7 @@ export default function ChallengesPage({ profile, role, subscriptionAccess }: { 
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200/80 bg-white text-slate-500 shadow-sm transition-all hover:bg-orange-50 hover:text-[#FF6A00] active:scale-95 disabled:opacity-50"
             aria-label="Muat ulang misi"
           >
-            <RefreshCw size={19} className={refreshing || syncing ? 'animate-spin text-[#FF6A00]' : ''} />
+            <RefreshCw size={20} className={refreshing || syncing ? 'animate-spin text-[#FF6A00]' : ''} />
           </button>
         </header>
 

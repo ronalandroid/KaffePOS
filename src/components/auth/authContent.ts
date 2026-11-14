@@ -29,7 +29,7 @@ export const brandHighlights = [
 
 export const authPreviewCards = [
   {
-    title: 'Dashboard',
+    title: 'Dashboard live',
     label: 'Web & APK',
     copy: 'Pantau penjualan dan laporan dari semua device.',
     icon: MonitorSmartphone,

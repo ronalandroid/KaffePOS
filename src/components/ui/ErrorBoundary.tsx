@@ -19,7 +19,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) return (
       <div role="alert" className="flex-1 flex flex-col items-center justify-center px-6 py-12 text-center bg-[#FAFAF9]">
         <div className="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-rose-50 text-rose-500 ring-1 ring-rose-100">
-          <AlertTriangle size={22} strokeWidth={2} />
+          <AlertTriangle size={20} />
         </div>
         <h3 className="text-base font-semibold tracking-tight text-zinc-800">
           {this.props.name ? `Bagian ${this.props.name} gagal dimuat` : 'Halaman ini gagal dimuat'}

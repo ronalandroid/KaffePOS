@@ -84,7 +84,7 @@ export default function PosVariantPicker({ item, onConfirm, onClose }: Props) {
                       <span className="font-black text-base text-stone-800 tracking-tight">{v.name}</span>
                       <span className="flex items-center gap-2">
                         <span className="font-black text-sm" style={{ color: 'var(--brand-orange-text)' }}>{fRp(v.price)}</span>
-                        {active && <Check size={18} className="text-[#FF6A00]" aria-hidden="true" />}
+                        {active && <Check size={20} className="text-[#FF6A00]" aria-hidden="true" />}
                       </span>
                     </button>
                   );
@@ -111,7 +111,7 @@ export default function PosVariantPicker({ item, onConfirm, onClose }: Props) {
                     >
                       <span className="flex items-center gap-3">
                         <span className={`flex size-6 items-center justify-center rounded-lg border-2 transition-colors ${active ? 'border-[#FF6A00] bg-[#FF6A00] text-white' : 'border-stone-200 bg-white text-transparent'}`}>
-                          <Check size={14} strokeWidth={3} aria-hidden="true" />
+                          <Check size={16} aria-hidden="true" />
                         </span>
                         <span className="font-bold text-base text-stone-800">{m.name}</span>
                       </span>
@@ -132,7 +132,7 @@ export default function PosVariantPicker({ item, onConfirm, onClose }: Props) {
               onClick={() => onConfirm(variant ?? undefined, chosenMods.length ? chosenMods : undefined)}
               className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#FF6A00] to-[#FF8A1C] py-4 font-black uppercase tracking-widest text-white shadow-[0_8px_24px_rgba(255,106,0,0.35)] transition-all active:scale-[0.98]"
             >
-              <Plus size={18} strokeWidth={3} aria-hidden="true" />
+              <Plus size={20} aria-hidden="true" />
               <span>Tambah • {fRp(total)}</span>
             </button>
           </div>

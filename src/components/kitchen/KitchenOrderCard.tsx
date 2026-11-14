@@ -91,7 +91,7 @@ export const KitchenOrderCard = memo(function KitchenOrderCard({
                 </p>
                 {item.note && (
                   <div className="mt-3 flex gap-2 rounded-2xl bg-amber-50/80 border border-amber-100 p-3">
-                    <AlertCircle size={12} className="shrink-0 text-amber-500 mt-0.5" />
+                    <AlertCircle size={16} className="shrink-0 text-amber-500 mt-0.5" />
                     <p className="text-[11px] font-bold text-amber-800 leading-snug">
                       {item.note}
                     </p>

@@ -100,7 +100,7 @@ export default function PlanConfirmation() {
                 rel="noreferrer"
                 className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-4 text-sm font-black text-white shadow-lg shadow-slate-900/15"
               >
-                <Instagram size={18} />
+                <Instagram size={20} />
                 Butuh Bantuan Admin
               </a>
               <Link

@@ -65,7 +65,7 @@ export default function ReceiptSettingsPanel({ form, update, previewOpen, setPre
     <>
       <button type="button" onClick={()=>setPrev(!previewOpen)}
         className={`w-full flex items-center justify-center gap-2 py-3 rounded-2xl border-2 font-bold text-sm ${previewOpen?'border-orange-400 bg-orange-50 text-orange-600':'border-slate-200 text-slate-600'}`}>
-        {previewOpen?<EyeOff size={15}/>:<Eye size={15}/>}
+        {previewOpen?<EyeOff size={16}/>:<Eye size={16}/>}
         {previewOpen?'Tutup Preview':'Preview Struk (Realtime)'}
       </button>
       {previewOpen&&<div className="bg-white rounded-2xl border border-slate-100 p-4">

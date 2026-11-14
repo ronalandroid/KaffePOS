@@ -167,7 +167,7 @@ export default function PosPaymentModal({
           <div className="mb-5 rounded-2xl border border-stone-200 bg-stone-50/80 p-3.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-stone-700">
-                <Split size={14} className="text-[#FF6A00]" /> Split Bill (Bayar Pisah)
+                <Split size={16} className="text-[#FF6A00]" /> Split Bill (Bayar Pisah)
               </span>
               <div className="flex gap-1.5">
                 {[
@@ -271,7 +271,7 @@ export default function PosPaymentModal({
           {paymentMessage && method === 'QRIS' && (
             <div className={`mb-6 rounded-2xl border px-4 py-3 text-sm font-bold ${paymentPhase==='success'?'border-emerald-200 bg-emerald-50 text-emerald-700':['failed','cancelled','expired','denied'].includes(paymentPhase)?'border-rose-200 bg-rose-50 text-rose-700':'border-orange-200 bg-orange-50 text-orange-700'}`}>
               <div className="flex items-start gap-2">
-                {['failed','cancelled','expired','denied'].includes(paymentPhase)?<AlertCircle size={18} aria-hidden="true"/>:<RefreshCw size={18} aria-hidden="true" className={checkingOut?'animate-spin':''}/>}
+                {['failed','cancelled','expired','denied'].includes(paymentPhase)?<AlertCircle size={20} aria-hidden="true"/>:<RefreshCw size={20} aria-hidden="true" className={checkingOut?'animate-spin':''}/>}
                 <div>
                   <p>{paymentMessage}</p>
                   {paymentOrder && <p className="mt-1 text-[11px] font-black uppercase tracking-wider opacity-70">{paymentOrder.order_id}</p>}
@@ -322,7 +322,7 @@ export default function PosPaymentModal({
                   discAmt > 0 ? 'border-green-300 bg-green-50 text-green-600' : 'border-stone-100 focus:border-[#FF6A00]'
                 }`}
               />
-              {discAmt > 0 && <CheckCircle2 size={18} className="absolute right-5 top-1/2 -translate-y-1/2 text-green-500" />}
+              {discAmt > 0 && <CheckCircle2 size={20} className="absolute right-5 top-1/2 -translate-y-1/2 text-green-500" />}
             </div>
           </div>
         </div>
@@ -343,7 +343,7 @@ export default function PosPaymentModal({
                   aria-pressed={method === m.id}
                   className={`flex flex-col items-center justify-center gap-2 py-4 rounded-2xl border-2 font-black text-[12px] transition-all disabled:opacity-30 ${method===m.id?'border-[#FF6A00] bg-orange-50 shadow-[0_4px_16px_rgba(255,106,0,0.15)]':'border-stone-100 text-stone-500 bg-white hover:border-stone-200'}`}
                   style={method===m.id?{color:'var(--brand-orange-text)'}:undefined}>
-                  <span className={`flex size-9 items-center justify-center rounded-xl ${method===m.id?'bg-[#FF6A00] text-white':'bg-stone-50 text-stone-400'}`}><Icon size={18}/></span>
+                  <span className={`flex size-9 items-center justify-center rounded-xl ${method===m.id?'bg-[#FF6A00] text-white':'bg-stone-50 text-stone-400'}`}><Icon size={20}/></span>
                   <span className="leading-none">{m.label}</span>
                 </button>
               );
@@ -383,8 +383,8 @@ export default function PosPaymentModal({
           className="w-full py-5 text-white font-black text-base rounded-2xl active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3 transition-transform hover:scale-[1.01] bg-gradient-to-r from-[#FF6A00] to-[#FF8A1C] shadow-[0_8px_24px_rgba(255,106,0,0.4)] hover:shadow-[0_12px_32px_rgba(255,106,0,0.5)]"
         >
           {checkingOut
-            ? <><RefreshCw size={22} className="animate-spin" /> MEMPROSES...</>
-            : <>{splitMode === 'items' && selectedSplitIds.length > 0 ? `BAYAR SPLIT (${selectedSplitIds.length} ITEM)` : 'KONFIRMASI BAYAR'} <CheckCircle2 size={22} /></>
+            ? <><RefreshCw size={20} className="animate-spin" /> MEMPROSES...</>
+            : <>{splitMode === 'items' && selectedSplitIds.length > 0 ? `BAYAR SPLIT (${selectedSplitIds.length} ITEM)` : 'KONFIRMASI BAYAR'} <CheckCircle2 size={20} /></>
           }
         </button>
       </div>

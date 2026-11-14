@@ -187,7 +187,7 @@ export default function PrinterSettings({ toast }: Props) {
               className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500 text-white text-xs font-bold rounded-xl active:scale-95 disabled:opacity-50">
               {connStatus === 'connecting'
                 ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"/>
-                : <Bluetooth size={12}/>}
+                : <Bluetooth size={16}/>}
               {connStatus === 'connecting' ? 'Menghubungkan...' : 'Hubungkan Otomatis'}
             </button>
           )}
@@ -204,7 +204,7 @@ export default function PrinterSettings({ toast }: Props) {
               </button>
               <button type="button" onClick={handleDisconnect}
                 className="p-1.5 bg-red-100 text-red-500 rounded-xl active:scale-95">
-                <Trash2 size={14}/>
+                <Trash2 size={16}/>
               </button>
             </div>
           )}
@@ -214,7 +214,7 @@ export default function PrinterSettings({ toast }: Props) {
       {/* Error message */}
       {errorMsg && (
         <div className="flex items-start gap-2.5 bg-red-50 border border-red-200 rounded-xl p-3">
-          <AlertCircle size={15} className="text-red-500 shrink-0 mt-0.5"/>
+          <AlertCircle size={16} className="text-red-500 shrink-0 mt-0.5"/>
           <p className="text-red-600 text-xs">{errorMsg}</p>
         </div>
       )}
@@ -245,7 +245,7 @@ export default function PrinterSettings({ toast }: Props) {
           <p className="text-xs font-black text-slate-400">Pilih printer</p>
           <button type="button" onClick={handleScan} disabled={scanning}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500 text-white text-xs font-bold rounded-xl active:scale-95 disabled:opacity-50">
-            <RefreshCw size={12} className={scanning ? 'animate-spin' : ''}/>
+            <RefreshCw size={16} className={scanning ? 'animate-spin' : ''}/>
             {scanning ? 'Scanning...' : 'Scan'}
           </button>
         </div>
@@ -281,8 +281,8 @@ export default function PrinterSettings({ toast }: Props) {
                     isConnected ? 'bg-green-100' : 'bg-slate-100'
                   }`}>
                     {isConnected
-                      ? <CheckCircle size={18} className="text-green-500"/>
-                      : <Circle size={18} className="text-slate-300"/>
+                      ? <CheckCircle size={20} className="text-green-500"/>
+                      : <Circle size={20} className="text-slate-300"/>
                     }
                   </div>
                   <div className="flex-1 min-w-0">

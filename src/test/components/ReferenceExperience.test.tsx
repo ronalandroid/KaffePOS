@@ -70,7 +70,7 @@ describe('KaffePOS reference experience', () => {
     expect(screen.getByTestId('reference-auth-shell')).toBeInTheDocument();
     expect(screen.getByTestId('reference-auth-mobile-brand')).not.toHaveClass('bg-kaffe-500');
     expect(screen.getByRole('heading', { name: /Aplikasi Kasir Modern Untuk Bisnis Anda/i })).toBeInTheDocument();
-    expect(screen.getByText(/Mudah digunakan/i)).toBeInTheDocument();
+    expect(screen.getByText(/Satu aplikasi/i)).toBeInTheDocument();
     const previewStage = screen.getByTestId('auth-preview-stage');
     expect(within(previewStage).getAllByTestId('auth-preview-card')).toHaveLength(3);
     expect(within(previewStage).getAllByTestId('auth-preview-card-icon')).toHaveLength(3);

@@ -231,7 +231,7 @@ export default function LandingPage() {
               >
                 <span>Buka Dashboard</span>
                 <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/15 transition-transform duration-200 group-hover:translate-x-0.5">
-                  <ArrowRight size={14} />
+                  <ArrowRight size={16} />
                 </span>
               </button>
             ) : (
@@ -250,7 +250,7 @@ export default function LandingPage() {
                 >
                   <span>Coba Gratis</span>
                   <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 transition-transform duration-200 group-hover:translate-x-0.5">
-                    <ArrowRight size={14} />
+                    <ArrowRight size={16} />
                   </span>
                 </button>
               </>
@@ -264,7 +264,7 @@ export default function LandingPage() {
             aria-label={mobileMenuOpen ? 'Tutup menu' : 'Buka menu'}
             aria-expanded={mobileMenuOpen}
           >
-            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </nav>
 
@@ -300,7 +300,7 @@ export default function LandingPage() {
                 className="flex h-10 w-10 items-center justify-center text-slate-400 transition-colors hover:text-slate-900"
                 aria-label="Tutup menu"
               >
-                <X size={22} />
+                <X size={20} />
               </button>
             </div>
 
@@ -346,7 +346,7 @@ export default function LandingPage() {
       </header>
 
       <main id="main-content" className="relative z-10 overflow-x-hidden pt-20">
-        {/* Hero Section */}
+        {/* Bagian pembuka */}
         <section className="relative overflow-hidden px-5 pb-16 pt-12 sm:px-6 md:pb-22 md:pt-20">
           <div className="mx-auto grid min-w-0 max-w-7xl items-center gap-12 lg:grid-cols-[0.94fr_1.22fr]">
             <div className="relative z-10 min-w-0 text-left">
@@ -373,7 +373,7 @@ export default function LandingPage() {
                 >
                   <span>Mulai Trial 14 Hari</span>
                   <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 transition-transform duration-200 group-hover:translate-x-0.5">
-                    <ArrowRight size={15} />
+                    <ArrowRight size={16} />
                   </span>
                 </button>
                 <button
@@ -381,7 +381,7 @@ export default function LandingPage() {
                   onClick={() => navigate('/login?demo=1')}
                   className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 text-sm font-extrabold text-slate-800 shadow-sm transition-colors hover:border-orange-200 hover:bg-orange-50/50 hover:text-[#FF6A00] sm:w-auto"
                 >
-                  <Coffee size={15} className="text-[#FF6A00]" />
+                  <Coffee size={16} className="text-[#FF6A00]" />
                   <span>Coba Demo Live</span>
                 </button>
                 <a
@@ -396,7 +396,7 @@ export default function LandingPage() {
                   onClick={handleDownload}
                   className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-slate-200/80 bg-slate-50/80 px-4 text-xs font-bold text-slate-600 transition-colors hover:bg-slate-100 sm:w-auto"
                 >
-                  <Smartphone size={14} className="text-slate-500" />
+                  <Smartphone size={16} className="text-slate-500" />
                   <span>APK Android</span>
                 </button>
               </div>
@@ -411,7 +411,7 @@ export default function LandingPage() {
                   return (
                     <div key={item.title} className="flex items-start gap-3">
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-[#FF6A00] ring-1 ring-orange-200/60">
-                        <Icon size={18} />
+                        <Icon size={20} />
                       </div>
                       <div>
                         <div className="flex items-center gap-1.5">
@@ -437,19 +437,19 @@ export default function LandingPage() {
             </p>
             <div className="mt-5 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-sm font-extrabold text-slate-600 md:gap-x-14">
               <div className="flex items-center gap-2">
-                <Coffee size={17} className="text-[#FF6A00]" /> Specialty Coffee Shop
+                <Coffee size={16} className="text-[#FF6A00]" /> Specialty Coffee Shop
               </div>
               <div className="flex items-center gap-2">
-                <Coffee size={17} className="text-[#FF6A00]" /> Kedai Kopi &amp; Roastery
+                <Coffee size={16} className="text-[#FF6A00]" /> Kedai Kopi &amp; Roastery
               </div>
               <div className="flex items-center gap-2">
-                <Store size={17} className="text-[#FF6A00]" /> Espresso Bar &amp; Booth
+                <Store size={16} className="text-[#FF6A00]" /> Espresso Bar &amp; Booth
               </div>
               <div className="flex items-center gap-2">
-                <Coffee size={17} className="text-[#FF6A00]" /> Slow Bar &amp; Manual Brew
+                <Coffee size={16} className="text-[#FF6A00]" /> Slow Bar &amp; Manual Brew
               </div>
               <div className="flex items-center gap-2">
-                <Store size={17} className="text-[#FF6A00]" /> Jaringan Cafe Multi-Cabang
+                <Store size={16} className="text-[#FF6A00]" /> Jaringan Cafe Multi-Cabang
               </div>
             </div>
           </div>
@@ -467,7 +467,7 @@ export default function LandingPage() {
                       <div>
                         <div className="flex items-center justify-between gap-3">
                           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-50 text-[#FF6A00] ring-1 ring-orange-200/60">
-                            <Icon size={21} />
+                            <Icon size={20} />
                           </div>
                         </div>
                         <h2 className="mt-5 font-display text-xl font-extrabold tracking-tight text-slate-900">
@@ -521,7 +521,7 @@ export default function LandingPage() {
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <div className="flex items-center gap-3">
                             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-orange-50 text-[#FF6A00] ring-1 ring-orange-200/70 transition-colors group-hover:bg-[#FF6A00] group-hover:text-white">
-                              <Icon size={22} />
+                              <Icon size={20} />
                             </div>
                           </div>
                           <div className="text-right">
@@ -542,14 +542,14 @@ export default function LandingPage() {
                         <ul className="space-y-2">
                           {feature.bullets.map((bullet) => (
                             <li key={bullet} className="flex items-center gap-2 text-xs font-bold text-slate-700">
-                              <CheckCircle2 size={14} className="shrink-0 text-[#FF6A00]" />
+                              <CheckCircle2 size={16} className="shrink-0 text-[#FF6A00]" />
                               <span>{bullet}</span>
                             </li>
                           ))}
                         </ul>
                         <div className="mt-4 inline-flex items-center gap-1.5 text-xs font-extrabold text-[#FF6A00]">
                           <span>Lihat spesifikasi teknis</span>
-                          <ArrowRight size={13} className="transition-transform duration-200 group-hover:translate-x-1" />
+                          <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-1" />
                         </div>
                       </div>
                     </div>
@@ -589,7 +589,7 @@ export default function LandingPage() {
                             {item.badge}
                           </span>
                           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-[#FF6A00]">
-                            <Icon size={18} />
+                            <Icon size={20} />
                           </div>
                         </div>
                         <h3 className="mt-4 font-display text-lg font-extrabold text-slate-900">{item.title}</h3>
@@ -630,7 +630,7 @@ export default function LandingPage() {
                 ].map((item) => (
                   <div key={item} className="flex items-start gap-3 text-sm font-semibold text-slate-700">
                     <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-50 text-[#FF6A00] ring-1 ring-orange-200/60">
-                      <CheckCircle2 size={13} />
+                      <CheckCircle2 size={16} />
                     </span>
                     <span>{item}</span>
                   </div>
@@ -753,7 +753,7 @@ export default function LandingPage() {
             {...downloadModal.dialogProps}
           >
             <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-[#FF6A00]/20 bg-orange-50">
-              <Lock size={32} style={{ color: BRAND_ACCENT }} />
+              <Lock size={24} style={{ color: BRAND_ACCENT }} />
             </div>
             <h3
               id="download-warning-title"
@@ -808,7 +808,7 @@ export default function LandingPage() {
                 return (
                   <div className="relative z-10 text-center">
                     <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-2xl border border-orange-200/70 bg-white text-[#FF6A00] shadow-sm sm:h-24 sm:w-24">
-                      <DetailIcon size={42} strokeWidth={1.75} />
+                      <DetailIcon size={24} />
                     </div>
                     <div className="kaffe-safe-text mb-2 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">
                       {detail.stats.metric}
@@ -830,7 +830,7 @@ export default function LandingPage() {
                 className="absolute right-4 top-4 text-slate-400 transition-colors hover:text-slate-900 sm:right-6 sm:top-6"
                 aria-label="Tutup detail fitur"
               >
-                <X size={22} />
+                <X size={20} />
               </button>
 
 
@@ -855,7 +855,7 @@ export default function LandingPage() {
                       key={h}
                       className="flex items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50/70 px-3.5 py-2.5"
                     >
-                      <CheckCircle2 size={15} className="shrink-0 text-[#FF6A00]" />
+                      <CheckCircle2 size={16} className="shrink-0 text-[#FF6A00]" />
                       <span className="kaffe-safe-text text-xs font-bold text-slate-800">{h}</span>
                     </div>
                   ))}
@@ -909,7 +909,7 @@ export default function LandingPage() {
                 className="absolute right-4 top-4 text-slate-400 transition-colors hover:text-slate-900 sm:right-6 sm:top-6"
                 aria-label="Tutup dokumen keamanan"
               >
-                <X size={22} />
+                <X size={20} />
               </button>
 
               <div className="mb-4 flex items-start gap-4 pr-10">
@@ -985,7 +985,7 @@ export default function LandingPage() {
           className="fixed bottom-6 right-6 z-[60] flex h-12 w-12 items-center justify-center rounded-2xl bg-[#FF6A00] text-white shadow-premium ring-4 ring-[#FF6A00]/15 transition-transform duration-200 hover:scale-105 active:scale-95"
           aria-label="Kembali ke atas"
         >
-          <ArrowUp size={20} strokeWidth={2.5} />
+          <ArrowUp size={20} />
         </button>
       )}
     </div>

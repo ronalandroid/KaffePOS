@@ -30,7 +30,7 @@ export default function ReferralDashboardPage({ toast }: { toast: ToastApi }) {
       <div className="flex h-full items-center justify-center p-6">
         <div className="max-w-md rounded-3xl border border-orange-100 bg-white p-6 text-center shadow-sm">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl bg-orange-50 text-[#FF6A00]">
-            <UsersRound size={26} />
+            <UsersRound size={24} />
           </div>
           <h1 className="text-xl font-black text-slate-900">Referral belum bisa dimuat</h1>
           <p className="mt-2 text-sm font-medium text-slate-500">{error}</p>

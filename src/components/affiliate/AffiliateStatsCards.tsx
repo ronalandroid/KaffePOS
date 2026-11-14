@@ -21,10 +21,10 @@ export default function AffiliateStatsCards({ data }: { data: AffiliateDashboard
         ))}
       </div>
       <div className="grid gap-3 rounded-3xl border border-orange-100 bg-white p-4 shadow-sm sm:grid-cols-4">
-        <CommissionStat icon={<Clock3 size={18} />} label="Menunggu" value={fRp(data.pending_commission)} />
+        <CommissionStat icon={<Clock3 size={20} />} label="Menunggu" value={fRp(data.pending_commission)} />
         <CommissionStat icon={<Wallet size={20} />} label="Bisa dicairkan" value={fRp(data.eligible_commission)} />
-        <CommissionStat icon={<CheckCircle2 size={18} />} label="Disetujui" value={fRp(data.approved_commission)} />
-        <CommissionStat icon={<CreditCard size={18} />} label="Dibayar" value={fRp(data.paid_commission)} />
+        <CommissionStat icon={<CheckCircle2 size={20} />} label="Disetujui" value={fRp(data.approved_commission)} />
+        <CommissionStat icon={<CreditCard size={20} />} label="Dibayar" value={fRp(data.paid_commission)} />
       </div>
     </section>
   );

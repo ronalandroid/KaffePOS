@@ -49,7 +49,7 @@ export function ReportChartsPanel({
         <div className="kaffe-segmented grid grid-cols-4 sm:inline-flex" role="group" aria-label="Jenis grafik">
           {CHART_TABS.map(c=>(
             <button type="button" key={c.id} onClick={()=>onSelectChart(c.id)} aria-pressed={activeChart===c.id} className="inline-flex items-center justify-center gap-1.5">
-              <c.e size={14} strokeWidth={2} aria-hidden="true" className="hidden sm:block" /><span>{c.l}</span>
+              <c.e size={16} aria-hidden="true" className="hidden sm:block" /><span>{c.l}</span>
             </button>
           ))}
         </div>

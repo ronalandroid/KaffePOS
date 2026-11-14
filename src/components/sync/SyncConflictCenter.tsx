@@ -131,7 +131,7 @@ export default function SyncConflictCenter({ open, onClose, storeId, role, onRet
         <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-5 sm:px-6">
           <div className="min-w-0">
             <div className="mb-2 flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-slate-400">
-              <WifiOff size={14} />
+              <WifiOff size={16} />
               Pusat Sinkronisasi
             </div>
             <h2 id="sync-conflict-title" className="text-xl font-black tracking-tight text-slate-900">{headline}</h2>
@@ -145,7 +145,7 @@ export default function SyncConflictCenter({ open, onClose, storeId, role, onRet
             className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-slate-50 text-slate-500 transition hover:bg-slate-100"
             aria-label="Tutup pusat sinkronisasi"
           >
-            <X size={18} />
+            <X size={20} />
           </button>
         </div>
 
@@ -173,7 +173,7 @@ export default function SyncConflictCenter({ open, onClose, storeId, role, onRet
           ) : viewItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-14 text-center">
               <div className="mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-emerald-50 text-emerald-600">
-                <CheckCircle2 size={26} />
+                <CheckCircle2 size={24} />
               </div>
               <p className="text-sm font-black text-slate-900">Tidak ada data bermasalah</p>
               <p className="mt-1 max-w-sm text-sm text-slate-500">Semua perubahan lokal sudah aman atau belum ada antrean sync.</p>
@@ -204,12 +204,12 @@ export default function SyncConflictCenter({ open, onClose, storeId, role, onRet
                       <p className="mt-2 text-sm font-medium leading-relaxed text-slate-600">{item.detail}</p>
                       {item.lastError ? (
                         <p className="mt-2 flex items-center gap-2 text-xs font-bold text-rose-600">
-                          <AlertTriangle size={14} />
+                          <AlertTriangle size={16} />
                           {item.lastError}
                         </p>
                       ) : null}
                       <p className="mt-3 flex items-center gap-2 text-[11px] font-bold text-slate-400">
-                        <Clock3 size={13} />
+                        <Clock3 size={16} />
                         Dibuat {formatDate(item.createdAt)}
                       </p>
                     </div>

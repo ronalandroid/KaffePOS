@@ -78,7 +78,7 @@ function PosOrderTypeAndTableBar({
           className="flex w-full items-center justify-between gap-2 rounded-xl border border-[var(--brand-panel-border)] bg-white px-3 text-[13px] font-semibold text-slate-700 transition-colors hover:border-orange-200 hover:bg-[var(--brand-orange-soft)]"
         >
           <span className="flex min-w-0 items-center gap-2 truncate">
-            <Utensils size={15} className="shrink-0 text-[var(--brand-orange-text)]" />
+            <Utensils size={16} className="shrink-0 text-[var(--brand-orange-text)]" />
             {tableNumber ? (
               <span className="font-bold text-slate-900">
                 Meja {tableNumber} · {pax} pax
@@ -89,7 +89,7 @@ function PosOrderTypeAndTableBar({
           </span>
           <span className="flex shrink-0 items-center gap-1 text-[12px] font-bold text-[var(--brand-orange-text)]">
             {openBillsCount > 0 ? `${openBillsCount} open bill` : 'Denah'}
-            <ChevronRight size={14} />
+            <ChevronRight size={16} />
           </span>
         </button>
       )}
@@ -154,7 +154,7 @@ export default function PosCartPanel({
         <div className="flex min-w-0 items-center gap-2">
           <button type="button" onClick={onCloseMobileCart}
             className="md:hidden flex h-11 w-11 items-center justify-center rounded-xl text-slate-600 hover:bg-slate-100"
-            aria-label="Tutup keranjang"><X size={18} /></button>
+            aria-label="Tutup keranjang"><X size={20} /></button>
           <div className="min-w-0">
             <h2 className="font-display text-[17px] font-extrabold leading-tight text-slate-900">Pesanan</h2>
             <p className="text-[12px] font-semibold text-slate-500 kaffe-num">
@@ -186,7 +186,7 @@ export default function PosCartPanel({
         <div className="border-b border-[var(--brand-panel-border)] bg-white px-4 py-3">
           <div className="mb-2 flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-stone-500">
-              <ChefHat size={13} />
+              <ChefHat size={16} />
               Status Dapur
             </div>
             <button type="button" onClick={() => window.dispatchEvent(new CustomEvent('kaffepos-open-tab', { detail: { tab: 'kitchen' } }))}
@@ -242,10 +242,10 @@ export default function PosCartPanel({
                 />
                 <div className="flex shrink-0 items-center rounded-xl border border-[var(--brand-panel-border)] bg-white">
                   <button type="button" onClick={() => updateQty(c.id, c.qty - 1)} className="flex h-11 w-11 items-center justify-center rounded-l-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900" aria-label={c.qty <= 1 ? `Hapus ${c.name}` : `Kurangi ${c.name}`}>
-                    {c.qty <= 1 ? <X size={15} strokeWidth={2.6} /> : <Minus size={15} strokeWidth={2.6}/>}
+                    {c.qty <= 1 ? <X size={16} /> : <Minus size={16}/>}
                   </button>
                   <span className="w-7 text-center text-[14px] font-extrabold text-slate-900 kaffe-num">{c.qty}</span>
-                  <button type="button" onClick={() => updateQty(c.id, c.qty + 1)} className="flex h-11 w-11 items-center justify-center rounded-r-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900" aria-label={`Tambah ${c.name}`}><Plus size={15} strokeWidth={2.6}/></button>
+                  <button type="button" onClick={() => updateQty(c.id, c.qty + 1)} className="flex h-11 w-11 items-center justify-center rounded-r-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900" aria-label={`Tambah ${c.name}`}><Plus size={16}/></button>
                 </div>
               </div>
             </li>

@@ -1,5 +1,4 @@
 // src/components/report/CashRegisterPanel.tsx
-import { Wallet } from 'lucide-react';
 import { fRp } from './reportFormat';
 
 type CashEntry = { opened_by?: string | null; date: string; note?: string | null; amount: number };
@@ -10,9 +9,6 @@ export function CashRegisterPanel({ totalCashRegister, entries }: CashRegisterPa
     <div className="kaffe-card overflow-hidden">
       <div className="px-5 py-4 flex items-center justify-between border-b border-[var(--brand-hairline)]">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--brand-canvas)] text-slate-600" aria-hidden="true">
-            <Wallet size={16}/>
-          </div>
           <h3 className="font-display text-[15px] font-extrabold text-slate-900">Saldo Kasir Awal</h3>
         </div>
         <p className="font-extrabold text-[15px] text-slate-900 kaffe-num">{fRp(totalCashRegister)}</p>

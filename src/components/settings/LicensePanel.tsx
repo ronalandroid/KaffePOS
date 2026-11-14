@@ -41,7 +41,7 @@ export default function LicensePanel({
           <p className="text-xs font-black text-slate-400">Lisensi</p>
           {isPro ? (
             <div className="flex items-start gap-3">
-              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600"><BadgeCheck size={18} /></span>
+              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600"><BadgeCheck size={20} /></span>
               <div>
                 <p className="text-sm font-black text-slate-800">Lisensi Penuh Aktif</p>
                 <p className="text-xs text-slate-500">Akun ini memiliki akses seluruh fitur KaffePOS tanpa batas waktu (beli putus).</p>
@@ -49,7 +49,7 @@ export default function LicensePanel({
             </div>
           ) : (
             <div className="flex items-start gap-3">
-              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600"><KeyRound size={18} /></span>
+              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600"><KeyRound size={20} /></span>
               <div>
                 <p className="text-sm font-black text-slate-800">Akun Belum Diaktivasi</p>
                 <p className="text-xs text-slate-500">Hubungi penjual untuk mengaktifkan lisensi penuh pada akun ini.</p>
@@ -76,7 +76,7 @@ export default function LicensePanel({
           </div>
           <button type="button" onClick={handleSaveKasir} disabled={savingKasir||!kasirName.trim()}
             className="px-4 py-3 bg-orange-500 text-white font-bold rounded-xl active:scale-95 disabled:opacity-50 flex items-center gap-1.5 text-sm shrink-0">
-            {savingKasir?<div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/>:kasirSaved?<CheckCircle2 size={16}/>:<Save size={15}/>}
+            {savingKasir?<div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/>:kasirSaved?<CheckCircle2 size={16}/>:<Save size={16}/>}
             {kasirSaved?'Tersimpan':'Simpan'}
           </button>
         </div>

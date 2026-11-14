@@ -44,7 +44,7 @@ export default function NotificationCard({ notification }: { notification: Kaffe
           </div>
           <p className="text-xs font-semibold leading-relaxed text-slate-600">{notification.message}</p>
           <div className="mt-3 flex items-center gap-1.5 text-slate-400">
-            <Clock size={11} />
+            <Clock size={16} />
             <span className="text-[10px] font-bold">{formatNotificationTime(notification.created_at)}</span>
           </div>
         </div>
@@ -57,7 +57,7 @@ export function NotificationEmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
       <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-slate-100">
-        <Bell size={36} className="text-slate-300" />
+        <Bell size={24} className="text-slate-300" />
       </div>
       <p className="mt-4 text-lg font-black text-slate-700">Belum ada notifikasi</p>
       <p className="mt-1 max-w-[230px] text-sm font-semibold text-slate-400">

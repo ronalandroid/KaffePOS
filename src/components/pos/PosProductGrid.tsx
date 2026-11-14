@@ -187,7 +187,7 @@ export default function PosProductGrid({
 
         {/* Search */}
         <div className="relative">
-          <Search size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+          <Search size={20} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
           <label className="sr-only" htmlFor="pos-menu-search">Cari menu</label>
           <input
             id="pos-menu-search"
@@ -255,7 +255,7 @@ export default function PosProductGrid({
                         className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
-                      <ProductPlaceholder category={item.category} className="absolute inset-0" iconSize={30} />
+                      <ProductPlaceholder category={item.category} className="absolute inset-0" />
                     )}
                     {inCart && (
                       <span className="absolute left-2.5 top-2.5 z-10 flex h-7 min-w-7 items-center justify-center rounded-full bg-[#FF6A00] px-2 text-[12px] font-extrabold text-white shadow-[0_2px_6px_rgba(196,69,0,0.3)] kaffe-num">
@@ -263,7 +263,7 @@ export default function PosProductGrid({
                       </span>
                     )}
                     <span className="absolute bottom-2.5 right-2.5 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-[var(--brand-orange-text)] shadow-[0_1px_3px_rgba(31,41,51,0.15)] transition-colors group-hover:bg-[#FF6A00] group-hover:text-white" aria-hidden="true">
-                      <Plus size={16} strokeWidth={2.6} />
+                      <Plus size={16} />
                     </span>
                   </div>
                   <div className="flex flex-1 flex-col gap-1 p-3">
@@ -293,7 +293,7 @@ export default function PosProductGrid({
               <div className="flex size-8 items-center justify-center rounded-full bg-white text-sm font-extrabold text-[var(--brand-orange-text)] kaffe-num">{cart.reduce((n, c) => n + c.qty, 0)}</div>
               <span className="text-[15px] font-bold">Lihat Pesanan</span>
             </div>
-            <div className="flex items-center gap-1.5 text-[15px] font-extrabold kaffe-num">{fRp(total)} <ChevronRight size={18}/></div>
+            <div className="flex items-center gap-1.5 text-[15px] font-extrabold kaffe-num">{fRp(total)} <ChevronRight size={20}/></div>
           </button>
         </div>
       )}

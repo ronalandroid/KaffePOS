@@ -3,18 +3,17 @@ import { Coffee, Pizza, Utensils, CupSoda, Sandwich } from 'lucide-react';
 interface Props {
   category?: string;
   className?: string;
-  iconSize?: number;
 }
 
-export default function ProductPlaceholder({ category = 'All', className = "", iconSize = 48 }: Props) {
+export default function ProductPlaceholder({ category = 'All', className = "" }: Props) {
   const getIcon = () => {
     const c = category.toLowerCase();
-    if (c.includes('kopi') || c.includes('minum') || c.includes('drink')) return <Coffee size={iconSize} strokeWidth={1.75} />;
-    if (c.includes('makan') || c.includes('food')) return <Utensils size={iconSize} strokeWidth={1.75} />;
-    if (c.includes('snack') || c.includes('cemilan')) return <Pizza size={iconSize} strokeWidth={1.75} />;
-    if (c.includes('soda') || c.includes('jus')) return <CupSoda size={iconSize} strokeWidth={1.75} />;
-    if (c.includes('roti') || c.includes('sandwich')) return <Sandwich size={iconSize} strokeWidth={1.75} />;
-    return <Coffee size={iconSize} strokeWidth={1.75} />;
+    if (c.includes('kopi') || c.includes('minum') || c.includes('drink')) return <Coffee size={24} />;
+    if (c.includes('makan') || c.includes('food')) return <Utensils size={24} />;
+    if (c.includes('snack') || c.includes('cemilan')) return <Pizza size={24} />;
+    if (c.includes('soda') || c.includes('jus')) return <CupSoda size={24} />;
+    if (c.includes('roti') || c.includes('sandwich')) return <Sandwich size={24} />;
+    return <Coffee size={24} />;
   };
 
   return (

@@ -74,13 +74,13 @@ export function AiInsightPanel({
               disabled={aiLoading}
               title="Refresh analisis"
             >
-              <RefreshCw size={15} className={aiLoading ? 'animate-spin' : ''} />
+              <RefreshCw size={16} className={aiLoading ? 'animate-spin' : ''} />
             </button>
           )}
           {aiLoading
             ? <div className="w-4 h-4 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
             : aiData
-            ? (aiOpen ? <ChevronUp size={18} className="text-slate-500" /> : <ChevronDown size={18} className="text-slate-500" />)
+            ? (aiOpen ? <ChevronUp size={20} className="text-slate-500" /> : <ChevronDown size={20} className="text-slate-500" />)
             : <span className="rounded-full border border-[var(--brand-panel-border)] bg-[var(--brand-canvas)] px-2.5 py-1 text-[12px] font-bold text-slate-600">{canUseAiInsight ? 'Analisis' : 'Terkunci'}</span>
           }
         </div>

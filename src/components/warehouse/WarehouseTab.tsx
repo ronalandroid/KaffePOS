@@ -398,7 +398,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
                     : 'font-semibold text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <Icon size={15} />{label}
+                <Icon size={16} />{label}
               </button>
             );
           })}
@@ -408,7 +408,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
       <div className="flex-1 overflow-y-auto p-4 pb-24 sm:p-5 lg:p-8 lg:pb-8">
         {lowStock.length > 0 && section === 'summary' && (
           <div className="mb-4 flex items-start gap-3 rounded-[20px] border border-rose-200 bg-rose-50 p-4">
-            <AlertTriangle size={18} className="mt-0.5 shrink-0 text-rose-600"/>
+            <AlertTriangle size={20} className="mt-0.5 shrink-0 text-rose-600"/>
             <div className="min-w-0">
               <p className="text-[14px] font-bold text-rose-800">{lowStock.length} bahan stok kritis</p>
               <p className="mt-0.5 text-[13px] font-medium text-rose-700">{lowStock.map(i=>i.name).join(', ')}</p>
@@ -416,7 +416,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
           </div>
         )}
         {section === 'ingredients' && <div className="relative mb-4 md:max-w-sm">
-          <Search size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"/>
+          <Search size={20} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"/>
           <input
             value={search}
             onChange={e=>setSearch(e.target.value)}
@@ -475,7 +475,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
 
         {section === 'ingredients' && (search !== dSearch ? <WarehouseSkeleton /> : filtered.length === 0 ? (
           <div className="kaffe-empty-state flex flex-col items-center justify-center rounded-[20px] px-6">
-             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--brand-canvas)] text-stone-300"><Archive size={28} /></div>
+             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--brand-canvas)] text-stone-300"><Archive size={24} /></div>
              <p className="font-display text-base font-extrabold text-slate-800">Belum ada bahan baku</p>
              <p className="mt-1 max-w-xs text-center text-[13px] font-medium text-slate-500">
                Tambahkan bahan pertama agar stok dan resep menu bisa terpantau.
@@ -697,7 +697,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
                     <p className="font-black text-slate-800">{product.name}</p>
                     <p className="text-[11px] font-bold text-slate-400">{product.category}</p>
                   </div>
-                  {hpp.complete ? <CheckCircle2 size={18} className="text-emerald-500"/> : <AlertTriangle size={18} className="text-amber-500"/>}
+                  {hpp.complete ? <CheckCircle2 size={20} className="text-emerald-500"/> : <AlertTriangle size={20} className="text-amber-500"/>}
                 </div>
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div><p className="text-[12px] font-medium text-slate-500">Harga</p><p className="font-bold text-slate-900 kaffe-num">{fRp(product.price)}</p></div>
@@ -715,7 +715,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-5">
             <div className="kaffe-card p-5">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
-                <div className="flex items-center gap-2 text-slate-700 font-black"><FileSpreadsheet size={18}/> CSV Import</div>
+                <div className="flex items-center gap-2 text-slate-700 font-black"><FileSpreadsheet size={20}/> CSV Import</div>
                 <div className="flex gap-2">
                   <select aria-label="Mode impor" value={importMode} onChange={e=>setImportMode(e.target.value as BulkImportMode)} className="h-10 border border-slate-200 rounded-xl px-3 text-xs font-black">
                     <option value="create_only">Create only</option>

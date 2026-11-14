@@ -40,7 +40,7 @@ export default function LoyaltyCheckoutModal({
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-orange-100 bg-white text-[#FF6A00]">
-            <BadgePercent size={17} />
+            <BadgePercent size={16} />
           </span>
           <div>
             <p className="text-[11px] font-black tracking-wider text-[#FF6A00] uppercase">Kopi Passport</p>
@@ -68,7 +68,7 @@ export default function LoyaltyCheckoutModal({
           disabled={searching}
           className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-2xl border border-orange-200 bg-white px-4 text-xs font-black uppercase tracking-wider text-[#FF6A00] transition-all active:scale-95 disabled:opacity-60"
         >
-          {searching ? <RefreshCw size={15} className="animate-spin" /> : <Search size={15} />}
+          {searching ? <RefreshCw size={16} className="animate-spin" /> : <Search size={16} />}
           Cari
         </button>
       </div>
@@ -84,7 +84,7 @@ export default function LoyaltyCheckoutModal({
             </div>
             {stampProgress ? (
               <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-orange-700">
-                <Stamp size={12} />
+                <Stamp size={16} />
                 {stampProgress.current}/{stampProgress.required}
               </span>
             ) : null}

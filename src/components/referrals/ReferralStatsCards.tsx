@@ -23,8 +23,8 @@ export default function ReferralStatsCards({ data }: { data: ReferralStats }) {
 
       <div className="rounded-3xl border border-orange-100 bg-white p-4 shadow-sm lg:col-span-4">
         <div className="grid gap-3 sm:grid-cols-3">
-          <RewardStat icon={<Clock3 size={18} />} label="Menunggu" value={fRp(data.total_reward_pending)} />
-          <RewardStat icon={<CheckCircle2 size={18} />} label="Disetujui" value={fRp(data.total_reward_approved)} />
+          <RewardStat icon={<Clock3 size={20} />} label="Menunggu" value={fRp(data.total_reward_pending)} />
+          <RewardStat icon={<CheckCircle2 size={20} />} label="Disetujui" value={fRp(data.total_reward_approved)} />
           <RewardStat icon={<Banknote size={20} />} label="Dibayar" value={fRp(data.total_reward_paid)} />
         </div>
       </div>

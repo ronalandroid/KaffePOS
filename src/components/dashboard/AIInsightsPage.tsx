@@ -331,7 +331,7 @@ export default function AIInsightsPage({ storeId, canUseAiInsight, hasBusinessDa
         </div>
       ) : (
         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center">
-          <AlertTriangle size={28} className="mx-auto text-slate-300" />
+          <AlertTriangle size={24} className="mx-auto text-slate-300" />
           <p className="mt-3 text-sm font-black text-slate-800">Belum ada analisis.</p>
           <p className="mt-1 text-xs font-semibold text-slate-500">Ketuk Segarkan setelah transaksi, menu, dan stok tersinkron.</p>
         </div>

@@ -573,7 +573,7 @@ export default function AppShell() {
               title="Keluar"
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-500 hover:bg-rose-50 hover:text-rose-600"
             >
-              <LogOut size={17} />
+              <LogOut size={16} />
             </button>
           </div>
         </div>
@@ -671,7 +671,7 @@ export default function AppShell() {
                   ? 'bg-slate-900'
                   : 'bg-amber-500'
           }`}>
-            {syncStatus === 'syncing' ? <RefreshCw size={12} className="text-white animate-spin" /> : <WifiOff size={12} className="text-white" />}
+            {syncStatus === 'syncing' ? <RefreshCw size={16} className="text-white animate-spin" /> : <WifiOff size={16} className="text-white" />}
             <p className="min-w-0 break-words text-white text-[12px] font-bold leading-tight">
               {syncStatus === 'sync_failed'
                 ? `${failedSyncCount || pendingSyncCount} data gagal sinkron`

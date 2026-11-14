@@ -225,7 +225,7 @@ function EmptyPerformanceState({ isOwner }: { isOwner: boolean }) {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-orange-100 bg-orange-50 text-[#FF6A00]">
-            <Coffee size={22} />
+            <Coffee size={20} />
           </div>
           <div className="min-w-0">
             <p className="text-sm font-black text-slate-900">
@@ -373,7 +373,7 @@ export default function StaffPersonalProfile({ profile, role }: { profile?: Prof
             aria-label={soundEnabled ? 'Matikan suara pencapaian' : 'Aktifkan suara pencapaian'}
             title={soundEnabled ? 'Matikan suara saat ada pencapaian baru' : 'Aktifkan suara saat ada pencapaian baru'}
           >
-            {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+            {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
           </button>
         </header>
 

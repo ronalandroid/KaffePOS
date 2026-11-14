@@ -20,16 +20,16 @@ export default function StoreProfilePanel({ form, update, setForm, triggerSave, 
         <p className="text-xs font-black text-slate-400 mb-3">Logo toko</p>
         <div className="flex items-center gap-4 mb-3">
           <div className="w-20 h-20 rounded-2xl border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden bg-slate-50 shrink-0">
-            {form.logo_url?<img src={form.logo_url} alt="logo" className="w-full h-full object-contain"/>:<div className="text-center"><Coffee size={26} strokeWidth={2} className="mx-auto text-slate-300" /><p className="text-[10px] text-slate-400 mt-1">Belum ada</p></div>}
+            {form.logo_url?<img src={form.logo_url} alt="logo" className="w-full h-full object-contain"/>:<div className="text-center"><Coffee size={24} className="mx-auto text-slate-300" /><p className="text-[10px] text-slate-400 mt-1">Belum ada</p></div>}
           </div>
           <div className="flex-1 space-y-2">
             <button type="button" onClick={()=>logoRef.current?.click()}
               className="w-full py-2.5 border-2 border-orange-200 text-orange-600 font-bold rounded-xl text-sm flex items-center justify-center gap-2 active:scale-95">
-              <Image size={15}/>Upload Logo
+              <Image size={16}/>Upload Logo
             </button>
             {form.logo_url&&<button type="button" onClick={()=>{const nf={...form,logo_url:'',logo_base64:''};setForm(nf);triggerSave(nf);}}
               className="w-full py-2 border border-slate-200 text-slate-500 rounded-xl text-xs flex items-center justify-center gap-1 active:scale-95">
-              <RotateCcw size={11}/>Hapus Logo
+              <RotateCcw size={16}/>Hapus Logo
             </button>}
             <p className="text-xs text-slate-400">PNG/JPG maks 500KB</p>
           </div>

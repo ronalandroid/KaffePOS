@@ -423,7 +423,7 @@ export default function AuthPage() {
                 const Icon = item.icon;
                 return (
                   <div key={idx} className="inline-flex items-center gap-2 rounded-full border border-orange-100 bg-white/90 px-3 py-2 text-[11px] font-extrabold text-slate-900 shadow-sm">
-                    <Icon size={15} className="text-[#FF6A00]" strokeWidth={2.5} aria-hidden="true" />
+                    <Icon size={16} className="text-[#FF6A00]" aria-hidden="true" />
                     <span>{item.title}</span>
                     <span className="sr-only">{item.copy}</span>
                   </div>
@@ -623,7 +623,7 @@ export default function AuthPage() {
                       aria-label="Buka inbox email di tab baru"
                       className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-slate-50 border border-slate-200 px-3 py-3 text-[12px] font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
                     >
-                      Buka Inbox <ExternalLink size={14} aria-hidden="true" className="opacity-70" />
+                      Buka Inbox <ExternalLink size={16} aria-hidden="true" className="opacity-70" />
                     </button>
                     <button
                       type="button"
@@ -631,7 +631,7 @@ export default function AuthPage() {
                       onClick={handleResendVerification}
                       className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-slate-50 border border-slate-200 px-3 py-3 text-[12px] font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors disabled:opacity-50"
                     >
-                      <RefreshCw size={14} className={`${resending ? 'animate-spin' : ''} opacity-70`} aria-hidden="true" />
+                      <RefreshCw size={16} className={`${resending ? 'animate-spin' : ''} opacity-70`} aria-hidden="true" />
                       {resendCooldown > 0 ? `Tunggu ${resendCooldown}s` : 'Kirim Ulang'}
                     </button>
                   </div>
@@ -642,7 +642,7 @@ export default function AuthPage() {
                     <div className="space-y-2">
                       <label htmlFor="auth-uname" className="text-[11px] font-black text-slate-400 pl-1 uppercase tracking-widest">Nama Bisnis</label>
                       <div className="relative group">
-                        <Store size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#FF6A00] transition-colors" aria-hidden="true" />
+                        <Store size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#FF6A00] transition-colors" aria-hidden="true" />
                         <input
                           id="auth-uname"
                           ref={mode === 'register' ? emailRef : undefined}
@@ -725,7 +725,7 @@ export default function AuthPage() {
                           aria-label={show ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 w-10 h-10 flex items-center justify-center hover:text-[#FF6A00] transition-colors outline-none rounded-md"
                         >
-                          {show ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
+                          {show ? <EyeOff size={20} aria-hidden="true" /> : <Eye size={20} aria-hidden="true" />}
                         </button>
                       </div>
                       {formErrors.pass && (
@@ -740,7 +740,7 @@ export default function AuthPage() {
                     <div className="space-y-2 pt-1">
                       <label htmlFor="auth-confirm" className="text-[11px] font-black text-slate-400 pl-1 uppercase tracking-widest">Konfirmasi Sandi Baru</label>
                       <div className="relative group">
-                        <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#FF6A00] transition-colors" aria-hidden="true" />
+                        <Lock size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#FF6A00] transition-colors" aria-hidden="true" />
                         <input
                           id="auth-confirm"
                           type={show ? 'text' : 'password'}
@@ -794,7 +794,7 @@ export default function AuthPage() {
                                 Demo Owner
                               </span>
                             </div>
-                            <ArrowRight size={11} className="text-[#FF6A00] opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <ArrowRight size={16} className="text-[#FF6A00] opacity-0 group-hover:opacity-100 transition-opacity" />
                           </div>
                           <span className="text-[10px] font-medium text-slate-500">
                             Fitur Lengkap (Signature Pro)
@@ -811,12 +811,12 @@ export default function AuthPage() {
                         >
                           <div className="flex items-center justify-between w-full mb-0.5">
                             <div className="flex items-center gap-1.5">
-                              <Coffee size={14} className="text-slate-700 group-hover:text-[#FF6A00] transition-colors" />
+                              <Coffee size={16} className="text-slate-700 group-hover:text-[#FF6A00] transition-colors" />
                               <span className="text-xs font-extrabold text-slate-900 group-hover:text-[#FF6A00] transition-colors">
                                 Demo Kasir
                               </span>
                             </div>
-                            <ArrowRight size={11} className="text-slate-700 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <ArrowRight size={16} className="text-slate-700 opacity-0 group-hover:opacity-100 transition-opacity" />
                           </div>
                           <span className="text-[10px] font-medium text-slate-500">
                             Mode Bar & Kasir POS

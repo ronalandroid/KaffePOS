@@ -237,7 +237,7 @@ export default function SubscriptionSection({ isPro, profile, toast, onRefreshSt
         </p>
       </div>
 
-      {/* ── HERO STATUS CARD ── */}
+      {/* ── KARTU STATUS UTAMA ── */}
       <div className="kaffe-subscription-card relative overflow-hidden rounded-[32px] p-6 md:p-8">
         <div className="relative flex min-w-0 flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0 flex-1">
@@ -250,13 +250,13 @@ export default function SubscriptionSection({ isPro, profile, toast, onRefreshSt
               </span>
               {loading && (
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-600 ring-1 ring-slate-100">
-                  <RefreshCw size={10} className="animate-spin" />
+                  <RefreshCw size={16} className="animate-spin" />
                   Sinkron
                 </span>
               )}
               {activePendingPayment && (
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-amber-700 ring-1 ring-amber-100">
-                  <Clock3 size={10} />
+                  <Clock3 size={16} />
                   Menunggu
                 </span>
               )}
@@ -272,14 +272,14 @@ export default function SubscriptionSection({ isPro, profile, toast, onRefreshSt
           <div className="kaffe-subscription-detail-panel flex shrink-0 flex-col gap-2 rounded-3xl p-5 min-w-0 w-full lg:min-w-[240px] lg:w-auto">
             <div className="flex min-w-0 items-center justify-between gap-4">
               <div className="flex items-center gap-2 text-slate-500">
-                <Calendar size={14} />
+                <Calendar size={16} />
                 <span className="text-[11px] font-black uppercase tracking-wider">Masa Aktif</span>
               </div>
               <span className="min-w-0 break-words text-right text-[11px] font-black text-slate-900">{expiryDate ? formatDateId(expiryDate) : 'Selamanya'}</span>
             </div>
             <div className="flex min-w-0 items-center justify-between gap-4 border-t border-orange-100/70 pt-2">
               <div className="flex items-center gap-2 text-slate-500">
-                <CreditCard size={14} />
+                <CreditCard size={16} />
                 <span className="text-[11px] font-black uppercase tracking-wider">Metode</span>
               </div>
               <span className="min-w-0 break-words text-right text-[11px] font-black text-slate-900">{BILLING_CYCLE_LABELS[(activeCycle as BillingCycle) || 'free']}</span>
@@ -311,7 +311,7 @@ export default function SubscriptionSection({ isPro, profile, toast, onRefreshSt
             onClick={handleRefresh}
             className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-orange-100 bg-white px-6 text-sm font-black text-slate-800 shadow-sm transition-all active:scale-95 hover:border-orange-200 hover:text-orange-700"
           >
-            <RefreshCw size={18} className={refreshing ? 'animate-spin' : ''} />
+            <RefreshCw size={20} className={refreshing ? 'animate-spin' : ''} />
             {refreshing ? 'Sinkron...' : 'Refresh Status'}
           </button>
         </div>
@@ -341,7 +341,7 @@ export default function SubscriptionSection({ isPro, profile, toast, onRefreshSt
                       className="inline-flex h-10 items-center gap-2 rounded-xl bg-amber-700 px-4 text-xs font-black text-white shadow-sm transition-all active:scale-95 hover:bg-amber-800"
                     >
                       Lanjutkan Pembayaran
-                      <ExternalLink size={14} />
+                      <ExternalLink size={16} />
                     </a>
                   </div>
                 )}
@@ -411,7 +411,7 @@ export default function SubscriptionSection({ isPro, profile, toast, onRefreshSt
           onClick={() => setShowHistory((v) => !v)}
           className="flex h-14 flex-1 items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-6 text-sm font-black text-slate-700 shadow-sm transition-all active:scale-95"
         >
-          <History size={18} />
+          <History size={20} />
           {showHistory ? 'Tutup Riwayat' : 'Lihat Riwayat Pembayaran'}
         </button>
         {isAdminEmail(profile?.email) && (
@@ -438,7 +438,7 @@ export default function SubscriptionSection({ isPro, profile, toast, onRefreshSt
           <div className="space-y-3">
             {paidHistory.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-slate-300">
-                <History size={40} className="mb-3 opacity-20" />
+                <History size={24} className="mb-3 opacity-20" />
                 <p className="text-xs font-bold uppercase tracking-widest">Belum ada catatan pembayaran</p>
               </div>
             ) : (
@@ -448,7 +448,7 @@ export default function SubscriptionSection({ isPro, profile, toast, onRefreshSt
                   <div key={entry.id} className="group flex min-w-0 flex-col gap-3 rounded-2xl border border-slate-50 bg-slate-50/50 p-4 transition-all hover:bg-white hover:border-slate-200 hover:shadow-sm sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex min-w-0 items-center gap-4">
                       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm border border-slate-100">
-                        <CreditCard size={18} className="text-slate-400" />
+                        <CreditCard size={20} className="text-slate-400" />
                       </div>
                       <div className="min-w-0">
                         <p className="truncate font-black text-slate-800 text-sm">{plan.name}</p>

@@ -117,7 +117,7 @@ export function DashboardPreview() {
                         : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                     }`}
                   >
-                    <Icon size={14} />
+                    <Icon size={16} />
                     <span className="truncate">{nav.label}</span>
                   </button>
                 );
@@ -141,7 +141,7 @@ export function DashboardPreview() {
 
             <div className="rounded-xl border border-slate-100 bg-slate-50/80 p-2.5">
               <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-700">
-                <Database size={12} className="text-[#FF6A00]" />
+                <Database size={16} className="text-[#FF6A00]" />
                 <span>RLS Store Isolation</span>
               </div>
               <p className="mt-1 font-mono text-[9px] text-slate-500">0 antrean pending • Aman</p>
@@ -198,7 +198,7 @@ export function DashboardPreview() {
                     {kpi.value}
                   </p>
                   <p className="mt-1 flex items-center gap-1 text-[10px] font-bold text-emerald-700">
-                    <TrendingUp size={11} />
+                    <TrendingUp size={16} />
                     <span>{kpi.delta}</span>
                   </p>
                 </div>
@@ -270,7 +270,7 @@ export function DashboardPreview() {
                     <p className="text-[10px] font-semibold text-slate-500">Setiap checkout kasir otomatis memotong stok gudang sesuai gramasi resep</p>
                   </div>
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 font-mono text-[10px] font-bold text-emerald-700">
-                    <CheckCircle2 size={11} /> Auto-Deduct Aktif
+                    <CheckCircle2 size={16} /> Auto-Deduct Aktif
                   </span>
                 </div>
                 <div className="grid gap-2.5 sm:grid-cols-2">
@@ -306,7 +306,7 @@ export function DashboardPreview() {
                     <ul className="mt-2.5 space-y-1.5">
                       {ticket.items.map((line) => (
                         <li key={line} className="flex items-center gap-1.5 text-[11px] font-bold text-slate-800">
-                          <Coffee size={12} className="shrink-0 text-[#FF6A00]" />
+                          <Coffee size={16} className="shrink-0 text-[#FF6A00]" />
                           <span className="truncate">{line}</span>
                         </li>
                       ))}
@@ -336,7 +336,7 @@ function MobileCheckoutPreview() {
         <span>09:41</span>
         <span className="h-3.5 w-14 rounded-full bg-slate-900" />
         <span className="inline-flex items-center gap-1 text-[9px] text-emerald-700">
-          <Wifi size={10} /> Sync
+          <Wifi size={16} /> Sync
         </span>
       </div>
 
@@ -379,7 +379,7 @@ function MobileCheckoutPreview() {
               paymentMethod === 'qris' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
             }`}
           >
-            <CreditCard size={10} className="text-[#FF6A00]" />
+            <CreditCard size={16} className="text-[#FF6A00]" />
             <span>QRIS Mayar</span>
           </button>
           <button
@@ -389,7 +389,7 @@ function MobileCheckoutPreview() {
               paymentMethod === 'tunai' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
             }`}
           >
-            <Printer size={10} className="text-[#FF6A00]" />
+            <Printer size={16} className="text-[#FF6A00]" />
             <span>Tunai + Struk</span>
           </button>
         </div>

@@ -104,7 +104,7 @@ export default function ExpenseModal({ onClose, cashierName, toast }: Props) {
             </div>
             <button type="button" onClick={onClose}
               className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center active:scale-90">
-              <X size={18} className="text-white" />
+              <X size={20} className="text-white" />
             </button>
           </div>
         </div>
@@ -114,7 +114,7 @@ export default function ExpenseModal({ onClose, cashierName, toast }: Props) {
           {/* Info saldo kasir */}
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Wallet size={14} className="text-orange-500" />
+              <Wallet size={16} className="text-orange-500" />
               <p className="text-xs font-black text-slate-500">Sumber dana kasir hari ini</p>
             </div>
             <div className="grid grid-cols-3 gap-2 text-center">
@@ -243,7 +243,7 @@ export default function ExpenseModal({ onClose, cashierName, toast }: Props) {
           {/* Warning jika melebihi saldo */}
           {isOverBudget && (
             <div className="flex items-start gap-2.5 bg-amber-50 border border-amber-200 rounded-xl p-3">
-              <AlertCircle size={15} className="text-amber-500 shrink-0 mt-0.5" />
+              <AlertCircle size={16} className="text-amber-500 shrink-0 mt-0.5" />
               <p className="text-amber-700 text-xs font-medium">
                 Jumlah melebihi sisa saldo kasir ({fRp(kasirSisa)}). Tetap bisa dicatat.
               </p>

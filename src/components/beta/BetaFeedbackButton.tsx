@@ -179,7 +179,7 @@ export default function BetaFeedbackButton({ storeId, toast, hideTrigger = false
           aria-label="Kirim feedback closed beta"
           title="Kirim feedback closed beta"
         >
-          <MessageSquareText size={18} />
+          <MessageSquareText size={20} />
           {queuedCount > 0 ? (
             <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#FF6A00] px-1 text-[10px] font-bold text-white ring-2 ring-white">
               {queuedCount}
@@ -210,7 +210,7 @@ export default function BetaFeedbackButton({ storeId, toast, hideTrigger = false
                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-100 bg-white text-slate-500 hover:bg-orange-50 hover:text-[#FF6A00]"
                 aria-label="Tutup feedback"
               >
-                <X size={18} />
+                <X size={20} />
               </button>
             </div>
 
@@ -230,7 +230,7 @@ export default function BetaFeedbackButton({ storeId, toast, hideTrigger = false
                       }`}
                       aria-label={`Beri nilai ${value} dari 5`}
                     >
-                      <Star size={18} fill={value <= rating ? '#FF6A00' : 'none'} />
+                      <Star size={20} fill={value <= rating ? '#FF6A00' : 'none'} />
                     </button>
                   ))}
                 </div>
@@ -264,7 +264,7 @@ export default function BetaFeedbackButton({ storeId, toast, hideTrigger = false
 
               <label className="block rounded-2xl border border-dashed border-orange-200 bg-orange-50/40 px-4 py-4">
                 <span className="mb-2 flex items-center gap-2 text-[11px] font-black uppercase tracking-wider text-orange-700">
-                  <ImagePlus size={14} />
+                  <ImagePlus size={16} />
                   Screenshot Opsional
                 </span>
                 <input

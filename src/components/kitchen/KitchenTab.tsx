@@ -149,7 +149,7 @@ export default function KitchenTab({ toast, profile }: Props) {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#FF6A00]/10 text-[#FF6A00] shadow-soft border border-[#FF6A00]/20">
-              <ChefHat size={24} strokeWidth={2.5} />
+              <ChefHat size={24} />
             </div>
             <div>
               <h2 className="font-display text-xl font-extrabold text-slate-800 tracking-tight">Antrean Dapur</h2>
@@ -169,7 +169,7 @@ export default function KitchenTab({ toast, profile }: Props) {
               title="Bunyi order baru"
               aria-label={soundOn ? 'Matikan suara bel' : 'Aktifkan suara bel'}
             >
-              <Bell size={18} />
+              <Bell size={20} />
             </button>
             <button type="button"
               onClick={() => storeId && loadKitchenOrders(storeId)}
@@ -177,7 +177,7 @@ export default function KitchenTab({ toast, profile }: Props) {
               title="Refresh"
               aria-label="Segarkan data"
             >
-              <RefreshCw size={18} className={kitchenRealtimeStatus === 'connecting' || kitchenRealtimeStatus === 'reconnecting' ? 'animate-spin' : ''} />
+              <RefreshCw size={20} className={kitchenRealtimeStatus === 'connecting' || kitchenRealtimeStatus === 'reconnecting' ? 'animate-spin' : ''} />
             </button>
           </div>
         </div>
@@ -206,7 +206,7 @@ export default function KitchenTab({ toast, profile }: Props) {
           </div>
 
           <div className="kaffe-scroll-tabs kaffe-command-bar flex items-center gap-2 overflow-x-auto no-scrollbar -mx-5 px-5 pb-1">
-            <SlidersHorizontal size={14} className="shrink-0 text-slate-300 mr-1" />
+            <SlidersHorizontal size={16} className="shrink-0 text-slate-300 mr-1" />
             {STATIONS.map((st) => (
               <button type="button"
                 key={st.id}
@@ -229,7 +229,7 @@ export default function KitchenTab({ toast, profile }: Props) {
         {visibleOrders.length === 0 ? (
           <div className="kaffe-empty-state flex h-full min-h-[360px] flex-col items-center justify-center rounded-3xl text-center opacity-60">
             <div className="w-24 h-24 bg-slate-100 rounded-[40px] flex items-center justify-center mb-6">
-              <ChefHat size={48} className="text-slate-300" />
+              <ChefHat size={24} className="text-slate-300" />
             </div>
             <p className="text-lg font-black text-slate-800 tracking-tight">Dapur siap</p>
             <p className="mt-1 text-[13px] font-medium text-slate-500">Belum ada pesanan. Pesanan baru dari kasir muncul di sini.</p>
@@ -311,7 +311,7 @@ export default function KitchenTab({ toast, profile }: Props) {
                               </p>
                               {item.note && (
                                 <div className="mt-3 flex gap-2 rounded-2xl bg-amber-50/80 border border-amber-100 p-3">
-                                  <AlertCircle size={12} className="shrink-0 text-amber-500 mt-0.5" />
+                                  <AlertCircle size={16} className="shrink-0 text-amber-500 mt-0.5" />
                                   <p className="text-[11px] font-bold text-amber-800 leading-snug">
                                     {item.note}
                                   </p>
@@ -332,7 +332,7 @@ export default function KitchenTab({ toast, profile }: Props) {
                           className={`relative w-full h-12 flex items-center justify-center gap-3 rounded-[20px] text-[13px] font-bold text-white transition-all active:scale-[0.97] disabled:opacity-50 overflow-hidden shadow-premium ${action.color} ${action.color === 'bg-orange-500' ? 'bg-[#FF6A00] hover:bg-[#ef934b]' : ''}`}
                         >
                           {busyId === order.id ? (
-                            <RefreshCw size={18} className="animate-spin" />
+                            <RefreshCw size={20} className="animate-spin" />
                           ) : (
                             <>
                               {ActionIcon ? <ActionIcon size={20} aria-hidden="true" /> : null}

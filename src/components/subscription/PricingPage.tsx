@@ -164,7 +164,7 @@ export default function PricingPage({
               <div className="mt-5 flex-1 space-y-2.5">
                 {plan.features.slice(0, 6).map((feature) => (
                   <div key={feature} className="flex min-w-0 items-start gap-2">
-                    <Check size={14} className="mt-0.5 shrink-0 text-[#FF6A00]" />
+                    <Check size={16} className="mt-0.5 shrink-0 text-[#FF6A00]" />
                     <span className="min-w-0 text-[11px] font-bold leading-relaxed text-slate-500">{feature}</span>
                   </div>
                 ))}
@@ -195,7 +195,7 @@ export default function PricingPage({
             <h3 className="font-display mt-1 text-xl font-extrabold text-slate-900">Pilih paket sesuai tahap cafe kamu</h3>
           </div>
           <div className="inline-flex w-fit items-center gap-2 rounded-full border border-orange-100 bg-white px-3 py-2 text-[10px] font-black uppercase tracking-wider text-orange-700">
-            <Users size={13} />
+            <Users size={16} />
             Mobile-first & siap APK
           </div>
         </div>
@@ -221,7 +221,7 @@ export default function PricingPage({
                     const included = value === 'yes';
                     return (
                       <td key={planId} className={`border-b border-slate-100 px-4 py-3 text-center font-bold ${included ? 'text-[#FF6A00]' : value === '-' ? 'text-slate-300' : 'text-slate-500'}`}>
-                        {included ? <Check size={16} strokeWidth={2.5} className="mx-auto" aria-label="Termasuk" /> : value}
+                        {included ? <Check size={16} className="mx-auto" aria-label="Termasuk" /> : value}
                       </td>
                     );
                   })}

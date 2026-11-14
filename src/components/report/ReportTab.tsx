@@ -1,6 +1,6 @@
 // src/components/report/ReportTab.tsx — v5 + Gemini AI Insight
 import { useState, useMemo, useCallback } from 'react';
-import { Download, FileText, TrendingUp, ShoppingBag, DollarSign, CreditCard, Wallet, Receipt, Lock, AlertTriangle } from 'lucide-react';
+import { Download, FileText, Wallet, Receipt, Lock, AlertTriangle } from 'lucide-react';
 import { useStore } from '@/hooks/useStore';
 import { useAuth } from '@/contexts/AuthContext';
 import { generateProfessionalPDF, type ReportData } from '@/utils/pdfReport';
@@ -413,7 +413,7 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
               aria-label="Edit saldo kasir"
               className="kaffe-icon-btn"
             >
-              <Wallet size={18} />
+              <Wallet size={20} />
             </button>
             <button type="button"
               onClick={() => setShowExpenseModal(true)}
@@ -457,7 +457,7 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
                 }`}
               >
                 {p.l}
-                {locked && <Lock size={12} className="text-slate-500" aria-label="Terkunci" />}
+                {locked && <Lock size={16} className="text-slate-500" aria-label="Terkunci" />}
               </button>
             );
           })}
@@ -490,7 +490,7 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
         {!hasAnyReportData && (
           <div className="kaffe-empty-state rounded-[20px] p-10 text-center">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--brand-canvas)] text-stone-300">
-               <Receipt size={28} />
+               <Receipt size={24} />
             </div>
             <p className="mb-1 font-display text-base font-extrabold text-slate-800">Belum ada data laporan</p>
             <p className="mx-auto max-w-md text-[13px] font-medium leading-relaxed text-slate-500">
@@ -500,12 +500,12 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
         )}
         {/* KPI */}
         <div className="kaffe-card-grid grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-          <StatCard label="Pendapatan" value={fRp(totalRevenue)} sub={`${filtered.length} transaksi`} icon={<DollarSign size={16}/>} color="orange"/>
-          <StatCard label="Laba Bersih" value={fRp(netProfit)} sub={`Margin ${grossMargin}%`} icon={<TrendingUp size={16}/>} color={netProfit>=0?'green':'red'}/>
-          <StatCard label="Total HPP" value={fRp(totalCogs)} sub={`Pengeluaran ${fRp(totalExpenses)}`} icon={<CreditCard size={16}/>} color="red"/>
-          <StatCard label="Rata-rata Transaksi" value={fRp(avgTrx)} sub={`Laba kotor ${fRp(grossProfit)}`} icon={<ShoppingBag size={16}/>} color="blue"/>
-          <StatCard label="Saldo Kasir" value={fRp(totalCashRegister)} sub={`${filteredCR.length}× buka kasir`} icon={<Wallet size={16}/>} color="orange"/>
-          <StatCard label="Pengeluaran Ops" value={fRp(totalExpOps)} sub="Di luar bahan baku" icon={<Receipt size={16}/>} color="red"/>
+          <StatCard label="Pendapatan" value={fRp(totalRevenue)} sub={`${filtered.length} transaksi`}/>
+          <StatCard label="Laba Bersih" value={fRp(netProfit)} sub={`Margin ${grossMargin}%`}/>
+          <StatCard label="Total HPP" value={fRp(totalCogs)} sub={`Pengeluaran ${fRp(totalExpenses)}`}/>
+          <StatCard label="Rata-rata Transaksi" value={fRp(avgTrx)} sub={`Laba kotor ${fRp(grossProfit)}`}/>
+          <StatCard label="Saldo Kasir" value={fRp(totalCashRegister)} sub={`${filteredCR.length}× buka kasir`}/>
+          <StatCard label="Pengeluaran Ops" value={fRp(totalExpOps)} sub="Di luar bahan baku"/>
         </div>
 
         <AiInsightPanel
@@ -521,7 +521,7 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
           onEmailCopy={handleEmailInsight}
         />
 
-        {lowStockCount>0&&<div className="flex items-center gap-3 rounded-[20px] border border-rose-200 bg-rose-50 p-4"><AlertTriangle size={18} className="shrink-0 text-rose-600" aria-hidden="true"/><p className="text-[13.5px] font-medium text-rose-800"><span className="font-bold">{lowStockCount} bahan kritis.</span> Restock dari tab Stok.</p></div>}
+        {lowStockCount>0&&<div className="flex items-center gap-3 rounded-[20px] border border-rose-200 bg-rose-50 p-4"><AlertTriangle size={20} className="shrink-0 text-rose-600" aria-hidden="true"/><p className="text-[13.5px] font-medium text-rose-800"><span className="font-bold">{lowStockCount} bahan kritis.</span> Restock dari tab Stok.</p></div>}
 
         {/* Charts */}
         <ReportChartsPanel
@@ -565,7 +565,7 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
         <ExpenseOpsPanel totalExpOps={totalExpOps} entries={filteredExpOps} />
 
         <p className="flex items-center justify-center gap-2 px-4 py-2 text-center text-[12px] font-medium text-slate-500">
-          <FileText size={14} className="shrink-0" aria-hidden="true" />
+          <FileText size={16} className="shrink-0" aria-hidden="true" />
           Ekspor PDF memuat {filtered.length} transaksi, semua grafik, dan inventaris.
         </p>
       </div>

@@ -408,7 +408,7 @@ export default function PrintActionSheet({
               style={{ backgroundColor: '#dcfce7' }}>
               {loading === 'wa'
                 ? <Spinner />
-                : <MessageCircle size={22} strokeWidth={2} className="text-emerald-600" />
+                : <MessageCircle size={20} className="text-emerald-600" />
               }
             </div>
             <div className="text-left flex-1">

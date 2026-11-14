@@ -57,7 +57,7 @@ export default function UpgradePrompt({
             className="group inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-900 px-6 text-sm font-black text-white shadow-lg transition-all active:scale-95 hover:bg-slate-800"
           >
             {actionLabel}
-            <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+            <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />
           </button>
           <a
             href={INSTAGRAM_ADMIN_URL}
@@ -65,7 +65,7 @@ export default function UpgradePrompt({
             rel="noreferrer"
             className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border-2 border-slate-100 bg-white px-6 text-sm font-bold text-slate-600 transition-all active:scale-95 hover:bg-slate-50"
           >
-            <MessageCircle size={18} />
+            <MessageCircle size={20} />
             Hubungi Admin
           </a>
         </div>

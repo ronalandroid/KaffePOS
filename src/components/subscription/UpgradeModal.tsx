@@ -56,7 +56,7 @@ const COMPARISON_ROWS = [
 function Capability({ enabled }: { enabled: boolean }) {
   return enabled ? (
     <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-orange-100 text-orange-700">
-      <Check size={14} strokeWidth={3} />
+      <Check size={16} />
     </span>
   ) : (
     <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-300">-</span>
@@ -161,7 +161,7 @@ export default function UpgradeModal({
                 className="shrink-0 rounded-full p-2 text-slate-300 transition-colors hover:bg-slate-50 hover:text-slate-900"
                 aria-label="Tutup upgrade"
               >
-                <X size={22} />
+                <X size={20} />
               </button>
             </div>
           </div>
@@ -250,13 +250,13 @@ export default function UpgradeModal({
               >
                 {isOwner ? (
                   <>
-                    <CreditCard size={17} />
+                    <CreditCard size={16} />
                     Lanjut Checkout
                   </>
                 ) : (
                   'Minta Owner/Admin Upgrade'
                 )}
-                <ArrowRight size={17} className="transition-transform group-hover:translate-x-1" />
+                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
               </button>
             </div>
           </div>

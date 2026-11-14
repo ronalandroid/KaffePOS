@@ -22,7 +22,7 @@ export class TabError extends React.Component<{ name: string; children: ReactNod
     if (this.state.err) return (
       <div role="alert" className="flex-1 flex flex-col items-center justify-center px-6 py-12 text-center">
         <div className="grid h-12 w-12 place-items-center rounded-2xl bg-rose-50 text-rose-500 ring-1 ring-rose-100">
-          <AlertTriangle size={22} strokeWidth={2} />
+          <AlertTriangle size={20} />
         </div>
         <p className="mt-4 text-base font-semibold tracking-tight text-zinc-800">{this.props.name} gagal dimuat</p>
         <p className="mt-1 max-w-[40ch] text-sm leading-relaxed text-zinc-500">
@@ -30,7 +30,7 @@ export class TabError extends React.Component<{ name: string; children: ReactNod
         </p>
         <button type="button" onClick={() => this.setState({ err: false })}
           className="mt-5 inline-flex items-center gap-2 rounded-xl bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-zinc-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/60">
-          <RotateCcw size={15} strokeWidth={2} />
+          <RotateCcw size={16} />
           Coba lagi
         </button>
       </div>
@@ -65,7 +65,7 @@ export function AppLoading({ message }: { message?: string }) {
     <div className="fixed inset-0 flex min-h-[100dvh] flex-col items-center justify-center gap-5 bg-[#FAFAF9]" role="status" aria-live="polite">
       <div className="relative grid h-16 w-16 place-items-center">
         <div className="absolute inset-0 rounded-2xl border-2 border-[#FF6A00]/10 border-t-[#FF6A00] animate-spin" />
-        <Coffee size={26} strokeWidth={2} className="text-[#FF6A00]" />
+        <Coffee size={24} className="text-[#FF6A00]" />
       </div>
       <p className="text-sm font-medium text-zinc-500">{message || 'Memuat...'}</p>
     </div>

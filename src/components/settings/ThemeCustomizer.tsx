@@ -81,7 +81,7 @@ export default function ThemeCustomizer({ toast }: { toast: { showToast: (messag
                       <p className="text-xs text-slate-500">{preset.description}</p>
                     </div>
                   </div>
-                  {isActive && <CheckCircle2 size={18} className="text-slate-900" />}
+                  {isActive && <CheckCircle2 size={20} className="text-slate-900" />}
                 </div>
               </button>
             );
@@ -92,7 +92,7 @@ export default function ThemeCustomizer({ toast }: { toast: { showToast: (messag
       <div className="bg-white rounded-2xl border border-slate-100 p-4">
         <div className="flex items-center gap-2 mb-3">
           <div className="h-9 w-9 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center">
-            <Palette size={18} />
+            <Palette size={20} />
           </div>
           <div>
             <p className="text-sm font-black text-slate-800">Custom Theme</p>
@@ -176,7 +176,7 @@ export default function ThemeCustomizer({ toast }: { toast: { showToast: (messag
             onClick={resetDraft}
             className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 px-4 text-[15px] font-bold text-slate-600"
           >
-            <RotateCcw size={18} />
+            <RotateCcw size={20} />
             Reset
           </button>
         </div>
