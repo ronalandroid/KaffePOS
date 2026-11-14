@@ -1,7 +1,6 @@
 /**
  * Marketing & operational content for the KaffePOS v2 landing page.
- * Synchronized with InsForge Cloud PostgreSQL (ap-southeast), Mayar Headless API v2,
- * offline-first IndexedDB engine, and Android APK / Web PWA capabilities.
+ * Copy describes what the product does for an outlet owner; vendor names stay out of headlines.
  */
 import {
   HelpCircle,
@@ -11,11 +10,13 @@ import {
   FileCheck,
   Scale,
   ShoppingBag,
-  Trophy,
-  Brain,
+  Users,
+  LineChart,
   Printer,
   ChefHat,
-  Gift,
+  Stamp,
+  Cloud,
+  CalendarCheck,
   BadgePercent,
   Database,
   CreditCard,
@@ -35,12 +36,12 @@ export const NAV_LINKS = [
 ];
 
 export type FeatureTitle =
-  | 'POS Offline First'
-  | 'Staff Performance'
-  | 'Kopi Passport Loyalty'
-  | 'AI Insights'
-  | 'Inventory + Resep + KDS'
-  | 'Thermal Printer Ready';
+  | 'Kasir tetap jalan saat offline'
+  | 'Performa staf'
+  | 'Kopi Passport'
+  | 'Analisis penjualan'
+  | 'Stok, resep, dan layar dapur'
+  | 'Printer thermal';
 
 export type SafeContentKey = 'ADVISORY' | 'TERMS' | 'PRIVACY' | 'AUDIT';
 
@@ -84,73 +85,61 @@ export type ArchitectureSyncItem = {
   icon: LucideIcon;
 };
 
-export type TestimonialItem = {
-  name: string;
-  role: string;
-  outlet: string;
-  location: string;
-  initials: string;
-  body: string;
-  rating: number;
-  impactMetric: string;
-  impactLabel: string;
-};
-
 export const BENEFITS = [
   {
     title: 'Biaya jelas mulai Rp49.000/bulan',
-    desc: 'Skema berlangganan transparan tanpa potongan komisi per cup. Cocok untuk espresso bar, booth kopi, hingga roastery multi-cabang.',
+    desc: 'Harga langganan tetap, tanpa potongan komisi per cup.',
     metric: 'Rp 1.630/hari',
-    tag: 'Unit Economics Rapi',
+    tag: '',
     icon: BadgePercent,
   },
   {
-    title: 'Trial 14 hari fitur Signature penuh',
-    desc: 'Uji langsung kasir offline-first, resep HPP otomatis, Kitchen Display (KDS), Kopi Passport, dan AI Insights di operasional nyata.',
-    metric: '14 Hari Full Akses',
-    tag: 'Tanpa Kartu Kredit',
-    icon: Gift,
+    title: 'Trial 14 hari, semua fitur Signature',
+    desc: 'Coba kasir offline, resep HPP otomatis, layar dapur (KDS), Kopi Passport, dan analisis penjualan di outlet kamu.',
+    metric: '14 hari',
+    tag: '',
+    icon: CalendarCheck,
   },
   {
-    title: 'Sinkronisasi Cloud & Pembayaran Instan',
-    desc: 'Didukung database InsForge Cloud PostgreSQL berkeamanan tinggi (RLS) serta aktivasi langganan instan via Mayar QRIS & Virtual Account.',
-    metric: '< 1.2d Webhook Sync',
-    tag: 'InsForge + Mayar v2',
-    icon: Trophy,
+    title: 'Data di cloud, pembayaran otomatis',
+    desc: 'Data outlet tersimpan di cloud dan terpisah per outlet. Langganan aktif otomatis setelah bayar lewat QRIS atau Virtual Account.',
+    metric: 'QRIS dan VA',
+    tag: '',
+    icon: Cloud,
   },
 ];
 
 export const ARCHITECTURE_SYNC_ITEMS: ArchitectureSyncItem[] = [
   {
-    badge: 'CLOUD DATABASE & RLS',
-    title: 'InsForge Cloud PostgreSQL',
-    desc: '46 tabel operasional dengan isolasi Row-Level Security (RLS) per outlet. Transaksi lokal di IndexedDB tersinkron otomatis begitu koneksi kembali.',
-    metric: '99.94%',
-    metricSub: 'Keandalan sinkronisasi antrean offline',
+    badge: 'Data',
+    title: 'Data tersimpan di cloud dan tetap jalan saat offline',
+    desc: 'Data tiap outlet terpisah. Transaksi yang dicatat saat offline tersimpan di perangkat dan tersinkron begitu koneksi kembali.',
+    metric: 'Offline',
+    metricSub: 'Transaksi tetap tercatat tanpa internet',
     icon: Database,
   },
   {
-    badge: 'PAYMENT GATEWAY V2',
-    title: 'Mayar Headless Payment Sync',
-    desc: 'Checkout langganan mendukung QRIS Dinamis, Virtual Account bank nasional, dan E-Wallet dengan rekonsiliasi webhook kriptografis real-time.',
-    metric: '< 1.5 dtk',
-    metricSub: 'Verifikasi otomatis status pembayaran',
+    badge: 'Pembayaran',
+    title: 'Pembayaran langganan otomatis',
+    desc: 'Bayar langganan lewat QRIS, Virtual Account, atau e-wallet. Paket aktif sendiri setelah pembayaran diterima.',
+    metric: 'QRIS',
+    metricSub: 'Juga Virtual Account dan e-wallet',
     icon: CreditCard,
   },
   {
-    badge: 'SECURITY & AUDIT TRAIL',
-    title: 'Enkripsi PII & Shift RBAC',
-    desc: 'Data pelanggan dienkripsi dengan standar AES-GCM, akses kasir dikunci PIN per shift, dan setiap koreksi stok tercatat di audit log.',
-    metric: 'Zero-Trust',
-    metricSub: 'Validasi hak akses di level server',
+    badge: 'Akses',
+    title: 'Hak akses kasir per shift',
+    desc: 'Kasir masuk dengan PIN per shift. Data pelanggan dienkripsi, dan setiap koreksi stok tercatat siapa dan kapan.',
+    metric: 'PIN',
+    metricSub: 'Per kasir, per shift',
     icon: Lock,
   },
   {
-    badge: 'HARDWARE & MULTI-PLATFORM',
-    title: 'Android APK, Tablet & Web PWA',
-    desc: 'Satu basis kode ringan untuk tablet kasir Android, smartphone barista, layar KDS dapur, dan cetak struk Bluetooth/USB 58mm & 80mm.',
+    badge: 'Perangkat',
+    title: 'Android, tablet, dan browser',
+    desc: 'Dipakai di tablet kasir Android, HP barista, layar dapur, dan printer struk Bluetooth atau USB.',
     metric: '58 / 80mm',
-    metricSub: 'Kompatibel printer thermal ESC/POS',
+    metricSub: 'Ukuran kertas struk yang didukung',
     icon: Printer,
   },
 ];
@@ -166,66 +155,66 @@ export const SUPPORT_CONTACT = [
 
 export const FEATURES: MarketingFeature[] = [
   {
-    title: 'POS Offline First',
+    title: 'Kasir tetap jalan saat offline',
     desc: 'Kasir F&B lengkap dengan Denah Meja, Open Bill (Simpan/Pindah/Gabung Meja), Split Bill per Item, serta tipe order Dine-In, Takeaway, GoFood, GrabFood & ShopeeFood.',
     icon: ShoppingBag,
     color: 'bg-orange-50 text-[#FF6A00]',
-    tag: 'Majoo-Grade F&B Suite',
-    metricLabel: 'Kecepatan Input Order',
-    metricValue: '2.4 dtk / cup',
+    tag: '',
+    metricLabel: 'Tipe pesanan',
+    metricValue: 'Dine-in, takeaway, ojol',
     bentoSpan: 'lg:col-span-7',
     bullets: ['Denah Meja, Open Bill & Pindah/Gabung Meja', 'Split Bill per Item & Bagi Rata + Order Ojol', 'Rekap Shift Kasir & Laci Uang (Kas Masuk/Keluar)'],
   },
   {
-    title: 'Inventory + Resep + KDS',
+    title: 'Stok, resep, dan layar dapur',
     desc: 'Setiap cup yang terjual otomatis memotong gramasi bahan baku sesuai resep HPP, dilengkapi Purchase Order (PO Supplier), Stok Opname, dan layar dapur KDS.',
     icon: ChefHat,
     color: 'bg-orange-50 text-[#FF6A00]',
-    tag: 'PO Supplier + HPP + KDS',
-    metricLabel: 'Akurasi Takaran Bahan',
-    metricValue: 'Presisi Gramasi',
+    tag: '',
+    metricLabel: 'Stok terpotong',
+    metricValue: 'Otomatis per resep',
     bentoSpan: 'lg:col-span-5',
     bullets: ['Purchase Order (PO Supplier) & Terima Barang', 'Stok Opname Fisik vs Sistem + Paket Kombo', 'Kitchen Display System (KDS) real-time'],
   },
   {
-    title: 'Kopi Passport Loyalty',
-    desc: 'Gantikan kartu stempel kertas yang sering hilang dengan stamp digital, poin belanja, dan level member untuk menjaga pelanggan balik lagi.',
-    icon: Gift,
+    title: 'Kopi Passport',
+    desc: 'Ganti kartu stempel kertas yang sering hilang dengan stempel digital, poin belanja, dan tingkatan member.',
+    icon: Stamp,
     color: 'bg-orange-50 text-[#FF6A00]',
-    tag: 'Retention & CRM',
-    metricLabel: 'Kenaikan Repeat Order',
-    metricValue: '+28.4% Retensi',
+    tag: '',
+    metricLabel: 'Pengganti',
+    metricValue: 'Kartu stempel kertas',
     bentoSpan: 'lg:col-span-4',
-    bullets: ['Stamp & poin otomatis via nomor HP', 'Tier member (Reguler, Artisan, Roaster)', 'Riwayat menu favorit pelanggan'],
+    bullets: ['Stempel dan poin otomatis lewat nomor HP', 'Tingkatan member (Reguler, Artisan, Roaster)', 'Riwayat menu favorit pelanggan'],
   },
   {
-    title: 'Staff Performance',
-    desc: 'Pantau produktivitas shift barista lewat misi operasional harian, perolehan XP, dan papan peringkat tim yang objektif.',
-    icon: Trophy,
+    title: 'Performa staf',
+    desc: 'Lihat jumlah transaksi, misi harian, poin, dan peringkat tiap staf.',
+    icon: Users,
     color: 'bg-orange-50 text-[#FF6A00]',
-    tag: 'Shift Gamification',
-    metricLabel: 'Disiplin SOP Harian',
-    metricValue: 'Terukur Real-time',
+    tag: '',
+    metricLabel: 'Dihitung dari',
+    metricValue: 'Transaksi di kasir',
     bentoSpan: 'lg:col-span-4',
-    bullets: ['Misi pembukaan & penutupan shift', 'Leaderboard kecepatan layanan', 'Rekap performa per kasir'],
+    bullets: ['Misi harian untuk kasir', 'Peringkat tim mingguan', 'Rekap performa per kasir'],
   },
   {
-    title: 'AI Insights',
-    desc: 'Analisis otomatis tren omzet harian, menu dengan margin tertinggi, jam sibuk barista, dan peringatan bahan baku yang hampir habis.',
-    icon: Brain,
+    title: 'Analisis penjualan',
+    desc: 'Ringkasan tren penjualan harian, menu terlaris, jam ramai, dan bahan baku yang hampir habis.',
+    icon: LineChart,
     color: 'bg-orange-50 text-[#FF6A00]',
-    tag: 'Decision Intelligence',
-    metricLabel: 'Evaluasi Harian Owner',
-    metricValue: 'Tanpa Rumus Excel',
+    tag: '',
+    metricLabel: 'Yang dibaca',
+    metricValue: 'Tren, menu, jam ramai',
     bentoSpan: 'lg:col-span-4',
-    bullets: ['Deteksi jam ramai (peak hour)', 'Rekomendasi bundling menu lambat laku', 'Ekspor laporan PDF siap rapat'],
+    bullets: ['Jam paling ramai', 'Saran untuk menu yang jarang dipesan', 'Ekspor laporan ke PDF'],
   },
   {
-    title: 'Thermal Printer Ready',
+    title: 'Printer thermal',
     desc: 'Cetak struk kasir dan tiket dapur langsung dari tablet Android atau browser desktop menggunakan printer thermal Bluetooth maupun USB.',
     icon: Printer,
     color: 'bg-orange-50 text-[#FF6A00]',
-    tag: 'ESC/POS Hardware Ready',
+    tag: '',
     metricLabel: 'Format Kertas Struk',
     metricValue: '58mm & 80mm',
     bentoSpan: 'lg:col-span-12',
@@ -234,49 +223,49 @@ export const FEATURES: MarketingFeature[] = [
 ];
 
 export const FEATURE_DETAILS: Record<FeatureTitle, FeatureDetail> = {
-  'POS Offline First': {
-    highlights: ['Offline Queue IndexedDB', 'Auto Sync ke InsForge Cloud', 'Struk Digital & Cetak', 'Mode Tablet & Smartphone'],
-    details: 'Kasir tetap bisa menerima pesanan dan mencetak struk saat koneksi internet mati. Seluruh transaksi disimpan secara lokal dan disinkronkan otomatis ke server InsForge Cloud tanpa duplikasi data.',
+  'Kasir tetap jalan saat offline': {
+    highlights: ['Transaksi tersimpan saat offline', 'Sinkron otomatis saat online', 'Struk digital dan cetak', 'Tablet dan HP'],
+    details: 'Kasir tetap bisa menerima pesanan dan mencetak struk saat koneksi internet mati. Seluruh transaksi disimpan secara lokal dan disinkronkan otomatis ke server tanpa duplikasi data.',
     stats: { metric: 'Saat Internet Putus', value: 'Tetap Jualan' },
     icon: Wifi,
   },
-  'Staff Performance': {
-    highlights: ['Misi Operasional Shift', 'Leaderboard Barista', 'Level & Poin XP', 'Log Aktivitas Kasir'],
-    details: 'KaffePOS membantu owner memantau kedisiplinan tim melalui misi harian, poin aktivitas, dan leaderboard otomatis yang terhubung langsung dengan transaksi nyata di kasir.',
-    stats: { metric: 'Produktivitas Tim', value: 'Terukur' },
-    icon: Trophy,
+  'Performa staf': {
+    highlights: ['Misi harian', 'Peringkat tim', 'Level dan poin', 'Catatan aktivitas kasir'],
+    details: 'Pemilik melihat misi harian, poin, dan peringkat tim yang dihitung dari transaksi di kasir.',
+    stats: { metric: 'Dihitung dari', value: 'Transaksi kasir' },
+    icon: Users,
   },
-  'Kopi Passport Loyalty': {
-    highlights: ['Stamp Kartu Digital', 'Akumulasi Poin Belanja', 'Katalog Tukar Reward', 'Tier Member Otomatis'],
+  'Kopi Passport': {
+    highlights: ['Kartu stempel digital', 'Poin belanja', 'Katalog penukaran hadiah', 'Tingkatan member otomatis'],
     details: 'Program loyalitas yang dirancang khusus untuk ritme coffee shop: pelanggan cukup menyebutkan nama atau nomor WhatsApp di kasir untuk mengumpulkan stamp dan menukar minuman gratis.',
-    stats: { metric: 'Pelanggan Tetap', value: '+28.4%' },
-    icon: Gift,
+    stats: { metric: 'Cukup dengan', value: 'Nomor HP' },
+    icon: Stamp,
   },
-  'AI Insights': {
-    highlights: ['Proyeksi Tren Omzet', 'Matriks Menu Terlaris', 'Analisis Jam Sibuk', 'Rekomendasi Stok & Promo'],
-    details: 'Mesin analitik KaffePOS mengolah data transaksi harian menjadi ringkasan praktis: kapan harus menambah barista di jam sibuk dan menu mana yang menyumbang margin bersih terbesar.',
-    stats: { metric: 'Keputusan Bisnis', value: 'Lebih Cepat' },
-    icon: Brain,
+  'Analisis penjualan': {
+    highlights: ['Tren penjualan', 'Menu terlaris', 'Jam ramai', 'Saran stok dan promo'],
+    details: 'KaffePOS merangkum transaksi harian: kapan outlet paling ramai dan menu mana yang paling banyak terjual.',
+    stats: { metric: 'Sumber data', value: 'Transaksi outlet' },
+    icon: LineChart,
   },
-  'Inventory + Resep + KDS': {
-    highlights: ['Potong Stok Sesuai Resep', 'Transparansi HPP / COGS', 'Layar Antrean Dapur (KDS)', 'Peringatan Stok Kritis'],
+  'Stok, resep, dan layar dapur': {
+    highlights: ['Stok terpotong sesuai resep', 'HPP per menu', 'Layar antrean dapur (KDS)', 'Peringatan stok menipis'],
     details: 'Hubungkan setiap varian menu (dingin/panas, ukuran cup, ekstra espresso shot) dengan komposisi bahan baku. Saat pesanan dibayar, stok gudang otomatis terpotong dan tampil di layar bar/dapur.',
-    stats: { metric: 'Selisih Bahan Baku', value: '< 1.4%' },
+    stats: { metric: 'Stok terpotong', value: 'Per resep' },
     icon: ChefHat,
   },
-  'Thermal Printer Ready': {
-    highlights: ['Dukungan Kertas 58mm & 80mm', 'Koneksi Bluetooth & USB Native', 'Struk Digital WhatsApp', 'Cetak Tiket Pesanan Bar'],
-    details: 'Dirancang untuk kecepatan meja kasir: cetak struk pembayaran dan label pesanan dalam hitungan milidetik di tablet Android maupun komputer kasir.',
-    stats: { metric: 'Waktu Cetak Struk', value: '< 0.8 dtk' },
+  'Printer thermal': {
+    highlights: ['Kertas 58 mm dan 80 mm', 'Bluetooth dan USB', 'Struk digital lewat WhatsApp', 'Tiket pesanan bar'],
+    details: 'Cetak struk pembayaran dan tiket pesanan dari tablet Android maupun komputer kasir.',
+    stats: { metric: 'Ukuran kertas', value: '58 dan 80 mm' },
     icon: Printer,
   },
 };
 
 export function getFeatureDetail(title: string): FeatureDetail {
   return FEATURE_DETAILS[title as FeatureTitle] ?? {
-    highlights: ['Mudah dipakai', 'Sinkronisasi aman', 'Siap operasional', 'Dukungan lintas perangkat'],
-    details: 'Fitur ini dirancang agar operasional harian tetap cepat, rapi, dan mudah dipahami oleh tim.',
-    stats: { metric: 'Status Sistem', value: 'Siap Pakai' },
+    highlights: [],
+    details: 'Rincian fitur ini belum tersedia.',
+    stats: { metric: '', value: '' },
     icon: HelpCircle,
   };
 }
@@ -320,42 +309,6 @@ export const SAFE_CONTENT: Record<SafeContentKey, SafeContentItem> = {
   },
 };
 
-export const TESTIMONIALS: TestimonialItem[] = [
-  {
-    name: 'Raka Prasetyo',
-    role: 'Founder & Head Barista',
-    outlet: 'Kopi Tuju Senopati',
-    location: 'Jakarta Selatan',
-    initials: 'RP',
-    body: 'Waktu rush hour jam 8 pagi dan makan siang, kasir tidak pernah lagi macet walau koneksi internet ruko sempat drop. Begitu online, semua transaksi langsung sinkron ke dashboard saya.',
-    rating: 5,
-    impactMetric: '-34% Waktu Antre',
-    impactLabel: 'Rata-rata checkout 190+ cup/hari',
-  },
-  {
-    name: 'Nadia Kusuma',
-    role: 'Co-Founder & Roaster',
-    outlet: 'Ruang Seduh Roastery',
-    location: 'Bandung',
-    initials: 'NK',
-    body: 'Dulu tiap akhir bulan selisih stok susu oat dan house blend selalu bikin pusing. Sejak pakai resep otomatis KaffePOS dan layar KDS di bar, selisih stok turun drastis dan HPP per cup langsung kelihatan.',
-    rating: 5,
-    impactMetric: '< 1.2% Selisih Stok',
-    impactLabel: 'Akurasi gramasi 42 varian menu',
-  },
-  {
-    name: 'Hendra Wijaya',
-    role: 'Operational Manager',
-    outlet: 'Kedai Kopi Rimbun (2 Outlet)',
-    location: 'Medan',
-    initials: 'HW',
-    body: 'Pelanggan suka sekali dengan Kopi Passport karena tidak perlu bawa kartu stempel kertas. Buat saya sebagai pengelola, laporan PDF harian dan perpanjangan paket lewat QRIS Mayar sangat praktis.',
-    rating: 5,
-    impactMetric: '+29% Repeat Order',
-    impactLabel: '1.400+ member aktif Kopi Passport',
-  },
-];
-
 export const FAQS = [
   {
     q: 'Apakah benar gratis 14 hari tanpa syarat kartu kredit?',
@@ -363,15 +316,15 @@ export const FAQS = [
   },
   {
     q: 'Bagaimana cara pembayaran langganan dan seberapa cepat akun aktif?',
-    a: 'Pembayaran diproses otomatis melalui integrasi Mayar Payment Gateway (mendukung QRIS semua bank/e-wallet, Virtual Account BCA/Mandiri/BRI/BNI, dan E-Wallet). Begitu pembayaran selesai, webhook server mengaktifkan lisensi Anda dalam hitungan detik.',
+    a: 'Pembayaran diproses otomatis melalui integrasi Mayar Payment Gateway (mendukung QRIS semua bank/e-wallet, Virtual Account BCA/Mandiri/BRI/BNI, dan E-Wallet). Begitu pembayaran selesai, paket Anda aktif otomatis.',
   },
   {
     q: 'Apakah kasir tetap bisa berjualan saat Wi-Fi atau internet cafe mati?',
-    a: 'Bisa 100%. KaffePOS menggunakan arsitektur Offline-First berbasis IndexedDB. Kasir tetap bisa menginput pesanan, memotong stok lokal, dan mencetak struk. Saat internet kembali menyala, data disinkronkan otomatis ke InsForge Cloud PostgreSQL.',
+    a: 'Bisa. Kasir tetap bisa menginput pesanan, memotong stok, dan mencetak struk. Transaksi tersimpan di perangkat, lalu tersinkron otomatis saat internet kembali.',
   },
   {
     q: 'Apakah data omzet dan resep cafe saya aman di cloud?',
-    a: 'Sangat aman. KaffePOS berjalan di atas InsForge Cloud PostgreSQL dengan Row-Level Security (RLS) ketat per outlet, enkripsi PII AES-GCM, serta jejak audit (audit trail) untuk setiap perubahan stok dan transaksi.',
+    a: 'Data tiap outlet terpisah dan hanya bisa dibuka akun outlet itu. Data pelanggan dienkripsi, dan setiap perubahan stok serta transaksi tercatat siapa dan kapan.',
   },
   {
     q: 'Perangkat dan printer thermal apa saja yang didukung?',

@@ -8,7 +8,6 @@ import {
   Database,
   Layers,
   Printer,
-  Sparkles,
   TrendingUp,
   Wifi,
 } from 'lucide-react';
@@ -404,7 +403,6 @@ function MobileCheckoutPreview() {
         </div>
 
         <div className="mt-2.5 flex h-9 w-full items-center justify-center gap-1.5 rounded-xl bg-[#FF6A00] text-[11px] font-extrabold text-white shadow-sm">
-          <Sparkles size={12} />
           <span>{paymentMethod === 'qris' ? 'Tampilkan QRIS Dinamis' : 'Cetak Struk 58mm'}</span>
         </div>
       </div>

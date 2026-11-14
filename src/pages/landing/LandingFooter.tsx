@@ -49,7 +49,7 @@ export function LandingFooter({
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200/80 bg-emerald-50 px-2.5 py-1 font-mono text-[10px] font-bold text-emerald-800">
                 <ShieldCheck size={12} />
-                AES-GCM Secured
+                Data pelanggan dienkripsi
               </span>
             </div>
           </div>
@@ -193,7 +193,7 @@ export function LandingFooter({
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-orange-100 pt-6 text-xs font-medium text-slate-500 sm:flex-row">
           <p>© 2026 KaffePOS v2. Seluruh hak cipta dilindungi undang-undang.</p>
           <p className="font-mono text-[11px] text-slate-500">
-            Powered by InsForge Cloud PostgreSQL &amp; Mayar Headless API v2
+            Pembayaran diproses oleh Mayar. Data disimpan di InsForge Cloud.
           </p>
         </div>
       </div>

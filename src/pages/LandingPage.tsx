@@ -2,7 +2,6 @@ import { useState, useEffect, type MouseEvent as ReactMouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Store,
-  Zap,
   ArrowRight,
   Menu,
   X,
@@ -12,11 +11,10 @@ import {
   HelpCircle,
   Shield,
   Cloud,
-  Trophy,
-  Brain,
+  ChefHat,
+  LineChart,
   CheckCircle2,
   Smartphone,
-  Sparkles,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useModalBehavior } from '@/hooks/useModalBehavior';
@@ -405,9 +403,9 @@ export default function LandingPage() {
 
               <div className="mt-10 grid max-w-[580px] gap-4 border-t border-slate-200/70 pt-7 sm:grid-cols-3">
                 {[
-                  { title: 'Offline First', metric: '0 Data Loss', desc: 'Tetap jualan saat Wi-Fi putus', icon: Cloud },
-                  { title: 'Resep & KDS', metric: '< 1.2% Selisih', desc: 'Potong gramasi stok otomatis', icon: Trophy },
-                  { title: 'AI Insights', metric: 'Real-time HPP', desc: 'Analisis jam ramai & margin', icon: Brain },
+                  { title: 'Jalan saat offline', metric: '', desc: 'Tetap jualan saat Wi-Fi putus', icon: Cloud },
+                  { title: 'Resep dan layar dapur', metric: '', desc: 'Stok terpotong otomatis per resep', icon: ChefHat },
+                  { title: 'Analisis penjualan', metric: '', desc: 'Tren, menu terlaris, dan jam ramai', icon: LineChart },
                 ].map((item) => {
                   const Icon = item.icon;
                   return (
@@ -418,7 +416,6 @@ export default function LandingPage() {
                       <div>
                         <div className="flex items-center gap-1.5">
                           <h3 className="text-xs font-extrabold text-slate-900">{item.title}</h3>
-                          <span className="font-mono text-[10px] font-bold text-[#FF6A00]">{item.metric}</span>
                         </div>
                         <p className="mt-0.5 text-xs leading-5 text-slate-500">{item.desc}</p>
                       </div>
@@ -443,7 +440,7 @@ export default function LandingPage() {
                 <Coffee size={17} className="text-[#FF6A00]" /> Specialty Coffee Shop
               </div>
               <div className="flex items-center gap-2">
-                <Zap size={17} className="text-[#FF6A00]" /> Kedai Kopi &amp; Roastery
+                <Coffee size={17} className="text-[#FF6A00]" /> Kedai Kopi &amp; Roastery
               </div>
               <div className="flex items-center gap-2">
                 <Store size={17} className="text-[#FF6A00]" /> Espresso Bar &amp; Booth
@@ -472,9 +469,6 @@ export default function LandingPage() {
                           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-50 text-[#FF6A00] ring-1 ring-orange-200/60">
                             <Icon size={21} />
                           </div>
-                          <span className="rounded-full bg-slate-100 px-3 py-1 font-mono text-[10px] font-bold text-slate-700">
-                            {benefit.tag}
-                          </span>
                         </div>
                         <h2 className="mt-5 font-display text-xl font-extrabold tracking-tight text-slate-900">
                           {benefit.title}
@@ -482,7 +476,7 @@ export default function LandingPage() {
                         <p className="mt-2.5 text-sm font-medium leading-7 text-slate-600">{benefit.desc}</p>
                       </div>
                       <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-3.5">
-                        <span className="text-[11px] font-bold text-slate-400">Benchmark Operasional</span>
+                        <span className="text-[11px] font-bold text-slate-500">Ringkasnya</span>
                         <span className="font-mono text-xs font-extrabold tabular-nums text-[#FF6A00]">
                           {benefit.metric}
                         </span>
@@ -499,10 +493,6 @@ export default function LandingPage() {
         <section id="features" className="px-5 py-8 sm:px-6 md:py-12">
           <div className="kaffe-soft-section mx-auto max-w-7xl rounded-[32px] px-5 py-10 md:px-10 md:py-14">
             <div className="mx-auto max-w-3xl text-center">
-              <div className="inline-flex items-center gap-2 rounded-full border border-orange-200/80 bg-white px-3.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#FF6A00]">
-                <Sparkles size={12} />
-                <span>Modular Cafe OS</span>
-              </div>
               <h2 className="mt-3 font-display text-2xl font-extrabold tracking-tight text-slate-900 md:text-4xl">
                 Satu POS untuk Mengelola Operasional Cafe Lebih Rapi
               </h2>
@@ -533,9 +523,6 @@ export default function LandingPage() {
                             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-orange-50 text-[#FF6A00] ring-1 ring-orange-200/70 transition-colors group-hover:bg-[#FF6A00] group-hover:text-white">
                               <Icon size={22} />
                             </div>
-                            <span className="rounded-full border border-orange-200/70 bg-orange-50/70 px-3 py-1 font-mono text-[10px] font-bold text-[#FF6A00]">
-                              {feature.tag}
-                            </span>
                           </div>
                           <div className="text-right">
                             <p className="text-[10px] font-bold text-slate-400">{feature.metricLabel}</p>
@@ -846,9 +833,6 @@ export default function LandingPage() {
                 <X size={22} />
               </button>
 
-              <span className="inline-block rounded-full bg-orange-50 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-[#FF6A00]">
-                {selectedFeature.tag}
-              </span>
 
               <h3
                 id="feature-detail-title"
