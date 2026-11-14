@@ -658,33 +658,10 @@ h1, h2, h3, h4, h5, h6, .font-display {
   54%, 100% { transform: translateX(340%) skewX(-12deg); opacity: 0; }
 }
 
-@keyframes kaffeConfettiDrift {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, 0) scale(0.7) rotate(0deg);
-  }
-  16% {
-    opacity: 0.96;
-  }
-  100% {
-    opacity: 0;
-    transform: translate(calc(-50% + var(--x)), var(--y)) scale(1) rotate(130deg);
-  }
-}
-
 @keyframes kaffeProgressGlow {
   0% { transform: translateX(-110%); opacity: 0; }
   32% { opacity: 0.55; }
   100% { transform: translateX(230%); opacity: 0; }
-}
-
-.kaffe-confetti-piece {
-  position: absolute;
-  width: 0.42rem;
-  height: 0.42rem;
-  border-radius: 999px;
-  box-shadow: 0 0 0 1px rgba(255, 106, 0, 0.06);
-  animation: kaffeConfettiDrift 960ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .kaffe-progress-bar {

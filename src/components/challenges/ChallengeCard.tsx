@@ -1,4 +1,4 @@
-import { CheckCircle2, Clock3, Coffee, ReceiptText, ShieldCheck, TrendingUp, Zap } from 'lucide-react';
+import { Ban, Banknote, CheckCircle2, Clock3, Coffee, ListChecks, ReceiptText } from 'lucide-react';
 import type { Challenge, UserChallengeProgress } from '@/lib/challenges';
 import { getChallengeProgressLabel, getChallengeTargetNumber } from '@/lib/challenges';
 import ProgressBar from './ProgressBar';
@@ -7,8 +7,8 @@ const ICONS = {
   sell_drink: Coffee,
   average_checkout_time: Clock3,
   transactions_count: ReceiptText,
-  upsell_value: TrendingUp,
-  zero_voids: ShieldCheck,
+  upsell_value: Banknote,
+  zero_voids: Ban,
 } as const;
 
 export default function ChallengeCard({
@@ -18,7 +18,7 @@ export default function ChallengeCard({
   challenge: Challenge;
   progress?: UserChallengeProgress | undefined;
 }) {
-  const Icon = ICONS[challenge.target_type] || Zap;
+  const Icon = ICONS[challenge.target_type] || ListChecks;
   const target = getChallengeTargetNumber(challenge);
   const current = Math.min(progress?.current_progress || 0, target);
   const percent = Math.round((current / Math.max(target, 1)) * 100);
@@ -32,9 +32,7 @@ export default function ChallengeCard({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-orange-100 bg-orange-50 text-[#FF6A00]">
-            <Icon size={20} strokeWidth={2.4} />
-          </div>
+          <Icon size={20} className="mt-0.5 shrink-0 text-orange-700" aria-hidden="true" />
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <p className="truncate text-sm font-black text-slate-900">{challenge.title}</p>
@@ -50,7 +48,7 @@ export default function ChallengeCard({
 
       <div className="mt-4">
         <div className="mb-2 flex items-center justify-between gap-3 text-[11px] font-black uppercase tracking-wider text-slate-400">
-          <span>{done ? 'Selesai' : 'Progress'}</span>
+          <span>{done ? 'Selesai' : 'Kemajuan'}</span>
           <span>
             {getChallengeProgressLabel(challenge, current)} / {getChallengeProgressLabel(challenge, target)}
           </span>

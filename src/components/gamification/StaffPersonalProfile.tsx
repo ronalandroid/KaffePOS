@@ -1,29 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { ReactNode } from 'react';
-import {
-  Award,
-  CheckCircle2,
-  ChevronRight,
-  Coffee,
-  Flame,
-  Medal,
-  ShieldCheck,
-  Sparkles,
-  Target,
-  TrendingUp,
-  Trophy,
-  Volume2,
-  VolumeX,
-  Zap,
-  type LucideIcon,
-} from 'lucide-react';
+import { Award, CheckCircle2, ChevronRight, Coffee, CalendarCheck, Lock, Volume2, VolumeX } from 'lucide-react';
 import { useStore } from '@/hooks/useStore';
 import { getStaffPerformance, type StaffPerformanceResponse } from '@/lib/backendApi';
 import { normalizeUserRole, type UserRole } from '@/lib/accessControl';
 import {
   buildStaffPersonalProfileStats,
   type StaffBadge,
-  type StaffBadgeIcon,
   type StaffChallenge,
 } from '@/lib/gamification';
 import { deriveLocalChallengeProgress } from '@/lib/challenges';
@@ -38,14 +20,6 @@ const fRp = (value: number) =>
   }).format(value || 0);
 
 const fNum = (value: number) => new Intl.NumberFormat('id-ID').format(value || 0);
-
-const BADGE_ICONS: Record<StaffBadgeIcon, LucideIcon> = {
-  award: Award,
-  zap: Zap,
-  'trending-up': TrendingUp,
-  'shield-check': ShieldCheck,
-  flame: Flame,
-};
 
 function ProgressBar({ value }: { value: number }) {
   return (
@@ -74,11 +48,11 @@ function LevelProgress({
   return (
     <div
       className="rounded-2xl border border-orange-100 bg-orange-50/70 p-4 sm:p-5"
-      title="Progress level dihitung dari poin transaksi, misi, dan badge yang sudah dicapai."
+      title="Kemajuan level dihitung dari poin transaksi, misi, dan badge yang sudah diraih."
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-[10px] font-black uppercase tracking-widest text-orange-700">Level Progress</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-orange-700">Kemajuan level</p>
           <div className="mt-2 flex flex-wrap items-end gap-2">
             <span className="font-display text-4xl font-extrabold leading-none text-slate-900">Lv {level}</span>
             <span className="pb-1 text-sm font-black text-orange-700">{label}</span>
@@ -104,13 +78,11 @@ function StreakCounter({ value }: { value: number }) {
   return (
     <div
       className="rounded-xl border border-orange-100 bg-orange-50/70 p-4"
-      title="Streak bertambah saat ada aktivitas transaksi yang konsisten setiap hari."
+      title="Bertambah satu setiap hari yang ada transaksinya, dan kembali ke nol jika terlewat sehari."
     >
-      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg border border-orange-100 bg-white text-[#FF6A00]">
-        <Flame size={18} />
-      </div>
+      <CalendarCheck size={20} className="mb-3 text-orange-700" aria-hidden="true" />
       <p className="font-display text-2xl font-extrabold text-slate-900">{value} hari</p>
-      <p className="mt-1 text-[11px] font-black uppercase tracking-wider text-slate-500">Daily streak</p>
+      <p className="mt-1 text-[11px] font-black uppercase tracking-wider text-slate-500">Hari berturut-turut</p>
     </div>
   );
 }
@@ -119,21 +91,14 @@ function StatCard({
   label,
   value,
   sub,
-  icon,
 }: {
   label: string;
   value: string;
   sub: string;
-  icon: ReactNode;
 }) {
   return (
     <div className="kaffe-metric-card p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[var(--brand-panel-shadow-hover)]">
-      <div className="mb-3 flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-orange-100 bg-orange-50 text-[#FF6A00]">
-          {icon}
-        </div>
-        <p className="min-w-0 text-[11px] font-semibold text-slate-400">{label}</p>
-      </div>
+      <p className="mb-3 min-w-0 text-[12px] font-semibold text-slate-600">{label}</p>
       <p className="font-display text-xl font-extrabold leading-tight text-slate-900">{value}</p>
       <p className="mt-2 text-[11px] font-semibold text-slate-500">{sub}</p>
     </div>
@@ -141,7 +106,7 @@ function StatCard({
 }
 
 function BadgeCard({ badge }: { badge: StaffBadge }) {
-  const Icon = BADGE_ICONS[badge.icon];
+  const Icon = badge.unlocked ? Award : Lock;
   const progress = Math.round((badge.progress / Math.max(badge.target, 1)) * 100);
 
   return (
@@ -151,24 +116,13 @@ function BadgeCard({ badge }: { badge: StaffBadge }) {
           ? 'border-orange-100 bg-orange-50/60 shadow-sm'
           : 'border-slate-100 bg-slate-50/70'
       }`}
-      title={badge.unlocked ? `${badge.name} sudah terbuka.` : `${badge.name}: ${badge.progress}/${badge.target} progress.`}
+      title={badge.unlocked ? `${badge.name} sudah diraih.` : `${badge.name}: ${badge.progress} dari ${badge.target}.`}
     >
-      {badge.unlocked ? (
-        <div className="absolute right-0 top-0 h-20 w-20 -translate-y-10 translate-x-10 rounded-full bg-white/70" />
-      ) : null}
       <div className="mb-3 flex items-start justify-between gap-3">
-        <div
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${
-            badge.unlocked
-              ? 'border-orange-100 bg-white text-[#FF6A00]'
-              : 'border-slate-100 bg-white text-slate-300'
-          }`}
-        >
-          <Icon size={18} strokeWidth={2.5} />
-        </div>
+        <Icon size={20} className={badge.unlocked ? 'text-orange-700' : 'text-slate-500'} aria-hidden="true" />
         {badge.unlocked ? (
-          <span className="relative rounded-full bg-white px-2 py-1 text-[10px] font-black uppercase tracking-wider text-[#FF6A00] ring-1 ring-orange-100">
-            Earned
+          <span className="relative rounded-full bg-white px-2 py-1 text-[10px] font-black uppercase tracking-wider text-orange-700 ring-1 ring-orange-100">
+            Diraih
           </span>
         ) : (
           <span className="rounded-full bg-white px-2 py-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
@@ -187,18 +141,14 @@ function BadgeCard({ badge }: { badge: StaffBadge }) {
 
 function RankBadge({ rank }: { rank: number }) {
   const medalClass = rank === 1
-    ? 'border-orange-100 bg-orange-50 text-[#FF6A00]'
-    : rank === 2
-      ? 'border-slate-200 bg-slate-50 text-slate-600'
-      : rank === 3
-        ? 'border-amber-100 bg-amber-50 text-amber-700'
-        : 'border-slate-100 bg-white text-slate-500';
+    ? 'border-orange-100 bg-orange-50 text-orange-700'
+    : 'border-slate-100 bg-white text-slate-600';
   return (
     <div
       className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border text-sm font-black ${medalClass}`}
-      title={rank <= 3 ? `Peringkat ${rank} mendapatkan highlight medal.` : `Peringkat ${rank}`}
+      title={`Peringkat ${rank}`}
     >
-      {rank <= 3 ? <Medal size={18} /> : `#${rank}`}
+      {rank}
     </div>
   );
 }
@@ -227,7 +177,7 @@ function ChallengeRow({ challenge }: { challenge: StaffChallenge }) {
       </div>
       <div className="mt-4">
         <div className="mb-2 flex flex-col gap-1 text-[11px] font-black uppercase tracking-wider text-slate-400 sm:flex-row sm:items-center sm:justify-between">
-          <span>Progress</span>
+          <span>Kemajuan</span>
           <span>{currentLabel} / {targetLabel}</span>
         </div>
         <ProgressBar value={progress} />
@@ -248,7 +198,7 @@ function PerformanceLoadingState() {
         <section className="kaffe-panel rounded-2xl p-5 md:p-6">
           <div className="flex items-center justify-center gap-3 py-14 text-sm font-bold text-slate-400">
             <div className="h-7 w-7 animate-spin rounded-full border-2 border-orange-200 border-t-[#FF6A00]" />
-            Memuat performa staff...
+            Memuat performa staf...
           </div>
         </section>
         <section className="kaffe-card-grid grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -363,7 +313,7 @@ export default function StaffPersonalProfile({ profile, role }: { profile?: Prof
       dispatchCelebrationOnce(`level:${scopeKey}:${stats.level}`, {
         kind: 'level',
         title: `Level ${stats.level} tercapai`,
-        message: `${stats.staffName} masuk level ${stats.levelLabel}.`,
+        message: `${stats.staffName} sekarang ${stats.levelLabel}.`,
         sound,
       });
     }
@@ -382,8 +332,8 @@ export default function StaffPersonalProfile({ profile, role }: { profile?: Prof
     if (stats.dailyStreak >= 3) {
       dispatchCelebrationOnce(`streak:${scopeKey}:${stats.dailyStreak}`, {
         kind: 'streak',
-        title: `${stats.dailyStreak} hari streak`,
-        message: 'Ritme transaksi harian tetap terjaga.',
+        title: `${stats.dailyStreak} hari berturut-turut`,
+        message: 'Ada transaksi setiap hari tanpa terlewat.',
         sound,
       });
     }
@@ -399,18 +349,18 @@ export default function StaffPersonalProfile({ profile, role }: { profile?: Prof
         <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <p className="text-[11px] font-black uppercase tracking-widest text-[#FF6A00]">
-              {isOwner ? 'Performa Tim' : 'Profil Performa'}
+              {isOwner ? 'Performa tim' : 'Performa saya'}
             </p>
             <h1 className="font-display mt-1 text-2xl font-extrabold text-slate-900">
               {stats.staffName}
             </h1>
             <p className="mt-1 text-sm font-semibold text-slate-500">
-              {storeSettings?.store_name || 'KaffePOS'} · {isOwner ? 'Owner view' : `Level ${stats.level} ${stats.levelLabel}`}
+              {storeSettings?.store_name || 'KaffePOS'} · {isOwner ? 'Tampilan pemilik' : `Level ${stats.level} ${stats.levelLabel}`}
             </p>
           </div>
           <div className="flex w-fit items-center gap-2 rounded-xl border border-slate-100 bg-white px-3 py-2 text-xs font-bold text-slate-500 shadow-sm">
             <span className={`h-2 w-2 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-            {syncing ? 'Menyinkronkan' : isOnline ? 'Online' : 'Mode offline'}
+            {syncing ? 'Menyinkronkan' : isOnline ? 'Tersambung' : 'Mode offline'}
           </div>
           <button
             type="button"
@@ -420,8 +370,8 @@ export default function StaffPersonalProfile({ profile, role }: { profile?: Prof
               setCelebrationSoundEnabled(next);
             }}
             className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 bg-white text-slate-500 shadow-sm hover:bg-orange-50 hover:text-[#FF6A00]"
-            aria-label={soundEnabled ? 'Matikan suara achievement' : 'Aktifkan suara achievement'}
-            title={soundEnabled ? 'Matikan suara lembut saat achievement tercapai' : 'Aktifkan suara lembut saat achievement tercapai'}
+            aria-label={soundEnabled ? 'Matikan suara pencapaian' : 'Aktifkan suara pencapaian'}
+            title={soundEnabled ? 'Matikan suara saat ada pencapaian baru' : 'Aktifkan suara saat ada pencapaian baru'}
           >
             {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
           </button>
@@ -449,8 +399,8 @@ export default function StaffPersonalProfile({ profile, role }: { profile?: Prof
                 </h2>
                 <p className="mt-2 text-sm font-semibold leading-relaxed text-slate-500">
                   {isOwner
-                    ? 'Pantau ritme tim, akurasi transaksi, dan kontribusi penjualan outlet dalam satu tampilan.'
-                    : 'Pertahankan ritme transaksi, upsell yang natural, dan akurasi kasir untuk naik level berikutnya.'}
+                    ? 'Poin tim dari transaksi, misi, dan badge minggu ini.'
+                    : 'Poin bertambah dari transaksi, misi harian, dan badge.'}
                 </p>
                 <div className="mt-5">
                   <LevelProgress
@@ -458,7 +408,7 @@ export default function StaffPersonalProfile({ profile, role }: { profile?: Prof
                     label={stats.levelLabel}
                     points={stats.points}
                     progress={stats.levelProgress}
-                    nextLabel={isOwner ? 'Progress Tim' : levelProgressLabel}
+                    nextLabel={isOwner ? 'Kemajuan tim' : levelProgressLabel}
                   />
                 </div>
               </div>
@@ -467,14 +417,11 @@ export default function StaffPersonalProfile({ profile, role }: { profile?: Prof
             <div className="grid grid-cols-2 gap-3">
               <StreakCounter value={stats.dailyStreak} />
               <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-4">
-                <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg border border-slate-100 bg-white text-[#FF6A00]">
-                  <Trophy size={18} />
-                </div>
                 <p className="font-display text-2xl font-extrabold text-slate-900">
-                  {isOwner ? fNum(stats.activeStaffCount) : `#${stats.rank}`}
+                  {isOwner ? fNum(stats.activeStaffCount) : `Ke-${stats.rank}`}
                 </p>
                 <p className="mt-1 text-[11px] font-black uppercase tracking-wider text-slate-500">
-                  {isOwner ? 'Staff aktif' : 'Ranking personal'}
+                  {isOwner ? 'Staf aktif' : 'Peringkat saya'}
                 </p>
               </div>
             </div>
@@ -485,36 +432,31 @@ export default function StaffPersonalProfile({ profile, role }: { profile?: Prof
           <StatCard
             label="Poin"
             value={fNum(stats.points)}
-            sub={isOwner ? 'Akumulasi performa tim' : 'Akumulasi performa personal'}
-            icon={<Sparkles size={18} />}
+            sub={isOwner ? 'Total poin tim' : 'Total poin saya'}
           />
           <StatCard
-            label="Transaksi Minggu Ini"
+            label="Transaksi minggu ini"
             value={fNum(stats.weeklyTransactions)}
-            sub="Transaksi non-void"
-            icon={<Zap size={18} />}
+            sub="Tidak termasuk void"
           />
           <StatCard
-            label="Revenue Minggu Ini"
+            label="Penjualan minggu ini"
             value={fRp(stats.weeklyRevenue)}
-            sub={isOwner ? 'Kontribusi outlet' : 'Kontribusi kasir'}
-            icon={<TrendingUp size={18} />}
+            sub={isOwner ? 'Seluruh outlet' : 'Dari transaksi saya'}
           />
           <StatCard
-            label="Badge Aktif"
+            label="Badge diraih"
             value={`${unlockedBadges}/${stats.badges.length}`}
-            sub="Pencapaian terbuka"
-            icon={<Medal size={18} />}
+            sub="Dari semua badge"
           />
         </section>
 
         <section className="kaffe-panel rounded-2xl p-5 md:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <p className="text-[11px] font-black uppercase tracking-widest text-[#FF6A00]">Misi Harian</p>
-              <h3 className="font-display mt-1 text-xl font-extrabold text-slate-900">Ringkasan Progress</h3>
+              <h3 className="font-display text-xl font-extrabold text-slate-900">Ringkasan misi</h3>
               <p className="mt-1 text-sm font-semibold leading-relaxed text-slate-500">
-                {mergedChallengeProgress.filter((item) => item.is_completed).length}/{activeChallenges.filter((item) => item.is_active).length} misi selesai · +{fNum(challengeRewardPoints)} poin reward
+                {mergedChallengeProgress.filter((item) => item.is_completed).length}/{activeChallenges.filter((item) => item.is_active).length} misi selesai · +{fNum(challengeRewardPoints)} poin hadiah
               </p>
             </div>
             <button
@@ -522,7 +464,7 @@ export default function StaffPersonalProfile({ profile, role }: { profile?: Prof
               onClick={() => window.dispatchEvent(new CustomEvent('kaffepos-open-tab', { detail: { tab: 'challenges' } }))}
               className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-orange-100 bg-orange-50 px-4 text-xs font-black uppercase tracking-wider text-orange-700 transition-all hover:bg-orange-100 active:scale-95"
             >
-              Buka Misi
+              Buka misi
               <ChevronRight size={16} />
             </button>
           </div>
@@ -532,13 +474,12 @@ export default function StaffPersonalProfile({ profile, role }: { profile?: Prof
           <div className="kaffe-panel rounded-2xl p-5 md:p-6">
             <div className="mb-5 flex items-center justify-between gap-3">
               <div>
-                <p className="text-[11px] font-black uppercase tracking-widest text-[#FF6A00]">Badge</p>
-                <h3 className="font-display mt-1 text-xl font-extrabold text-slate-900">
-                  {isOwner ? 'Badge Collection Tim' : 'Badge Collection'}
+                <h3 className="font-display text-xl font-extrabold text-slate-900">
+                  {isOwner ? 'Badge tim' : 'Badge'}
                 </h3>
               </div>
               <span className="rounded-full border border-slate-100 bg-slate-50 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-slate-500">
-                {unlockedBadges} terbuka
+                {unlockedBadges} diraih
               </span>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -551,23 +492,19 @@ export default function StaffPersonalProfile({ profile, role }: { profile?: Prof
           <div className="kaffe-panel rounded-2xl p-5 md:p-6">
             <div className="mb-5 flex items-center justify-between gap-3">
               <div>
-                <p className="text-[11px] font-black uppercase tracking-widest text-[#FF6A00]">Ranking</p>
-                <h3 className="font-display mt-1 text-xl font-extrabold text-slate-900">
-                  {isOwner ? 'Leaderboard Tim' : 'Posisi Saya'}
+                <h3 className="font-display text-xl font-extrabold text-slate-900">
+                  {isOwner ? 'Peringkat tim' : 'Peringkat saya'}
                 </h3>
               </div>
               <span className="rounded-full border border-orange-100 bg-orange-50 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-orange-700">
-                {isOwner ? `${stats.activeStaffCount} staff` : `#${stats.rank}`}
+                {isOwner ? `${stats.activeStaffCount} staf` : `Ke-${stats.rank}`}
               </span>
             </div>
             <div className="space-y-3">
               {visibleLeaderboard.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/70 p-5 text-center">
-                  <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-white text-slate-300">
-                    <Trophy size={20} />
-                  </div>
-                  <p className="text-sm font-black text-slate-800">Belum ada ranking minggu ini</p>
-                  <p className="mt-1 text-xs font-semibold leading-relaxed text-slate-500">Ranking akan muncul setelah transaksi pertama tersimpan.</p>
+                  <p className="text-sm font-black text-slate-800">Belum ada peringkat minggu ini</p>
+                  <p className="mt-1 text-xs font-semibold leading-relaxed text-slate-500">Peringkat muncul setelah transaksi pertama tersimpan.</p>
                 </div>
               ) : visibleLeaderboard.map((entry) => {
                 const active = !isOwner && entry.name === stats.staffName;
@@ -594,11 +531,7 @@ export default function StaffPersonalProfile({ profile, role }: { profile?: Prof
         <section className="kaffe-panel rounded-2xl p-5 md:p-6">
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
-              <p className="text-[11px] font-black uppercase tracking-widest text-[#FF6A00]">Daily Challenges</p>
-              <h3 className="font-display mt-1 text-xl font-extrabold text-slate-900">Misi Aktif Hari Ini</h3>
-            </div>
-            <div className="hidden h-10 w-10 items-center justify-center rounded-xl border border-orange-100 bg-orange-50 text-[#FF6A00] sm:flex">
-              <Target size={18} />
+              <h3 className="font-display text-xl font-extrabold text-slate-900">Misi hari ini</h3>
             </div>
           </div>
           <div className="grid gap-3 lg:grid-cols-2">

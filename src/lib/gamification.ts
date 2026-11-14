@@ -55,11 +55,11 @@ export type StaffPersonalProfileStats = {
 };
 
 const LEVELS = [
-  { min: 0, label: 'Rookie Barista' },
-  { min: 120, label: 'Barista Fokus' },
-  { min: 300, label: 'Shift Hero' },
-  { min: 600, label: 'Kopi Captain' },
-  { min: 1000, label: 'Outlet Champion' },
+  { min: 0, label: 'Kasir baru' },
+  { min: 120, label: 'Kasir terlatih' },
+  { min: 300, label: 'Kasir andal' },
+  { min: 600, label: 'Kasir senior' },
+  { min: 1000, label: 'Kasir teladan' },
 ] as const;
 
 function startOfDay(date: Date) {
@@ -202,8 +202,8 @@ function buildBadges(params: {
   const badgeDefinitions: StaffBadge[] = [
     {
       code: 'speed-demon',
-      name: 'Speed Demon',
-      description: 'Selesaikan 15 transaksi minggu ini.',
+      name: '15 transaksi seminggu',
+      description: 'Selesaikan 15 transaksi dalam minggu ini.',
       icon: 'zap',
       progress: params.weeklyTransactions,
       target: 15,
@@ -211,8 +211,8 @@ function buildBadges(params: {
     },
     {
       code: 'upsell-king',
-      name: 'Upsell King',
-      description: 'Capai 5 transaksi bernilai tinggi.',
+      name: 'Transaksi besar',
+      description: 'Catat 5 transaksi senilai Rp 50.000 ke atas atau berisi 3 item ke atas dalam minggu ini.',
       icon: 'trending-up',
       progress: params.weeklyUpsells,
       target: 5,
@@ -220,8 +220,8 @@ function buildBadges(params: {
     },
     {
       code: 'zero-voids',
-      name: 'Zero Voids',
-      description: 'Jaga minggu ini tanpa void.',
+      name: 'Tanpa void',
+      description: 'Seminggu penuh tanpa transaksi void.',
       icon: 'shield-check',
       progress: params.weeklyVoids === 0 && params.weeklyTransactions > 0 ? 1 : 0,
       target: 1,
@@ -229,8 +229,8 @@ function buildBadges(params: {
     },
     {
       code: 'streak-flame',
-      name: 'Daily Streak',
-      description: 'Aktif transaksi 3 hari berturut-turut.',
+      name: '3 hari berturut-turut',
+      description: 'Ada transaksi 3 hari berturut-turut.',
       icon: 'flame',
       progress: params.dailyStreak,
       target: 3,
@@ -238,8 +238,8 @@ function buildBadges(params: {
     },
     {
       code: 'kds-ready',
-      name: 'KDS Ready',
-      description: 'Bantu selesaikan 10 order dapur.',
+      name: '10 pesanan dapur',
+      description: 'Selesaikan 10 pesanan di layar dapur.',
       icon: 'award',
       progress: params.completedKitchenOrders,
       target: 10,
@@ -262,16 +262,16 @@ function buildChallenges(params: {
   return [
     {
       code: 'daily-10-checkouts',
-      title: '10 Transaksi Hari Ini',
-      description: 'Jaga ritme kasir tetap cepat dan rapi.',
+      title: '10 transaksi hari ini',
+      description: 'Selesaikan 10 transaksi sebelum tutup kasir.',
       current: params.todayTransactions,
       target: 10,
       rewardPoints: 50,
     },
     {
       code: 'qris-3',
-      title: '3 Pembayaran QRIS',
-      description: 'Dorong pembayaran digital saat antrean ramai.',
+      title: '3 pembayaran QRIS',
+      description: 'Terima 3 pembayaran lewat QRIS hari ini.',
       current: params.todayQris,
       target: 3,
       rewardPoints: 25,
@@ -279,15 +279,15 @@ function buildChallenges(params: {
     {
       code: 'revenue-500k',
       title: 'Penjualan Rp 500 rb',
-      description: 'Kejar target personal lewat upsell yang natural.',
+      description: 'Capai total penjualan Rp 500.000 hari ini.',
       current: params.todayRevenue,
       target: 500000,
       rewardPoints: 60,
     },
     {
       code: 'zero-void-day',
-      title: 'Tanpa Void Hari Ini',
-      description: 'Pastikan transaksi akurat sebelum bayar.',
+      title: 'Tanpa void hari ini',
+      description: 'Tutup hari tanpa transaksi void.',
       current: params.todayVoids === 0 && params.todayTransactions > 0 ? 1 : 0,
       target: 1,
       rewardPoints: 20,

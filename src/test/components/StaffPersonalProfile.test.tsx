@@ -55,37 +55,37 @@ describe('StaffPersonalProfile', () => {
   it('renders the staff profile using KaffePOS performance sections', () => {
     render(<StaffPersonalProfile profile={profile} />);
 
-    expect(screen.getByText('Profil Performa')).toBeInTheDocument();
+    expect(screen.getByText('Performa saya')).toBeInTheDocument();
     expect(screen.getAllByText('Rina Agustina').length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Level/i).length).toBeGreaterThan(0);
-    expect(screen.getByText('Daily streak')).toBeInTheDocument();
-    expect(screen.getByText('Badge Collection')).toBeInTheDocument();
-    expect(screen.getByText('Misi Aktif Hari Ini')).toBeInTheDocument();
-    expect(screen.getByText('Ranking personal')).toBeInTheDocument();
+    expect(screen.getByText('Hari berturut-turut')).toBeInTheDocument();
+    expect(screen.getByText('Badge')).toBeInTheDocument();
+    expect(screen.getByText('Misi hari ini')).toBeInTheDocument();
+    expect(screen.getAllByText('Peringkat saya').length).toBeGreaterThan(0); expect(screen.getByText('Badge diraih')).toBeInTheDocument();
   });
 
   it('shows badge grid and active challenge progress', () => {
     render(<StaffPersonalProfile profile={profile} />);
 
-    expect(screen.getByText('Speed Demon')).toBeInTheDocument();
-    expect(screen.getByText('Upsell King')).toBeInTheDocument();
-    expect(screen.getByText('10 Transaksi Hari Ini')).toBeInTheDocument();
-    expect(screen.getByText('3 Pembayaran QRIS')).toBeInTheDocument();
-    expect(screen.getAllByText(/#\d+/).length).toBeGreaterThan(0);
+    expect(screen.getByText('15 transaksi seminggu')).toBeInTheDocument();
+    expect(screen.getByText('Transaksi besar')).toBeInTheDocument();
+    expect(screen.getByText('10 transaksi hari ini')).toBeInTheDocument();
+    expect(screen.getByText('3 pembayaran QRIS')).toBeInTheDocument();
+    expect(screen.getAllByText(/Ke-\d+/).length).toBeGreaterThan(0);
   });
 
   it('keeps cashier view personal without exposing other staff names', () => {
     render(<StaffPersonalProfile profile={profile} role="cashier" />);
 
-    expect(screen.getByText('Posisi Saya')).toBeInTheDocument();
+    expect(screen.getAllByText('Peringkat saya').length).toBeGreaterThan(0); expect(screen.queryByText('Peringkat tim')).not.toBeInTheDocument().toBeInTheDocument();
     expect(screen.queryByText('Budi')).not.toBeInTheDocument();
   });
 
   it('shows owner team mode and team leaderboard', () => {
     render(<StaffPersonalProfile profile={{ id: 'owner_1', display_name: 'Owner', email: 'owner@example.com', role: 'owner_admin' }} {...ownerRoleProps} />);
 
-    expect(screen.getByText('Performa Tim')).toBeInTheDocument();
-    expect(screen.getByText('Leaderboard Tim')).toBeInTheDocument();
+    expect(screen.getByText('Performa tim')).toBeInTheDocument();
+    expect(screen.getByText('Peringkat tim')).toBeInTheDocument();
     expect(screen.getByText('Budi')).toBeInTheDocument();
     expect(screen.getByText('Rina Agustina')).toBeInTheDocument();
   });
@@ -95,7 +95,7 @@ describe('StaffPersonalProfile', () => {
 
     render(<StaffPersonalProfile profile={profile} role="cashier" />);
 
-    expect(screen.getByText('Memuat performa staff...')).toBeInTheDocument();
+    expect(screen.getByText('Memuat performa staf...')).toBeInTheDocument();
   });
 
   it('renders an empty state for a new cashier with zero activity', () => {

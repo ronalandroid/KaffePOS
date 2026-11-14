@@ -1,4 +1,4 @@
-import { BadgePercent, Bell, BriefcaseBusiness, Clock, Info, Package, Target, Trophy } from 'lucide-react';
+import { Award, Bell, BriefcaseBusiness, Clock, Info, ListChecks, Package, Stamp } from 'lucide-react';
 import type { KaffeNotification } from '@/lib/notifications';
 import { getNotificationCategory } from '@/lib/notifications';
 
@@ -10,12 +10,12 @@ function formatNotificationTime(value: string) {
 
 function getVisual(notification: KaffeNotification) {
   const category = getNotificationCategory(notification);
-  if (notification.type === 'loyalty') return { Icon: BadgePercent, label: 'Business Alert', className: 'bg-orange-100 text-orange-600' };
-  if (category === 'gamification') return { Icon: Trophy, label: 'Gamification', className: 'bg-orange-100 text-orange-600' };
-  if (category === 'challenges') return { Icon: Target, label: 'Challenges', className: 'bg-orange-100 text-orange-600' };
-  if (category === 'business_alert') return { Icon: BriefcaseBusiness, label: 'Business Alert', className: 'bg-slate-100 text-slate-600' };
-  if (category === 'stock') return { Icon: Package, label: 'Stock', className: 'bg-amber-100 text-amber-700' };
-  return { Icon: Info, label: 'System', className: 'bg-slate-100 text-slate-500' };
+  if (notification.type === 'loyalty') return { Icon: Stamp, label: 'Loyalty', className: 'text-orange-700' };
+  if (category === 'gamification') return { Icon: Award, label: 'Pencapaian', className: 'text-orange-700' };
+  if (category === 'challenges') return { Icon: ListChecks, label: 'Misi', className: 'text-orange-700' };
+  if (category === 'business_alert') return { Icon: BriefcaseBusiness, label: 'Info usaha', className: 'text-slate-600' };
+  if (category === 'stock') return { Icon: Package, label: 'Stok', className: 'text-amber-700' };
+  return { Icon: Info, label: 'Sistem', className: 'text-slate-600' };
 }
 
 export default function NotificationCard({ notification }: { notification: KaffeNotification }) {
@@ -31,9 +31,7 @@ export default function NotificationCard({ notification }: { notification: Kaffe
       }`}
     >
       <div className="flex gap-4">
-        <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${visual.className}`}>
-          <Icon size={19} />
-        </div>
+        <Icon size={20} className={`mt-0.5 shrink-0 ${visual.className}`} aria-hidden="true" />
         <div className="min-w-0 flex-1">
           <div className="mb-1 flex items-start justify-between gap-3">
             <div className="min-w-0">
