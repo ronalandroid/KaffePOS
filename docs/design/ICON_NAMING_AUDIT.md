@@ -2,7 +2,7 @@
 
 Tanggal: 14 November 2026
 Basis kode: branch `redesign/professional-ui` (PR #1, commit `4156c17`), di atas `main@5d45963`
-Status: **Langkah 1 selesai. Belum ada kode yang diubah.** Langkah 2 menunggu persetujuan pemilik produk.
+Status: **Langkah 2 dan 3 selesai** di branch `design/icon-naming`. Pemilik produk menyetujui semua rekomendasi (K-1 sampai K-8). Hasil, penyimpangan dari rencana, dan Delivery Gate ada di bagian akhir.
 
 ## Skill yang dimuat
 
@@ -312,6 +312,86 @@ Verifikasi di akhir: `npm run check`, dua perintah grep dari brief harus kosong,
 
 Satu catatan untuk grep kedua: kata `unlock` akan tetap muncul di nama variabel (`badge.unlocked`, `unlockBodyScroll`) dan `pintar` tidak dipakai sebagai nama variabel. Sesuai brief, id dan nama field tidak diganti; baris-baris itu akan saya daftar di sini sebagai pengecualian beralasan.
 
+## Hasil penerapan (Langkah 2)
+
+Keputusan: K-1 testimoni diperlakukan belum terverifikasi dan dihapus (commit tersendiri, mudah di-revert). K-2 Kopi Score dihapus dari tampilan. K-3 "Kasir teladan". K-4 lencana "Paling populer" diganti "Multi kasir". K-5 tiga opsi logo diajukan, berkas lama tidak disentuh. K-6 dan K-7 diterapkan. K-8 PR baru di atas PR #1.
+
+### Yang berbeda dari rencana audit
+
+| Rencana | Yang terjadi | Alasan |
+|---|---|---|
+| Pembungkus `ui/Icon.tsx` | Diganti `src/test/iconSystem.test.ts` | Test mengunci pustaka, ukuran, stroke, dan glyph terlarang tanpa memaksa 88 berkas pindah ke API baru. |
+| G-07 "Penjualan tambahan" | Menjadi "Transaksi besar" | Syarat di kode: total Rp 50.000 ke atas **atau** 3 item ke atas. Itu bukan penjualan tambahan. |
+| T-02 ikon `Usb` / `Wifi` di printer | Tidak diterapkan | Layar pengaturan printer hanya punya koneksi Bluetooth. |
+| X-02, X-03 splash Android | **Tidak diterapkan** | Mengubah activity peluncur dan ikon splash tanpa emulator berisiko merusak pembukaan aplikasi. Hanya X-01 (hapus dua animasi yatim) yang dikerjakan. |
+| Judul misi bawaan di backend ("Zero Voids", "Checkout Cepat", "Upsell Rp50.000") | **Tidak diubah** | Judul dipakai sebagai kunci unik `(store_id, title, valid_from)`. Mengganti teksnya membuat misi ganda di hari yang sama. Butuh migrasi data. |
+
+### Temuan baru saat penerapan
+
+- **Kopi Score punya dua rumus berbeda**: satu di backend (layar analisis), satu lagi di `ReportTab.tsx` (PDF). Keduanya dihapus dari tampilan.
+- **Teks analisis memuat angka karangan**: "Potential +18% revenue", "Estimated impact +12-18%", dan angka "confidence" 64 sampai 90 yang ditulis tetap di kode. Semua diganti kalimat tanpa angka; lencana persen kepercayaan dihapus dari kartu.
+- **Landing memuat lebih banyak angka tanpa sumber** dari yang tercatat di audit: "99.94%", "2.4 dtk / cup", "< 0.8 dtk", "< 1.5 dtk", "0 Data Loss", "Zero-Trust", "Majoo-Grade". Semua diganti fakta produk.
+- Enkripsi AES-GCM memang ada di `backend/src/lib/encryption.ts`, jadi klaim "Data pelanggan dienkripsi" dipertahankan (S-26).
+
+### Angka akhir
+
+- Ikon: 268 ukuran dinormalkan ke 16/20/24 dan 41 `strokeWidth` dihapus, di 68 berkas.
+- Glyph `Sparkles`, `Zap`, `Wand2`, `Brain`, `Trophy`, `Medal`, `Flame`, `Target` (sebagai ikon): nol tersisa di `src`.
+- Dipertahankan dengan alasan: `Award` (satu ikon badge dan pencapaian), `Gift` ×3 (penukaran hadiah loyalty), `Star` ×1 (input rating di formulir feedback), `ShieldCheck` ×2 (checkout pembayaran, enkripsi di footer landing), `TrendingUp` ×2 (tren penjualan di analisis, pratinjau landing).
+
+### Pengecualian grep kedua
+
+Baris yang masih cocok dengan `unlock|Hero|actionable` adalah nama field dan fungsi (`badge.unlocked`, `unlockedBadges`, `unlockBodyScroll`), nama test, dan komentar. Tidak ada yang tampil ke pengguna.
+
+## Hasil verifikasi (Langkah 3)
+
+- `npm run check`: lulus, dijalankan dalam tiga bagian. Lint dan typecheck bersih. Test frontend 58 berkas / 211 test, test backend 46 berkas / 210 test. Build web dan `backend check` berhasil.
+- Grep pertama (`Sparkles|Wand2|Brain|Zap|Rocket|Crown|Gem`): kosong.
+- Screenshot sebelum dan sesudah: `docs/design/before-after/` (nav bawah mobile, sidebar tablet, Kasir, Dapur, Performa, Misi, Dashboard, Pengaturan printer). Diambil dari dev server dengan data contoh. **Tidak ada**: splash Android (tanpa emulator), layar Analisis dengan data (butuh backend), kartu pesanan Dapur (butuh backend).
+
 ## Hasil Delivery Gate
 
-Belum dijalankan. Diisi setelah Langkah 2 dan 3.
+Lingkup gate: perubahan di branch ini (ikon, glyph, teks), bukan seluruh aplikasi.
+
+### Blok 1: Hard Gate
+
+| Aturan | Hasil | Bukti |
+|---|---|---|
+| R-02 tanda pisah panjang | PASS | Grep di `src` hanya menyisakan satu komentar kode. |
+| R-03 mobile | PASS, terbatas | Screenshot 390 px untuk nav, Kasir, Dapur, Performa, Misi tanpa overflow. Layar lain tidak diperiksa ulang. |
+| R-17, R-18, R-36, R-38 angka, testimoni, klaim | PASS, dengan satu sisa | Testimoni, rating, Kopi Score, "Paling populer", dan angka dampak dihapus. Sisa: "Hemat hingga 24%" di paket tahunan berasal dari hitungan harga, bukan klaim. |
+| R-23 aset | PASS | Logo lama tidak diubah; tiga opsi diajukan untuk dipilih. |
+| R-25 kontras | PASS untuk yang disentuh | Teks oranye baru memakai `orange-700` (di atas 4,5:1). Kontras layar yang tidak disentuh tidak diaudit. |
+| R-27 state | PASS untuk yang disentuh | Empty state Dapur, Misi, Analisis, dan peringkat menyebut sebab dan langkah berikutnya. |
+| R-32, R-39 keyboard dan nama aksesibel | PASS untuk yang disentuh | Ikon hiasan diberi `aria-hidden`; tombol ikon punya `aria-label` Indonesia; notifikasi pencapaian memakai `role="status"`. |
+| R-33 tanpa skrip penambal | PASS | Perubahan ditulis di sumber. Codemod ukuran ikon dijalankan sekali dan tidak ditinggal di repo. |
+| R-35 dijalankan dan diklik | **BELUM PENUH** | Aplikasi dibangun, test lulus, dan enam layar dibuka lewat screenshot. Klik satu per satu ke setiap tombol belum dilakukan, dan alur yang butuh backend tidak bisa dijalankan di sini. Perlu uji manual di perangkat sebelum merge. |
+| R-37 arah desain | PASS | `DESIGN.md` ditambahkan di akar repo, dial ENERGY 1 / RHYTHM 1 / MOTION 1. |
+| R-24, R-26, R-28, R-34, R-40 | Tidak berubah | Tidak ada navigasi, kontrol, FAQ, tema, atau media baru. |
+
+### Blok 2: Purpose-Gate
+
+| Aturan | Hasil | Bukti |
+|---|---|---|
+| R-04 ikon | PASS | Setiap ikon yang tersisa punya alasan di tabel audit; glyph generik nol dan dikunci test. |
+| R-09 lencana | PASS | Pil eyebrow di harga, modal upgrade, landing, dan FAQ dihapus. Lencana status (Aman, Menipis, Habis, Baru) tetap karena menandai status nyata. |
+| R-19 gerak | PASS | Confetti dan denyut dihapus; sisa gerak hanya umpan balik tekan dan putaran saat memuat. |
+| R-12, R-13 bayangan dan glow | PASS | Kotak warna di belakang ikon dihapus dari kartu angka, notifikasi, dan header panel. |
+| R-01, R-06, R-07, R-08, R-10, R-14, R-22 | Di luar lingkup | Warna, tipografi, dan layout tidak diubah di branch ini. |
+
+### Blok 3: Liveliness
+
+Dial dinyatakan (1/1/1) dan hasilnya konsisten: satu aksen (oranye di aksi utama), satu titik fokus per layar (tombol Bayar, angka poin, tombol proses pesanan), motif identitas tetap dari tipografi tebal dan cangkir di empty state. PASS.
+
+### Blok 4: Craftsmanship
+
+- C-1, C-5: PASS. Tidak ada keputusan dengan alasan "bawaan AI", dan tidak ada klaim tanpa sumber di bagian yang disentuh.
+- C-2, C-4: ikut R-35, belum penuh.
+- R-15, R-16: PASS. Tombol menyebut aksinya ("Lihat paket Signature", "Cetak tes", "Segarkan"); kata "pintar", "Smart", "unlock", "Actionable" hilang dari teks.
+- R-05, R-11, R-20, R-29, R-30: di luar lingkup.
+
+### UI Skill Checklist (`antislop-ui`)
+
+Lulus untuk butir yang relevan: tanpa emoji; ruang di atas judul bersih dari pil; setiap titik warna menandai status nyata; angka, delta, dan baris berasal dari data atau dihapus; empty state menyebut sebab dan langkah berikutnya. Belum dinilai di branch ini: variasi komposisi antar seksi landing dan tiga kolom harga (lingkup layout).
+
+**Kesimpulan gate: satu butir belum penuh (R-35).** Menurut aturan `antislop`, hasil ini belum boleh dianggap selesai sampai uji klik di perangkat dilakukan.

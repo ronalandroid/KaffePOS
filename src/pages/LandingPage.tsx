@@ -653,7 +653,7 @@ export default function LandingPage() {
                   Mulai dari Outlet Kecil, Siap untuk Berkembang
                 </h2>
                 <p className="mx-auto mt-3.5 max-w-2xl text-sm font-medium leading-7 text-slate-600">
-                  Mulai dengan trial 14 hari fitur Signature lengkap. Setelah itu pilih paket sesuai skala kedai Anda—pembayaran praktis melalui QRIS, Virtual Account, atau E-Wallet dengan aktivasi lisensi otomatis.
+                  Mulai dengan trial 14 hari fitur Signature lengkap. Setelah itu pilih paket sesuai skala kedai Anda. Bayar lewat QRIS, Virtual Account, atau E-Wallet dengan aktivasi lisensi otomatis.
                 </p>
               </div>
               <PricingPage

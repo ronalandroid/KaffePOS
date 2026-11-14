@@ -645,7 +645,7 @@ export default function Dashboard() {
             </h3>
             <div className="divide-y divide-[var(--brand-hairline)]">
               <div className="flex items-center justify-between gap-3 py-3 first:pt-0">
-                <p className="flex items-center gap-2 text-[13px] font-semibold text-slate-600"><span className="h-2 w-2 rounded-full bg-blue-600" aria-hidden="true" />Revenue periode</p>
+                <p className="flex items-center gap-2 text-[13px] font-semibold text-slate-600"><span className="h-2 w-2 rounded-full bg-blue-600" aria-hidden="true" />Penjualan periode</p>
                 <p className="text-[15px] font-extrabold text-slate-900 kaffe-num">{fRp(totalRangeRevenue)}</p>
               </div>
               <div className="flex items-center justify-between gap-3 py-3">

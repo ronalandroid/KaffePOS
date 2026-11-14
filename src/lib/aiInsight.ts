@@ -65,7 +65,7 @@ function buildPrompt(ctx: InsightContext): string {
 
   return `Kamu adalah analis bisnis kafe profesional. Analisis data POS berikut dan berikan insight dalam bahasa Indonesia yang singkat, padat, dan bisa langsung dikerjakan.
 
-DATA KAFE "${ctx.storeName}" — Periode: ${ctx.period}:
+DATA KAFE "${ctx.storeName}", periode: ${ctx.period}:
 - Revenue: ${fRpShort(ctx.totalRevenue)} | HPP: ${fRpShort(ctx.totalCogs)} | Laba: ${fRpShort(ctx.netProfit)} | Margin: ${ctx.grossMargin}%
 - Jumlah transaksi: ${ctx.txCount} | Rata-rata transaksi: ${fRpShort(ctx.avgTrx)}
 - Pengeluaran ops: ${fRpShort(ctx.totalExpenses)}
