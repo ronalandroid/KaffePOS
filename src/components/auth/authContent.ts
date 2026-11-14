@@ -6,7 +6,7 @@ export const LOGO_ICON = '/logo-kaffeposappicon.svg';
 
 export const brandHighlights = [
   {
-    title: 'Satu aplikasi',
+    title: 'Semua dalam satu tempat',
     copy: 'Kelola penjualan, stok, pelanggan, dan laporan dari satu aplikasi.',
     icon: Store,
   },
