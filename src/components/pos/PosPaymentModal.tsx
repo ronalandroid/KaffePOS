@@ -5,7 +5,7 @@
 // POSTab container and are passed in; the modal reads only the cart/discount
 // slices it renders directly.
 import { useState, useMemo } from 'react';
-import { X, RefreshCw, CheckCircle2, Banknote, Gift, Landmark, Smartphone, AlertCircle, Split } from 'lucide-react';
+import { X, RefreshCw, CheckCircle2, Banknote, TicketPercent, Landmark, Smartphone, AlertCircle, Split } from 'lucide-react';
 import { useStore } from '@/hooks/useStore';
 import LoyaltyCheckoutModal from '@/components/loyalty/LoyaltyCheckoutModal';
 import { canProcessPosPaymentOffline } from '@/lib/offlinePolicy';
@@ -309,7 +309,7 @@ export default function PosPaymentModal({
               </label>
               <button type="button" onClick={onOpenVouchers}
                 className="inline-flex items-center gap-1.5 text-[11px] font-black text-orange-500 uppercase tracking-widest hover:underline">
-                <Gift size={13} /> Pilih Promo
+                <TicketPercent size={16} /> Pilih promo
               </button>
             </div>
             <div className="relative">

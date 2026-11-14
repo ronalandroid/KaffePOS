@@ -1,5 +1,5 @@
 /** Presentational widgets for the loyalty tab (badges, stamp grid, cards, states). */
-import { Coffee, Gift, Loader2, Plus, Sparkles, Stamp, TicketPercent, UserRound } from 'lucide-react';
+import { Coffee, Gift, Loader2, Plus, Stamp, TicketPercent, UserRound } from 'lucide-react';
 import type { LoyaltyPassport, LoyaltyReward, LoyaltySettings } from '@/lib/loyalty';
 import { canRedeemReward, getStampProgress, getTierLabel, getTierProgress } from '@/lib/loyalty';
 import { fRp, fNum } from './loyaltyFormat';
@@ -22,7 +22,6 @@ export function TierBadge({ tier }: { tier: LoyaltyPassport['tier'] }) {
       className="inline-flex items-center gap-1.5 rounded-full border border-orange-100 bg-orange-50 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-orange-700"
       title="Tier naik otomatis dari total transaksi pelanggan."
     >
-      <Sparkles size={12} />
       {label}
     </span>
   );

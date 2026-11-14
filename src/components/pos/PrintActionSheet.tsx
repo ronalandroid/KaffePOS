@@ -152,7 +152,7 @@ async function sharePDFToWhatsApp(tx:any, storeSettings:any): Promise<void> {
 
   await Share.share({
     title: `Struk ${storeSettings?.store_name || 'KaffePOS'}`,
-    text: `Struk transaksi ${tx.id} — ${fRp(tx.total)}`,
+    text: `Struk transaksi ${tx.id}, total ${fRp(tx.total)}`,
     url: uri,
     dialogTitle: 'Kirim struk via...',
   });
@@ -414,7 +414,7 @@ export default function PrintActionSheet({
             <div className="text-left flex-1">
               <p className="font-black text-slate-800 text-sm">Kirim Struk via WhatsApp</p>
               <p className="text-xs mt-0.5 font-medium" style={{ color: '#16a34a' }}>
-                {loading === 'wa' ? 'Membuat PDF...' : 'Format PDF — kirim ke pelanggan'}
+                {loading === 'wa' ? 'Membuat PDF...' : 'Format PDF untuk dikirim ke pelanggan'}
               </p>
             </div>
             <span className="text-[10px] font-bold px-2.5 py-1.5 rounded-xl shrink-0"

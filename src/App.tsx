@@ -96,7 +96,7 @@ function OfflineBanner({ show }: { show: boolean }) {
       borderBottom: '1px solid rgba(255,255,255,0.1)'
     }}>
       <WifiOff size={14} style={{ color: '#fb923c' }} />
-      <span>Mode Offline — Data tersimpan aman di perangkat, sinkron otomatis saat online kembali</span>
+      <span>Mode offline. Data tersimpan di perangkat dan tersinkron otomatis saat online kembali.</span>
     </div>
   );
 }

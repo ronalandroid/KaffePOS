@@ -151,7 +151,7 @@ function DayRow({ day, defaultOpen = false }: DayRowProps) {
               <div>
                 <p className="text-[12px] font-bold text-amber-800">Diambil dari saldo penjualan</p>
                 <p className="text-[12px] text-amber-800">
-                  Saldo kasir tidak cukup — {fRp(fromSales)} diambil dari pendapatan hari ini ({fRp(day.revenue)})
+                  Saldo kasir tidak cukup. {fRp(fromSales)} diambil dari pendapatan hari ini ({fRp(day.revenue)})
                 </p>
               </div>
             </div>

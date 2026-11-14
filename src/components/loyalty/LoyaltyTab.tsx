@@ -1,17 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import {
-  BadgePercent,
-  CheckCircle2,
-  Gift,
-  Loader2,
-  Plus,
-  RefreshCw,
-  Search,
-  Settings2,
-  ShieldCheck,
-  Stamp,
-  UserRound,
-} from 'lucide-react';
+import { BadgePercent, CheckCircle2, Gift, Loader2, Plus, RefreshCw, Search, Settings2, Stamp, UserRound } from 'lucide-react';
 import { useStore } from '@/hooks/useStore';
 import { normalizeUserRole, type UserRole } from '@/lib/accessControl';
 import {
@@ -525,7 +513,6 @@ export function LoyaltyPage({ toast, profile, role, subscriptionAccess }: { toas
                   <h3 className="mt-1 text-lg font-black text-slate-900">Daftar penukaran</h3>
                 </div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-orange-100 bg-orange-50 px-3 py-2 text-[10px] font-black uppercase tracking-wider text-orange-700">
-                  <ShieldCheck size={13} />
                   Dipakai di checkout
                 </div>
               </div>

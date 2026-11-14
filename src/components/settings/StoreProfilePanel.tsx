@@ -56,7 +56,7 @@ export default function StoreProfilePanel({ form, update, setForm, triggerSave, 
           <div className="flex justify-between text-xs text-slate-400 mt-1"><span>0%</span><span>20%</span></div>
         </div>
         <Sel label="Mata Uang" value={form.currency||'IDR'} onChange={(v:string)=>update('currency',v)}
-          options={[{v:'IDR',l:'IDR — Rupiah'},{v:'USD',l:'USD — Dollar'},{v:'MYR',l:'MYR — Ringgit'},{v:'SGD',l:'SGD — Singapura'}]}/>
+          options={[{v:'IDR',l:'IDR (Rupiah)'},{v:'USD',l:'USD (Dollar)'},{v:'MYR',l:'MYR (Ringgit)'},{v:'SGD',l:'SGD (Dolar Singapura)'}]}/>
       </div>
     </>
   );
