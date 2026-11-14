@@ -28,9 +28,11 @@
     --brand-gradient: linear-gradient(135deg, #FF6A00 0%, #FF8A1C 100%);
     --brand-surface-gradient: linear-gradient(135deg, #FFFFFF 0%, #FFFFFF 50%, #FFF6EF 78%, #FFF0E6 100%);
     --brand-soft-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 246, 239, 0.98) 58%, rgba(255, 240, 230, 0.94) 100%);
-    --brand-panel-border: rgba(229, 231, 235, 0.92);
-    --brand-panel-shadow: 0 16px 46px rgba(31, 41, 51, 0.07);
-    --brand-panel-shadow-hover: 0 22px 60px rgba(255, 106, 0, 0.13);
+    --brand-panel-border: #ECE7E2;
+    --brand-panel-shadow: 0 1px 2px rgba(31, 41, 51, 0.04), 0 2px 8px rgba(31, 41, 51, 0.035);
+    --brand-panel-shadow-hover: 0 2px 4px rgba(31, 41, 51, 0.04), 0 10px 28px rgba(31, 41, 51, 0.08);
+    --brand-canvas: #F8F6F3;
+    --brand-hairline: #F1EDE9;
     --theme-50: #FFF6EF;
     --theme-100: #FFF0E6;
     --theme-200: #FFE0C2;
@@ -340,18 +342,13 @@ h1, h2, h3, h4, h5, h6, .font-display {
 }
 
 .kaffe-app-bg {
-  background:
-    radial-gradient(circle at top left, rgba(255, 138, 28, 0.13), transparent 32%),
-    radial-gradient(circle at bottom right, rgba(255, 106, 0, 0.09), transparent 28%),
-    var(--brand-surface-gradient);
+  background: var(--brand-canvas);
 }
 
 .kaffe-panel {
-  background: rgba(255, 255, 255, 0.96);
+  background: #ffffff;
   border: 1px solid var(--brand-panel-border);
   box-shadow: var(--brand-panel-shadow);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
 }
 
 .kaffe-soft-section {
@@ -364,7 +361,7 @@ h1, h2, h3, h4, h5, h6, .font-display {
   background-color: var(--brand-orange);
   background-image: var(--brand-gradient);
   color: #ffffff;
-  box-shadow: 0 18px 38px rgba(255, 106, 0, 0.24);
+  box-shadow: 0 1px 2px rgba(196, 69, 0, 0.18), 0 4px 12px rgba(255, 106, 0, 0.18);
 }
 
 .kaffe-cta-band {
@@ -378,23 +375,22 @@ h1, h2, h3, h4, h5, h6, .font-display {
 }
 
 .kaffe-sidebar {
-  background: rgba(255, 255, 255, 0.96);
-  border-color: rgba(229, 231, 235, 0.86);
-  box-shadow: 14px 0 42px rgba(31, 41, 51, 0.05);
+  background: #ffffff;
+  border-color: var(--brand-panel-border);
 }
 
 .kaffe-metric-card {
   background: #ffffff;
-  border: 1px solid rgba(229, 231, 235, 0.92);
-  border-radius: 14px;
-  box-shadow: 0 12px 34px rgba(31, 41, 51, 0.06);
+  border: 1px solid var(--brand-panel-border);
+  border-radius: 20px;
+  box-shadow: var(--brand-panel-shadow);
 }
 
 .kaffe-table-surface {
   background: #ffffff;
-  border: 1px solid rgba(229, 231, 235, 0.92);
+  border: 1px solid var(--brand-panel-border);
   border-radius: 16px;
-  box-shadow: 0 16px 42px rgba(31, 41, 51, 0.06);
+  box-shadow: var(--brand-panel-shadow);
   overflow: hidden;
 }
 
@@ -414,7 +410,9 @@ h1, h2, h3, h4, h5, h6, .font-display {
 .kaffe-responsive-surface {
   min-width: 0;
   max-width: 100%;
-  overflow-wrap: anywhere;
+  /* break-word (not anywhere): wraps long strings without letting titles like
+     "Katalog Menu" collapse to their min-content width and split mid-word. */
+  overflow-wrap: break-word;
   word-wrap: break-word;
 }
 
@@ -488,41 +486,37 @@ h1, h2, h3, h4, h5, h6, .font-display {
 
 .kaffe-action-card {
   min-width: 0;
-  border: 1px solid rgba(229, 231, 235, 0.92);
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 12px 32px rgba(31, 41, 51, 0.06);
+  border: 1px solid var(--brand-panel-border);
+  background: #ffffff;
+  box-shadow: var(--brand-panel-shadow);
 }
 
 .kaffe-action-card:hover {
-  border-color: rgba(255, 106, 0, 0.22);
-  box-shadow: 0 20px 52px rgba(255, 106, 0, 0.11);
+  border-color: rgba(255, 106, 0, 0.28);
+  box-shadow: var(--brand-panel-shadow-hover);
 }
 
 .kaffe-empty-state {
   min-height: 240px;
-  border: 1px dashed rgba(203, 213, 225, 0.9);
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 246, 239, 0.72));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border: 1px dashed #DDD6CF;
+  background: #ffffff;
 }
 
 .kaffe-checkout-panel {
   min-width: 0;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(255, 250, 245, 0.96));
-  box-shadow: -18px 0 48px rgba(31, 41, 51, 0.06);
+  background: #ffffff;
 }
 
 .kaffe-gradient-cta {
   color: #ffffff;
   background-color: var(--brand-orange);
   background-image: var(--brand-gradient);
-  box-shadow: 0 16px 34px rgba(255, 106, 0, 0.22);
+  box-shadow: 0 1px 2px rgba(196, 69, 0, 0.2), 0 6px 16px rgba(255, 106, 0, 0.2);
 }
 
 .kaffe-gradient-cta:hover {
-  filter: brightness(1.02);
-  box-shadow: 0 20px 42px rgba(255, 106, 0, 0.28);
+  filter: brightness(1.03);
+  box-shadow: 0 2px 4px rgba(196, 69, 0, 0.2), 0 10px 24px rgba(255, 106, 0, 0.24);
 }
 
 .kaffe-subscription-card {
@@ -633,7 +627,7 @@ h1, h2, h3, h4, h5, h6, .font-display {
 }
 
 .kaffe-filter-chip {
-  border: 1px solid rgba(229, 231, 235, 0.96);
+  border: 1px solid var(--brand-panel-border);
   background: #ffffff;
   color: #475569;
 }
@@ -643,20 +637,7 @@ h1, h2, h3, h4, h5, h6, .font-display {
   background-color: var(--brand-orange);
   background-image: var(--brand-gradient);
   color: #ffffff;
-  box-shadow: 0 12px 28px rgba(255, 106, 0, 0.18);
-  outline: 2px solid rgba(154, 52, 18, 0.26);
-  outline-offset: 2px;
-}
-
-.kaffe-filter-chip[data-active="true"]::after {
-  content: "";
-  display: inline-block;
-  width: 0.42rem;
-  height: 0.42rem;
-  margin-left: 0.35rem;
-  border-radius: 999px;
-  background: currentColor;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.45);
+  box-shadow: 0 1px 2px rgba(196, 69, 0, 0.18);
 }
 
 .kaffe-footer {
@@ -983,4 +964,77 @@ h1, h2, h3, h4, h5, h6, .font-display {
 
 .ring-\[\#FF6A00\]\/10 {
   --tw-ring-color: rgba(255, 106, 0, 0.16) !important;
+}
+
+
+/* ── Professional surface primitives (redesign) ──────────────────────
+   Calm, flat surfaces: white cards on a warm-neutral canvas, hairline
+   borders, small layered shadows. Orange is kept for actions and state. */
+.kaffe-card {
+  background: #ffffff;
+  border: 1px solid var(--brand-panel-border);
+  border-radius: 20px;
+  box-shadow: var(--brand-panel-shadow);
+}
+
+.kaffe-card-interactive {
+  transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kaffe-card-interactive:hover {
+  border-color: rgba(255, 106, 0, 0.28);
+  box-shadow: var(--brand-panel-shadow-hover);
+}
+
+.kaffe-segmented {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 14px;
+  background: #F1EDE9;
+}
+
+.kaffe-segmented > button {
+  min-height: 38px;
+  border-radius: 11px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--a11y-muted);
+}
+
+.kaffe-segmented > button[aria-pressed="true"] {
+  background: #ffffff;
+  color: var(--brand-neutral-900);
+  box-shadow: 0 1px 2px rgba(31, 41, 51, 0.08), 0 1px 4px rgba(31, 41, 51, 0.06);
+}
+
+.kaffe-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid var(--brand-panel-border);
+  background: #ffffff;
+  color: var(--a11y-muted);
+}
+
+.kaffe-icon-btn:hover {
+  background: var(--brand-orange-soft);
+  color: var(--brand-orange-text);
+}
+
+.kaffe-eyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--a11y-subtle);
+}
+
+.kaffe-num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }

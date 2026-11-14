@@ -129,17 +129,29 @@ export default function PosProductGrid({
   return (
     <div className="flex-1 min-w-0 flex flex-col overflow-hidden relative">
 
-      {/* Menu header — warm gradient wash */}
-      <div className="bg-gradient-to-b from-white to-stone-50/60 border-b border-stone-200/50 px-4 sm:px-6 pt-5 pb-4 z-10">
-        <div className="flex min-w-0 items-center justify-between gap-3 mb-4">
+      {/* Catalog header */}
+      <div className="z-10 border-b border-[var(--brand-panel-border)] bg-white px-4 pt-4 pb-3 sm:px-6 sm:pt-5">
+        <div className="mb-3 flex min-w-0 items-start justify-between gap-3">
           <div className="min-w-0">
-            <h2 className="font-display text-2xl font-black text-stone-800 tracking-tight">Katalog Menu</h2>
-            {lowStock.length > 0 && (
-              <p className="text-[11px] text-rose-500 font-bold mt-0.5 flex items-center gap-1.5">
-                <span className="size-1.5 rounded-full bg-rose-500 animate-pulse" />
-                {lowStock.length} bahan kritis
-              </p>
-            )}
+            <h2 className="font-display text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">Katalog Menu</h2>
+            <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] font-semibold text-slate-500">
+              <span className="kaffe-num">{filtered.length} menu</span>
+              {lowStock.length > 0 && (
+                <span className="inline-flex items-center gap-1.5 text-rose-700">
+                  <span className="h-1.5 w-1.5 rounded-full bg-rose-500" aria-hidden="true" />
+                  {lowStock.length} bahan kritis
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => { if (!isOnline) window.location.reload(); }}
+                className={`kaffe-btn-compact inline-flex items-center gap-1.5 rounded-md ${isOnline ? 'cursor-default text-emerald-700' : 'font-bold text-rose-700 underline underline-offset-2'}`}
+                aria-label={isOnline ? 'Status koneksi terhubung' : 'Muat ulang karena offline'}
+              >
+                <span className={`h-1.5 w-1.5 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-rose-500 animate-pulse'}`} aria-hidden="true" />
+                {isOnline ? 'Terhubung' : 'Offline, ketuk untuk muat ulang'}
+              </button>
+            </div>
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
@@ -147,12 +159,13 @@ export default function PosProductGrid({
               <button
                 type="button"
                 onClick={onOpenTableModal}
-                className="flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-2 text-[11px] font-black text-stone-700 shadow-sm transition-colors hover:border-[#FF6A00] hover:text-[#FF6A00]"
+                aria-label={selectedTable ? `Meja ${selectedTable}` : 'Meja & Bill'}
+                className="inline-flex h-11 items-center gap-2 rounded-xl border border-[var(--brand-panel-border)] bg-white px-3 text-[13px] font-bold text-slate-700 transition-colors hover:border-orange-200 hover:bg-[var(--brand-orange-soft)]"
               >
-                <Utensils size={13} className="text-[#FF6A00]" />
-                <span>{selectedTable ? `Meja ${selectedTable}` : 'Meja & Bill'}</span>
+                <Utensils size={16} className="text-[var(--brand-orange-text)]" />
+                <span className="hidden xl:inline">{selectedTable ? `Meja ${selectedTable}` : 'Meja & Bill'}</span>
                 {openBillsCount > 0 && (
-                  <span className="ml-0.5 rounded-full bg-[#FF6A00] px-1.5 py-0.5 text-[9px] font-black text-white">
+                  <span className="rounded-full bg-[#FF6A00] px-1.5 py-0.5 text-[10px] font-bold leading-none text-white kaffe-num">
                     {openBillsCount}
                   </span>
                 )}
@@ -162,101 +175,108 @@ export default function PosProductGrid({
               <button
                 type="button"
                 onClick={onOpenShiftModal}
-                className="flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-2 text-[11px] font-black text-stone-700 shadow-sm transition-colors hover:border-[#FF6A00] hover:text-[#FF6A00]"
+                aria-label="Shift & Laci"
+                className="inline-flex h-11 items-center gap-2 rounded-xl border border-[var(--brand-panel-border)] bg-white px-3 text-[13px] font-bold text-slate-700 transition-colors hover:border-orange-200 hover:bg-[var(--brand-orange-soft)]"
               >
-                <Wallet size={13} className="text-[#FF6A00]" />
-                <span className="hidden sm:inline">Shift & Laci</span>
+                <Wallet size={16} className="text-[var(--brand-orange-text)]" />
+                <span className="hidden xl:inline">Shift & Laci</span>
               </button>
             )}
-            {/* Online / Offline badge */}
-            <button type="button" onClick={() => { if (!isOnline) window.location.reload(); }}
-              className={`flex shrink-0 items-center gap-2 px-3.5 py-2 rounded-full border cursor-pointer active:scale-95 transition-transform duration-200 ${isOnline?'bg-emerald-50 border-emerald-100 text-emerald-700':'bg-rose-500 border-rose-600 text-white animate-bounce shadow-[0_6px_20px_rgba(239,68,68,0.45)]'}`}
-              aria-label={isOnline ? 'Status koneksi terhubung' : 'Muat ulang karena offline'}>
-              <div className={`size-1.5 rounded-full ${isOnline?'bg-emerald-500 animate-pulse':'bg-white animate-ping'}`} />
-              <span className="text-[10px] font-black uppercase tracking-widest">{isOnline?'Terhubung':'OFFLINE!'}</span>
-            </button>
           </div>
         </div>
 
-        {/* Search bar — rounded-full, warm focus ring */}
+        {/* Search */}
         <div className="relative">
-          <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
+          <Search size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
           <label className="sr-only" htmlFor="pos-menu-search">Cari menu</label>
           <input
             id="pos-menu-search"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Cari menu kopi, snack…"
-            className="w-full h-12 bg-stone-50 border border-stone-200/70 rounded-full pl-12 pr-5 text-[14px] focus:outline-none focus:ring-4 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]/60 transition-all duration-200 font-medium text-stone-700 placeholder:text-stone-400 shadow-inner"
+            placeholder="Cari menu kopi, snack..."
+            className="h-11 w-full rounded-xl border border-[var(--brand-panel-border)] bg-[var(--brand-canvas)] pl-11 pr-4 font-medium text-slate-800 placeholder:text-slate-500 transition-colors focus:border-[#FF6A00]/60 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#FF6A00]/15"
           />
         </div>
 
-        <div className="kaffe-scroll-tabs kaffe-command-bar flex gap-2 mt-4 overflow-x-auto pb-1 scrollbar-hide">
+        <div className="kaffe-scroll-tabs kaffe-command-bar -mx-4 mt-3 flex gap-1.5 overflow-x-auto px-4 pb-0.5 scrollbar-hide sm:-mx-6 sm:px-6">
           {cats.map(c => {
-            const isAll = c === 'All'; const active = cat === c;
-            const sz = `h-9 ${isAll ? 'px-6 font-display text-[13px] font-black tracking-wide' : 'px-5 text-[12px] font-bold'}`;
-            const st = active ? 'bg-[#FF6A00] text-white shadow-[0_4px_12px_rgba(255,106,0,0.35)]' : `bg-white border border-stone-200 ${isAll ? 'text-stone-700' : 'text-stone-500'} hover:bg-stone-50 hover:border-stone-300`;
-            return <button type="button" key={c} onClick={() => setCat(c)} aria-pressed={active} className={`shrink-0 rounded-full transition-all duration-200 ${sz} ${st}`}>{c}</button>;
+            const active = cat === c;
+            return (
+              <button
+                type="button"
+                key={c}
+                onClick={() => setCat(c)}
+                aria-pressed={active}
+                className={`h-9 shrink-0 rounded-full px-4 text-[13px] font-bold transition-colors ${
+                  active
+                    ? 'border border-[#FF6A00]/50 bg-[var(--brand-orange-soft)] text-[var(--brand-orange-text)]'
+                    : 'border border-[var(--brand-panel-border)] bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900'
+                }`}
+              >
+                {c === 'All' ? 'Semua' : c}
+              </button>
+            );
           })}
         </div>
       </div>
 
       {/* Product grid */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-5">
+      <div className="flex-1 overflow-y-auto bg-[var(--brand-canvas)] p-3 sm:p-4 md:p-5">
         {search !== dSearch ? (
           <POSSkeleton />
         ) : filtered.length === 0 ? (
-          <div className="kaffe-empty-state flex flex-col items-center justify-center h-full rounded-3xl gap-4">
-            <div className="size-24 bg-gradient-to-b from-stone-50 to-stone-100 rounded-[40px] flex items-center justify-center shadow-inner">
-              <CoffeeCupIcon className="w-9 h-9 text-stone-300"/>
+          <div className="kaffe-empty-state flex h-full flex-col items-center justify-center gap-3 rounded-[20px] px-6">
+            <div className="flex size-16 items-center justify-center rounded-2xl bg-[var(--brand-canvas)]">
+              <CoffeeCupIcon className="h-8 w-8 text-stone-300"/>
             </div>
             <div className="text-center">
-              <p className="font-black text-stone-700 text-base tracking-tight">Menu tidak ditemukan</p>
-              <p className="max-w-xs text-center text-xs font-medium text-stone-400 mt-1 leading-relaxed">Coba kata kunci lain atau tambah produk baru dari tab Produk.</p>
+              <p className="font-display text-base font-extrabold text-slate-800">Menu tidak ditemukan</p>
+              <p className="mt-1 max-w-xs text-[13px] font-medium leading-relaxed text-slate-500">Coba kata kunci lain atau tambah produk baru dari tab Produk.</p>
             </div>
           </div>
         ) : (
-          <div className="kaffe-card-grid kaffe-quick-grid grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 pb-24 md:pb-4">
+          <div className="kaffe-card-grid kaffe-quick-grid grid grid-cols-2 gap-3 pb-24 sm:grid-cols-3 md:grid-cols-2 md:pb-4 lg:grid-cols-3 xl:grid-cols-4">
             {filtered.map(item => {
               const totalQty = cartQtyByBase.get(item.id) || 0;
               const isFlashing = flashId === item.id;
+              const inCart = totalQty > 0;
               return (
                 <button type="button" key={item.id} onClick={() => handleAdd(item)}
-                  className={`kaffe-action-card group min-w-0 bg-white rounded-[20px] overflow-hidden border border-stone-100 shadow-sm cursor-pointer text-left transition-all duration-300 hover:shadow-[0_8px_24px_rgba(255,106,0,0.12)] hover:-translate-y-0.5 active:scale-[0.98] active:ring-2 active:ring-[#FF6A00]/40 flex flex-col relative ${isFlashing ? 'ring-2 ring-[#FF6A00]/50 scale-[1.03]' : ''}`}
+                  className={`kaffe-action-card group relative flex min-w-0 flex-col overflow-hidden rounded-[20px] text-left transition-[border-color,box-shadow,transform] duration-200 active:scale-[0.98] ${
+                    inCart ? '!border-[#FF6A00]/60 ring-1 ring-[#FF6A00]/30' : ''
+                  } ${isFlashing ? 'scale-[1.02]' : ''}`}
                   aria-label={`Tambah ${item.name} ke keranjang`}>
-                  {item.image_url ? (
-                    <div className="relative pt-[75%] w-full overflow-hidden bg-stone-50">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#F6F2EE]">
+                    {item.image_url ? (
                       <img
                         src={item.image_url}
                         alt={item.name}
                         decoding="async"
-                        className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
-                    </div>
-                  ) : (
-                    <div className="pt-[75%] w-full relative">
-                      <ProductPlaceholder category={item.category} className="absolute inset-0" iconSize={32} />
-                    </div>
-                  )}
-                  <div className="p-3.5 flex-1 flex flex-col">
-                    <p className="font-display font-bold text-stone-800 text-[13px] leading-tight mb-2 group-hover:text-[#FF6A00] transition-colors duration-200">
+                    ) : (
+                      <ProductPlaceholder category={item.category} className="absolute inset-0" iconSize={30} />
+                    )}
+                    {inCart && (
+                      <span className="absolute left-2.5 top-2.5 z-10 flex h-7 min-w-7 items-center justify-center rounded-full bg-[#FF6A00] px-2 text-[12px] font-extrabold text-white shadow-[0_2px_6px_rgba(196,69,0,0.3)] kaffe-num">
+                        {totalQty}
+                      </span>
+                    )}
+                    <span className="absolute bottom-2.5 right-2.5 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-[var(--brand-orange-text)] shadow-[0_1px_3px_rgba(31,41,51,0.15)] transition-colors group-hover:bg-[#FF6A00] group-hover:text-white" aria-hidden="true">
+                      <Plus size={16} strokeWidth={2.6} />
+                    </span>
+                  </div>
+                  <div className="flex flex-1 flex-col gap-1 p-3">
+                    <p className="line-clamp-2 text-[13.5px] font-bold leading-snug text-slate-900">
                       {item.name}
                     </p>
-                    <div className="mt-auto flex items-center gap-1.5">
+                    <div className="mt-auto flex items-baseline gap-1.5 pt-1">
                       {(item.variants?.length || item.modifiers?.length) ? (
-                        <span className="text-[9px] font-black uppercase tracking-wider text-stone-400">mulai</span>
+                        <span className="text-[11px] font-semibold text-slate-500">mulai</span>
                       ) : null}
-                      <p className="font-black text-[14px] tabular-nums" style={{color:'var(--brand-orange-text)'}}>{fRp(item.price)}</p>
+                      <p className="text-[14px] font-extrabold kaffe-num" style={{color:'var(--brand-orange-text)'}}>{fRp(item.price)}</p>
                     </div>
                   </div>
-
-                  {/* Quantity badge — vibrant orange pill */}
-                  {totalQty > 0 && (
-                    <div className="absolute top-2.5 right-2.5 bg-[#FF6A00] text-white rounded-full shadow-[0_4px_12px_rgba(255,106,0,0.4)] px-2.5 py-1 flex items-center gap-1.5 z-10 animate-in zoom-in-95 duration-150">
-                      <span className="font-black text-[11px] leading-none tabular-nums">{totalQty}</span>
-                      <Plus size={10} strokeWidth={3} />
-                    </div>
-                  )}
                 </button>
               );
             })}
@@ -268,12 +288,12 @@ export default function PosProductGrid({
       {cart.length > 0 && (
         <div className="kaffe-sticky-action md:hidden absolute bottom-4 left-4 right-4 z-20">
           <button type="button" onClick={onOpenMobileCart}
-            className="w-full bg-gradient-to-r from-[#FF6A00] to-[#FF8A1C] text-white p-4 rounded-3xl flex items-center justify-between shadow-[0_12px_40px_rgba(255,106,0,0.45)] hover:shadow-[0_16px_48px_rgba(255,106,0,0.55)] active:scale-[0.97] transition-all">
+            className="kaffe-gradient-cta flex h-14 w-full items-center justify-between rounded-2xl px-4 active:scale-[0.98]">
             <div className="flex items-center gap-3">
-              <div className="size-8 rounded-full bg-white flex items-center justify-center font-black text-sm text-[#FF6A00] shadow-sm">{cart.length}</div>
-              <span className="font-bold text-sm tracking-wide">Keranjang</span>
+              <div className="flex size-8 items-center justify-center rounded-full bg-white text-sm font-extrabold text-[var(--brand-orange-text)] kaffe-num">{cart.reduce((n, c) => n + c.qty, 0)}</div>
+              <span className="text-[15px] font-bold">Lihat Pesanan</span>
             </div>
-            <div className="flex items-center gap-2 font-black text-base text-white/90">{fRp(total)} <ChevronRight size={18}/></div>
+            <div className="flex items-center gap-1.5 text-[15px] font-extrabold kaffe-num">{fRp(total)} <ChevronRight size={18}/></div>
           </button>
         </div>
       )}

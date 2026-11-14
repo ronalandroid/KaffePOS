@@ -65,9 +65,9 @@ module.exports = {
         '5xl': '2.5rem',
       },
       boxShadow: {
-        'premium': '0 10px 40px -10px rgba(255, 106, 0, 0.15)',
-        'premium-hover': '0 20px 50px -15px rgba(255, 106, 0, 0.25)',
-        'soft': '0 4px 20px -1px rgba(0, 0, 0, 0.04), 0 2px 10px -1px rgba(0, 0, 0, 0.02)',
+        'premium': '0 2px 4px rgba(31, 41, 51, 0.04), 0 10px 28px rgba(31, 41, 51, 0.08)',
+        'premium-hover': '0 4px 8px rgba(31, 41, 51, 0.05), 0 16px 36px rgba(31, 41, 51, 0.10)',
+        'soft': '0 1px 2px rgba(31, 41, 51, 0.04), 0 2px 8px rgba(31, 41, 51, 0.035)',
       },
       animation: {
         'in': 'fadeIn 0.2s ease',

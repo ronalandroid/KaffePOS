@@ -45,7 +45,7 @@ export default function NotificationBell({
     <button
       type="button"
       onClick={onOpen}
-      className={`relative flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-100 bg-white text-slate-500 shadow-sm transition-all hover:border-orange-100 hover:bg-orange-50 hover:text-[#FF6A00] ${className}`}
+      className={`relative flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--brand-panel-border)] bg-white text-slate-600 transition-colors hover:bg-[var(--brand-orange-soft)] hover:text-[var(--brand-orange-text)] ${className}`}
       aria-label="Buka notifikasi"
     >
       <Bell size={19} />

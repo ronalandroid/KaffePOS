@@ -76,7 +76,7 @@ describe('white and orange professional design system', () => {
 
     expect(menu).toContain('kaffe-table-surface');
     expect(menu).toContain('kaffe-product-grid');
-    expect(menu).toContain('kaffe-filter-chip');
+    expect(menu).toContain('aria-pressed={cat===c}');
     expect(menu).toContain('Tambah Produk');
   });
 
@@ -103,7 +103,8 @@ describe('white and orange professional design system', () => {
     expect(css).toContain('.kaffe-bottom-nav');
     expect(css).toContain('100dvh');
     expect(css).toContain('scrollbar-gutter: stable');
-    expect(css).toContain('overflow-wrap: anywhere');
+    expect(css).toContain('overflow-wrap: break-word');
+    expect(css).not.toContain('overflow-wrap: anywhere');
     expect(css).toContain('max-height: min(92dvh');
     expect(css).toContain('safe-area-inset-bottom');
     expect(appShell).toContain('kaffe-responsive-surface');
@@ -163,8 +164,8 @@ describe('white and orange professional design system', () => {
     expect(css).toContain('.kaffe-empty-state');
     expect(css).toContain('.kaffe-checkout-panel');
     expect(css).toContain('.kaffe-sticky-action');
-    expect(css).toContain('.kaffe-filter-chip[data-active="true"]::after');
-    expect(css).toContain('outline: 2px solid');
+    expect(css).toContain('.kaffe-filter-chip[data-active="true"]');
+    expect(css).toContain('outline: 3px solid var(--a11y-focus)');
     expect(posGrid).toContain('kaffe-quick-grid');
     expect(posGrid).not.toContain('loading="lazy"');
     expect(posGrid).toContain('triggerCardFlash');

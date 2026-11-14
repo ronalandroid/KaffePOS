@@ -364,108 +364,108 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
   };
 
   return (
-    <div className="kaffe-responsive-surface flex-1 flex flex-col overflow-hidden bg-white lg:bg-slate-50/50">
-      <div className="bg-white border-b border-slate-100 px-4 sm:px-6 pt-6 pb-4 z-10">
-        <div className="flex min-w-0 items-center justify-between gap-3 mb-4">
+    <div className="kaffe-app-bg kaffe-responsive-surface flex-1 flex flex-col overflow-hidden">
+      <div className="z-10 border-b border-[var(--brand-panel-border)] bg-white px-4 pt-5 sm:px-6 lg:px-8">
+        <div className="mb-4 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
-            <h2 className="text-xl font-bold tracking-tight text-slate-900">Stok</h2>
-            <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Bahan, Konversi, Resep, HPP</p>
+            <h2 className="font-display text-2xl font-extrabold tracking-tight text-slate-900">Stok</h2>
+            <p className="mt-1 text-[13px] font-medium text-slate-500">
+              Bahan baku, konversi, resep, dan HPP. Restock dicatat sebagai pembelian dan tidak mengurangi saldo kasir.
+            </p>
           </div>
           <div className={`shrink-0 gap-2 ${section === 'ingredients' || section === 'summary' ? 'flex' : 'hidden md:flex'}`}>
-            <button type="button" onClick={openNew} className="flex items-center gap-2 h-10 px-4 bg-white text-slate-600 rounded-xl border border-slate-200 text-[12px] font-black uppercase tracking-widest active:scale-95 transition-all hover:border-orange-200 hover:text-[#FF6A00]">
-              <Plus size={16}/>Baru
+            <button type="button" onClick={openNew} className="inline-flex h-11 items-center gap-1.5 rounded-xl border border-[var(--brand-panel-border)] bg-white px-4 text-[13px] font-bold text-slate-700 transition-colors hover:border-orange-200 hover:bg-[var(--brand-orange-soft)]">
+              <Plus size={16} className="text-[var(--brand-orange-text)]"/>Bahan Baru
             </button>
             <button type="button" onClick={()=>{setForm({id:'',name:'',qty:'',cost:'',unit:'gr',minStock:'5',type:'restock'});setShowModal(true);}}
-              className="kaffe-gradient-button flex items-center gap-2 h-10 px-4 rounded-xl text-[12px] font-black uppercase tracking-widest active:scale-95 transition-all">
+              className="kaffe-gradient-cta inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl px-5 text-[14px] font-bold sm:flex-none">
               <Archive size={16}/>Restock
             </button>
           </div>
         </div>
-        <p className="text-[10px] text-slate-400 mb-4 font-bold uppercase tracking-widest leading-relaxed">
-          Restock tercatat sebagai pembelian bahan baku dan tidak mengurangi saldo awal kasir.
-        </p>
 
-        <div className="kaffe-scroll-tabs flex gap-2 overflow-x-auto pb-2 mb-3">
-          {WAREHOUSE_SECTION_ITEMS.map(({ id, label, icon: Icon }) => (
-            <button type="button"
-              key={id}
-              onClick={() => setSection(id)}
-              className={`h-10 px-3 rounded-2xl border text-[11px] font-black whitespace-nowrap flex items-center gap-2 transition-all ${
-                section === id
-                  ? 'bg-slate-900 text-white border-slate-900 shadow-soft'
-                  : 'bg-white text-slate-500 border-slate-100 hover:border-orange-200'
-              }`}
-            >
-              <Icon size={14} />{label}
-            </button>
-          ))}
-        </div>
+        <nav aria-label="Bagian stok" className="kaffe-scroll-tabs -mx-4 flex gap-1 overflow-x-auto px-4 no-scrollbar sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+          {WAREHOUSE_SECTION_ITEMS.map(({ id, label, icon: Icon }) => {
+            const active = section === id;
+            return (
+              <button type="button"
+                key={id}
+                onClick={() => setSection(id)}
+                aria-current={active ? 'page' : undefined}
+                className={`relative flex h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-t-lg px-3 text-[13px] transition-colors ${
+                  active
+                    ? 'font-bold text-[var(--brand-orange-text)] after:absolute after:inset-x-2 after:bottom-0 after:h-[3px] after:rounded-full after:bg-[#FF6A00]'
+                    : 'font-semibold text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Icon size={15} />{label}
+              </button>
+            );
+          })}
+        </nav>
+      </div>
 
+      <div className="flex-1 overflow-y-auto p-4 pb-24 sm:p-5 lg:p-8 lg:pb-8">
         {lowStock.length > 0 && section === 'summary' && (
-          <div className="bg-rose-50 border border-rose-100 rounded-2xl p-3 mb-4 flex items-start gap-3">
-            <AlertTriangle size={18} className="text-rose-500 shrink-0 mt-0.5"/>
-            <div>
-              <p className="text-rose-600 text-[11px] font-black uppercase tracking-widest">{lowStock.length} BAHAN STOK KRITIS!</p>
-              <p className="text-rose-400 text-xs font-bold mt-0.5">{lowStock.map(i=>i.name).join(', ')}</p>
+          <div className="mb-4 flex items-start gap-3 rounded-[20px] border border-rose-200 bg-rose-50 p-4">
+            <AlertTriangle size={18} className="mt-0.5 shrink-0 text-rose-600"/>
+            <div className="min-w-0">
+              <p className="text-[14px] font-bold text-rose-800">{lowStock.length} bahan stok kritis</p>
+              <p className="mt-0.5 text-[13px] font-medium text-rose-700">{lowStock.map(i=>i.name).join(', ')}</p>
             </div>
           </div>
         )}
-
-        {/* Search */}
-        {section === 'ingredients' && <div className="relative mb-2">
-          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"/>
-          <input 
-            value={search} 
-            onChange={e=>setSearch(e.target.value)} 
+        {section === 'ingredients' && <div className="relative mb-4 md:max-w-sm">
+          <Search size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"/>
+          <input
+            value={search}
+            onChange={e=>setSearch(e.target.value)}
             placeholder="Cari bahan baku..."
             aria-label="Cari bahan baku"
-            className="w-full h-12 bg-slate-50 border border-slate-100 rounded-2xl pl-12 pr-4 text-[15px] focus:outline-none focus:ring-4 focus:ring-[#FF6A00]/5 focus:border-[#FF6A00]/20 transition-all font-bold text-slate-700 placeholder:text-slate-300 shadow-sm"
+            className="h-11 w-full rounded-xl border border-[var(--brand-panel-border)] bg-white pl-11 pr-4 font-medium text-slate-800 placeholder:text-slate-500 transition-colors focus:border-[#FF6A00]/60 focus:outline-none focus:ring-4 focus:ring-[#FF6A00]/15"
           />
         </div>}
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-4 md:p-6">
         {section === 'summary' && (
           <div className="space-y-5">
             <div className="kaffe-card-grid grid grid-cols-2 lg:grid-cols-4 gap-3">
-              <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-soft">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Bahan Aktif</p>
-                <p className="mt-2 text-2xl font-black text-slate-900">{activeInventory.length}</p>
+              <div className="kaffe-metric-card p-4 sm:p-5">
+                <p className="text-[12.5px] font-semibold text-slate-600">Bahan Aktif</p>
+                <p className="mt-2 font-display text-[26px] font-extrabold leading-tight text-slate-900 kaffe-num">{activeInventory.length}</p>
               </div>
-              <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-soft">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Stok Kritis</p>
-                <p className={`mt-2 text-2xl font-black ${lowStock.length ? 'text-rose-500' : 'text-emerald-600'}`}>{lowStock.length}</p>
+              <div className="kaffe-metric-card p-4 sm:p-5">
+                <p className="text-[12.5px] font-semibold text-slate-600">Stok Kritis</p>
+                <p className={`mt-2 font-display text-[26px] font-extrabold leading-tight kaffe-num ${lowStock.length ? 'text-rose-700' : 'text-emerald-700'}`}>{lowStock.length}</p>
               </div>
-              <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-soft">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nilai Stok</p>
-                <p className="mt-2 text-lg font-black text-slate-900">{fRp(inventoryValue)}</p>
+              <div className="kaffe-metric-card p-4 sm:p-5">
+                <p className="text-[12.5px] font-semibold text-slate-600">Nilai Stok</p>
+                <p className="mt-2 truncate font-display text-[22px] font-extrabold leading-tight text-slate-900 kaffe-num sm:text-[26px]">{fRp(inventoryValue)}</p>
               </div>
-              <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-soft">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Resep Aktif</p>
-                <p className="mt-2 text-2xl font-black text-slate-900">{menu.filter(item => item.recipe?.length).length}</p>
+              <div className="kaffe-metric-card p-4 sm:p-5">
+                <p className="text-[12.5px] font-semibold text-slate-600">Resep Aktif</p>
+                <p className="mt-2 font-display text-[26px] font-extrabold leading-tight text-slate-900 kaffe-num">{menu.filter(item => item.recipe?.length).length}</p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-              <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-soft">
-                <p className="text-[11px] font-black uppercase tracking-widest text-slate-500 mb-3">Bahan Perlu Restock</p>
+              <div className="kaffe-card p-5">
+                <p className="font-display text-[15px] font-extrabold text-slate-900 mb-3">Bahan Perlu Restock</p>
                 {lowStock.length === 0 ? (
-                  <p className="text-sm font-bold text-slate-400">Semua bahan utama aman.</p>
+                  <p className="text-[13px] font-medium text-slate-500">Semua bahan utama aman.</p>
                 ) : lowStock.slice(0, 6).map(item => (
-                  <div key={item.id} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
-                    <span className="text-sm font-bold text-slate-700">{item.name}</span>
-                    <span className="text-xs font-black text-rose-500">{item.stock} {item.unit}</span>
+                  <div key={item.id} className="flex items-center justify-between py-2.5 border-b border-[var(--brand-hairline)] last:border-0">
+                    <span className="text-[13.5px] font-semibold text-slate-800">{item.name}</span>
+                    <span className="rounded-md bg-rose-50 px-2 py-0.5 text-[12px] font-bold text-rose-700 kaffe-num">{item.stock} {item.unit}</span>
                   </div>
                 ))}
               </div>
-              <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-soft">
-                <p className="text-[11px] font-black uppercase tracking-widest text-slate-500 mb-3">HPP Belum Lengkap</p>
+              <div className="kaffe-card p-5">
+                <p className="font-display text-[15px] font-extrabold text-slate-900 mb-3">HPP Belum Lengkap</p>
                 {hppRows.filter(row => !row.hpp.complete).length === 0 ? (
-                  <p className="text-sm font-bold text-slate-400">Semua resep yang aktif punya HPP valid.</p>
+                  <p className="text-[13px] font-medium text-slate-500">Semua resep yang aktif punya HPP valid.</p>
                 ) : hppRows.filter(row => !row.hpp.complete).slice(0, 6).map(row => (
-                  <div key={row.product.id} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
-                    <span className="text-sm font-bold text-slate-700">{row.product.name}</span>
-                    <span className="text-[11px] font-black text-amber-500">{row.hpp.warnings.length} catatan</span>
+                  <div key={row.product.id} className="flex items-center justify-between py-2 border-b border-[var(--brand-hairline)] last:border-0">
+                    <span className="text-[13.5px] font-semibold text-slate-800">{row.product.name}</span>
+                    <span className="text-[12px] font-bold text-amber-700">{row.hpp.warnings.length} catatan</span>
                   </div>
                 ))}
               </div>
@@ -474,15 +474,15 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
         )}
 
         {section === 'ingredients' && (search !== dSearch ? <WarehouseSkeleton /> : filtered.length === 0 ? (
-          <div className="kaffe-empty-state flex flex-col items-center justify-center h-60 rounded-3xl text-slate-300">
-             <Archive size={48} className="mb-4 opacity-10" />
-             <p className="text-[12px] font-black uppercase tracking-[0.2em]">Stok masih kosong</p>
-             <p className="mt-2 max-w-xs text-center text-xs font-semibold text-slate-400">
+          <div className="kaffe-empty-state flex flex-col items-center justify-center rounded-[20px] px-6">
+             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--brand-canvas)] text-stone-300"><Archive size={28} /></div>
+             <p className="font-display text-base font-extrabold text-slate-800">Belum ada bahan baku</p>
+             <p className="mt-1 max-w-xs text-center text-[13px] font-medium text-slate-500">
                Tambahkan bahan pertama agar stok dan resep menu bisa terpantau.
              </p>
           </div>
         ) : (
-            <div className="kaffe-card-grid grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+            <div className="kaffe-card-grid grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 lg:gap-4">
             {filtered.map(item => {
           const inMenus = usedInMenu[item.id] || [];
           return (
@@ -502,20 +502,20 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
 
         {section === 'po' && (
           <div className="grid grid-cols-1 xl:grid-cols-[380px_1fr] gap-5">
-            <form onSubmit={handleCreatePo} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-soft space-y-3 h-fit">
-              <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">Buat Purchase Order (PO Supplier)</p>
+            <form onSubmit={handleCreatePo} className="kaffe-card p-5 space-y-3 h-fit">
+              <p className="font-display text-[15px] font-extrabold text-slate-900">Buat Purchase Order (PO Supplier)</p>
               <input
                 aria-label="Nama Supplier"
                 value={poSupplier}
                 onChange={(e) => setPoSupplier(e.target.value)}
                 placeholder="Nama Supplier (contoh: PT Kopi Nusantara)"
-                className="w-full h-11 border border-slate-200 rounded-2xl px-3 text-sm font-bold"
+                className="w-full h-11 border border-[var(--brand-panel-border)] rounded-xl px-3 font-medium text-slate-800 bg-white focus:outline-none focus:border-[#FF6A00]/60 focus:ring-4 focus:ring-[#FF6A00]/15"
               />
               <select
                 aria-label="Bahan Baku PO"
                 value={poIngredientId}
                 onChange={(e) => setPoIngredientId(e.target.value)}
-                className="w-full h-11 border border-slate-200 rounded-2xl px-3 text-sm font-bold"
+                className="w-full h-11 border border-[var(--brand-panel-border)] rounded-xl px-3 font-medium text-slate-800 bg-white focus:outline-none focus:border-[#FF6A00]/60 focus:ring-4 focus:ring-[#FF6A00]/15"
               >
                 <option value="">Pilih bahan baku yang dipesan</option>
                 {inventory.map((item) => (
@@ -532,7 +532,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
                   value={poQty}
                   onChange={(e) => setPoQty(e.target.value)}
                   placeholder="Qty Order"
-                  className="h-11 border border-slate-200 rounded-2xl px-3 text-sm font-bold"
+                  className="h-11 border border-[var(--brand-panel-border)] rounded-xl px-3 font-medium text-slate-800 bg-white focus:outline-none focus:border-[#FF6A00]/60 focus:ring-4 focus:ring-[#FF6A00]/15"
                 />
                 <input
                   aria-label="Total Tagihan Supplier (Rp)"
@@ -540,7 +540,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
                   value={poTotalCost}
                   onChange={(e) => setPoTotalCost(e.target.value)}
                   placeholder="Total Harga (Rp)"
-                  className="h-11 border border-slate-200 rounded-2xl px-3 text-sm font-bold"
+                  className="h-11 border border-[var(--brand-panel-border)] rounded-xl px-3 font-medium text-slate-800 bg-white focus:outline-none focus:border-[#FF6A00]/60 focus:ring-4 focus:ring-[#FF6A00]/15"
                 />
               </div>
               <input
@@ -548,12 +548,12 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
                 value={poNotes}
                 onChange={(e) => setPoNotes(e.target.value)}
                 placeholder="Catatan pengiriman / termin pembayaran"
-                className="w-full h-11 border border-slate-200 rounded-2xl px-3 text-sm font-bold"
+                className="w-full h-11 border border-[var(--brand-panel-border)] rounded-xl px-3 font-medium text-slate-800 bg-white focus:outline-none focus:border-[#FF6A00]/60 focus:ring-4 focus:ring-[#FF6A00]/15"
               />
               <button
                 type="submit"
                 disabled={poSaving}
-                className="w-full h-11 rounded-2xl bg-[#FF6A00] text-white font-black text-[12px] uppercase tracking-widest disabled:opacity-50"
+                className="kaffe-gradient-cta w-full h-11 rounded-xl text-[14px] font-bold disabled:opacity-50"
               >
                 {poSaving ? 'Menyimpan...' : 'Terbitkan PO Supplier'}
               </button>
@@ -561,17 +561,17 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
 
             <div className="space-y-3">
               {purchaseOrders.length === 0 ? (
-                <div className="bg-white border border-slate-100 rounded-2xl p-8 text-center text-slate-400 font-semibold text-xs">
+                <div className="kaffe-card p-8 text-center text-slate-500 font-medium text-[13px]">
                   Belum ada Purchase Order (PO) ke supplier. Buat PO di sebelah kiri untuk memantau pesanan bahan baku dan menambah stok otomatis saat barang datang.
                 </div>
               ) : (
                 purchaseOrders.map((po) => (
-                  <div key={po.id} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-soft flex flex-wrap items-center justify-between gap-4">
+                  <div key={po.id} className="kaffe-card p-5 flex flex-wrap items-center justify-between gap-4">
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-mono text-xs font-black text-[#FF6A00]">{po.po_number}</span>
                         <span
-                          className={`rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase ${
+                          className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
                             po.status === 'received'
                               ? 'bg-emerald-50 text-emerald-700'
                               : 'bg-amber-50 text-amber-700'
@@ -588,7 +588,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="text-right">
-                        <p className="text-[10px] font-black uppercase text-slate-400">Nilai PO</p>
+                        <p className="text-[12px] font-medium text-slate-500">Nilai PO</p>
                         <p className="font-mono text-base font-black text-slate-900">{fRp(po.total_amount)}</p>
                       </div>
                       {po.status !== 'received' && (
@@ -596,7 +596,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
                           type="button"
                           onClick={() => void handleReceivePo(po)}
                           disabled={poSaving}
-                          className="h-10 rounded-xl bg-emerald-600 px-4 text-xs font-black uppercase tracking-wider text-white hover:bg-emerald-700 disabled:opacity-50"
+                          className="h-11 rounded-xl bg-emerald-700 px-4 text-[13px] font-bold text-white hover:bg-emerald-800 disabled:opacity-50"
                         >
                           Terima Barang
                         </button>
@@ -611,31 +611,31 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
 
         {section === 'conversions' && (
           <div className="grid grid-cols-1 xl:grid-cols-[360px_1fr] gap-5">
-            <form onSubmit={handleSaveConversion} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-soft space-y-3">
-              <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">Tambah Konversi</p>
-              <select aria-label="Bahan baku asal" value={conversionForm.ingredient_id} onChange={e=>setConversionForm(f=>({...f,ingredient_id:e.target.value}))} className="w-full h-11 border border-slate-200 rounded-2xl px-3 text-sm font-bold">
+            <form onSubmit={handleSaveConversion} className="kaffe-card p-5 space-y-3">
+              <p className="font-display text-[15px] font-extrabold text-slate-900">Tambah Konversi</p>
+              <select aria-label="Bahan baku asal" value={conversionForm.ingredient_id} onChange={e=>setConversionForm(f=>({...f,ingredient_id:e.target.value}))} className="w-full h-11 border border-[var(--brand-panel-border)] rounded-xl px-3 font-medium text-slate-800 bg-white focus:outline-none focus:border-[#FF6A00]/60 focus:ring-4 focus:ring-[#FF6A00]/15">
                 <option value="">Global / semua bahan</option>
                 {inventory.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
               </select>
               <div className="grid grid-cols-2 gap-2">
-                <input aria-label="Satuan asal" value={conversionForm.from_unit} onChange={e=>setConversionForm(f=>({...f,from_unit:e.target.value}))} placeholder="mika / bal" className="h-11 border border-slate-200 rounded-2xl px-3 text-sm font-bold"/>
-                <input aria-label="Satuan tujuan" value={conversionForm.to_unit} onChange={e=>setConversionForm(f=>({...f,to_unit:e.target.value}))} placeholder="pcs / gram" className="h-11 border border-slate-200 rounded-2xl px-3 text-sm font-bold"/>
+                <input aria-label="Satuan asal" value={conversionForm.from_unit} onChange={e=>setConversionForm(f=>({...f,from_unit:e.target.value}))} placeholder="mika / bal" className="h-11 border border-[var(--brand-panel-border)] rounded-xl px-3 font-medium text-slate-800 bg-white focus:outline-none focus:border-[#FF6A00]/60 focus:ring-4 focus:ring-[#FF6A00]/15"/>
+                <input aria-label="Satuan tujuan" value={conversionForm.to_unit} onChange={e=>setConversionForm(f=>({...f,to_unit:e.target.value}))} placeholder="pcs / gram" className="h-11 border border-[var(--brand-panel-border)] rounded-xl px-3 font-medium text-slate-800 bg-white focus:outline-none focus:border-[#FF6A00]/60 focus:ring-4 focus:ring-[#FF6A00]/15"/>
               </div>
-              <input aria-label="Rasio konversi" type="number" step="0.0001" value={conversionForm.ratio} onChange={e=>setConversionForm(f=>({...f,ratio:e.target.value}))} placeholder="15" className="h-11 w-full border border-slate-200 rounded-2xl px-3 text-sm font-bold"/>
-              <button type="submit" className="w-full h-11 rounded-2xl bg-slate-900 text-white font-black text-[12px] uppercase tracking-widest">Simpan Konversi</button>
+              <input aria-label="Rasio konversi" type="number" step="0.0001" value={conversionForm.ratio} onChange={e=>setConversionForm(f=>({...f,ratio:e.target.value}))} placeholder="15" className="h-11 w-full border border-[var(--brand-panel-border)] rounded-xl px-3 font-medium text-slate-800 bg-white focus:outline-none focus:border-[#FF6A00]/60 focus:ring-4 focus:ring-[#FF6A00]/15"/>
+              <button type="submit" className="w-full h-11 rounded-xl bg-slate-900 text-white font-bold text-[14px] hover:bg-slate-800">Simpan Konversi</button>
             </form>
-            <div className="bg-white border border-slate-100 rounded-2xl shadow-soft overflow-hidden">
+            <div className="kaffe-card overflow-hidden">
               {unitConversions.length === 0 ? (
-                <div className="p-8 text-center text-slate-400 font-semibold text-xs">Belum ada konversi unit. Tambahkan konversi saat bahan dibeli dan dipakai dalam satuan berbeda.</div>
+                <div className="p-8 text-center text-slate-500 font-medium text-[13px]">Belum ada konversi unit. Tambahkan konversi saat bahan dibeli dan dipakai dalam satuan berbeda.</div>
               ) : unitConversions.map(conversion => {
                 const ingredient = inventory.find(item => item.id === conversion.ingredient_id);
                 return (
-                  <div key={conversion.id} className="flex items-center justify-between gap-4 px-5 py-4 border-b border-slate-50 last:border-0">
+                  <div key={conversion.id} className="flex items-center justify-between gap-4 px-5 py-4 border-b border-[var(--brand-hairline)] last:border-0">
                     <div>
                       <p className="text-sm font-black text-slate-800">1 {conversion.from_unit} = {conversion.ratio.toLocaleString('id-ID')} {conversion.to_unit}</p>
                       <p className="text-[11px] font-bold text-slate-400">{ingredient?.name || 'Global'}</p>
                     </div>
-                    <button type="button" onClick={()=>deleteStockUnitConversion(conversion.id)} className="h-9 px-3 rounded-xl bg-rose-50 text-rose-500 text-[11px] font-black">Hapus</button>
+                    <button type="button" onClick={()=>deleteStockUnitConversion(conversion.id)} className="h-11 px-3 rounded-xl text-rose-700 text-[13px] font-bold hover:bg-rose-50">Hapus</button>
                   </div>
                 );
               })}
@@ -645,28 +645,28 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
 
         {section === 'recipes' && (
           <div className="grid grid-cols-1 xl:grid-cols-[360px_1fr] gap-5">
-            <form onSubmit={handleSaveRecipe} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-soft space-y-3">
-              <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">Tambah Resep</p>
-              <select aria-label="Produk" value={recipeForm.product_id} onChange={e=>setRecipeForm(f=>({...f,product_id:e.target.value}))} className="w-full h-11 border border-slate-200 rounded-2xl px-3 text-sm font-bold">
+            <form onSubmit={handleSaveRecipe} className="kaffe-card p-5 space-y-3">
+              <p className="font-display text-[15px] font-extrabold text-slate-900">Tambah Resep</p>
+              <select aria-label="Produk" value={recipeForm.product_id} onChange={e=>setRecipeForm(f=>({...f,product_id:e.target.value}))} className="w-full h-11 border border-[var(--brand-panel-border)] rounded-xl px-3 font-medium text-slate-800 bg-white focus:outline-none focus:border-[#FF6A00]/60 focus:ring-4 focus:ring-[#FF6A00]/15">
                 <option value="">Pilih produk</option>
                 {menu.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
               </select>
-              <select aria-label="Bahan baku resep" value={recipeForm.ingredient_id} onChange={e=>setRecipeForm(f=>({...f,ingredient_id:e.target.value}))} className="w-full h-11 border border-slate-200 rounded-2xl px-3 text-sm font-bold">
+              <select aria-label="Bahan baku resep" value={recipeForm.ingredient_id} onChange={e=>setRecipeForm(f=>({...f,ingredient_id:e.target.value}))} className="w-full h-11 border border-[var(--brand-panel-border)] rounded-xl px-3 font-medium text-slate-800 bg-white focus:outline-none focus:border-[#FF6A00]/60 focus:ring-4 focus:ring-[#FF6A00]/15">
                 <option value="">Pilih bahan</option>
                 {inventory.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
               </select>
               <div className="grid grid-cols-2 gap-2">
-                <input aria-label="Jumlah bahan per porsi" type="number" step="0.0001" value={recipeForm.qty} onChange={e=>setRecipeForm(f=>({...f,qty:e.target.value}))} placeholder="Qty / porsi" className="h-11 border border-slate-200 rounded-2xl px-3 text-sm font-bold"/>
-                <input aria-label="Satuan rujukan" value={recipeForm.unit_reference} onChange={e=>setRecipeForm(f=>({...f,unit_reference:e.target.value}))} placeholder="pcs / gram" className="h-11 border border-slate-200 rounded-2xl px-3 text-sm font-bold"/>
+                <input aria-label="Jumlah bahan per porsi" type="number" step="0.0001" value={recipeForm.qty} onChange={e=>setRecipeForm(f=>({...f,qty:e.target.value}))} placeholder="Qty / porsi" className="h-11 border border-[var(--brand-panel-border)] rounded-xl px-3 font-medium text-slate-800 bg-white focus:outline-none focus:border-[#FF6A00]/60 focus:ring-4 focus:ring-[#FF6A00]/15"/>
+                <input aria-label="Satuan rujukan" value={recipeForm.unit_reference} onChange={e=>setRecipeForm(f=>({...f,unit_reference:e.target.value}))} placeholder="pcs / gram" className="h-11 border border-[var(--brand-panel-border)] rounded-xl px-3 font-medium text-slate-800 bg-white focus:outline-none focus:border-[#FF6A00]/60 focus:ring-4 focus:ring-[#FF6A00]/15"/>
               </div>
               {recipeError && (
                 <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs font-bold text-rose-600">{recipeError}</p>
               )}
-              <button type="submit" className="w-full h-11 rounded-2xl bg-slate-900 text-white font-black text-[12px] uppercase tracking-widest">Simpan Resep</button>
+              <button type="submit" className="w-full h-11 rounded-xl bg-slate-900 text-white font-bold text-[14px] hover:bg-slate-800">Simpan Resep</button>
             </form>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {hppRows.map(({ product, hpp }) => (
-                <div key={product.id} className="bg-white border border-slate-100 rounded-2xl p-4 shadow-soft">
+                <div key={product.id} className="kaffe-card p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="font-black text-slate-800">{product.name}</p>
@@ -691,7 +691,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
         {section === 'hpp' && (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {hppRows.map(({ product, hpp, margin }) => (
-              <div key={product.id} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-soft">
+              <div key={product.id} className="kaffe-card p-5">
                 <div className="flex items-start justify-between gap-3 mb-4">
                   <div>
                     <p className="font-black text-slate-800">{product.name}</p>
@@ -700,10 +700,10 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
                   {hpp.complete ? <CheckCircle2 size={18} className="text-emerald-500"/> : <AlertTriangle size={18} className="text-amber-500"/>}
                 </div>
                 <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div><p className="text-[10px] font-black text-slate-400 uppercase">Harga</p><p className="font-black text-slate-900">{fRp(product.price)}</p></div>
-                  <div><p className="text-[10px] font-black text-slate-400 uppercase">HPP</p><p className="font-black text-slate-900">{fRp(hpp.totalCost)}</p></div>
-                  <div><p className="text-[10px] font-black text-slate-400 uppercase">Margin</p><p className="font-black text-emerald-600">{margin.marginPercent}%</p></div>
-                  <div><p className="text-[10px] font-black text-slate-400 uppercase">Laba</p><p className="font-black text-slate-900">{fRp(margin.grossProfit)}</p></div>
+                  <div><p className="text-[12px] font-medium text-slate-500">Harga</p><p className="font-bold text-slate-900 kaffe-num">{fRp(product.price)}</p></div>
+                  <div><p className="text-[12px] font-medium text-slate-500">HPP</p><p className="font-bold text-slate-900 kaffe-num">{fRp(hpp.totalCost)}</p></div>
+                  <div><p className="text-[12px] font-medium text-slate-500">Margin</p><p className="font-bold text-emerald-700 kaffe-num">{margin.marginPercent}%</p></div>
+                  <div><p className="text-[12px] font-medium text-slate-500">Laba</p><p className="font-bold text-slate-900 kaffe-num">{fRp(margin.grossProfit)}</p></div>
                 </div>
                 {!hpp.complete && <p className="mt-3 text-[11px] font-bold text-amber-600">{hpp.warnings[0]}</p>}
               </div>
@@ -713,7 +713,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
 
         {section === 'import' && (
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-5">
-            <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-soft">
+            <div className="kaffe-card p-5">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
                 <div className="flex items-center gap-2 text-slate-700 font-black"><FileSpreadsheet size={18}/> CSV Import</div>
                 <div className="flex gap-2">
@@ -733,12 +733,12 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
                 placeholder={'kind,name,stock,base_unit,total_cost,from_unit,to_unit,ratio,product_name,ingredient_name,qty_per_serving,price,category\ningredient,Gula Aren,10,kg,45000,,,,,,,\nconversion,,,,,kg,gram,1000,,,,,\nproduct,Kopi Susu,,,,,,,,,,18000,Coffee\nrecipe,,,,,,,,Kopi Susu,Gula Aren,20,,'}
               />
             </div>
-            <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-soft h-fit">
-              <p className="text-[11px] font-black uppercase tracking-widest text-slate-500 mb-3">Preview Import</p>
+            <div className="kaffe-card p-5 h-fit">
+              <p className="font-display text-[15px] font-extrabold text-slate-900 mb-3">Preview Import</p>
               <div className="grid grid-cols-2 gap-2 mb-4">
                 {Object.entries(importPreview.summary).map(([key, value]) => (
                   <div key={key} className="bg-slate-50 rounded-xl p-3">
-                    <p className="text-[9px] font-black uppercase text-slate-400">{key}</p>
+                    <p className="text-[11px] font-semibold text-slate-500">{key}</p>
                     <p className="text-xl font-black text-slate-800">{value}</p>
                   </div>
                 ))}
@@ -752,7 +752,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
                   ))}
                 </div>
               )}
-              <button type="button" onClick={handleCommitImport} disabled={importing || importPreview.errors.length > 0 || importPreview.validRows.length === 0} className="w-full h-12 rounded-2xl bg-[#FF6A00] text-white font-black text-[12px] uppercase tracking-widest disabled:opacity-40">
+              <button type="button" onClick={handleCommitImport} disabled={importing || importPreview.errors.length > 0 || importPreview.validRows.length === 0} className="kaffe-gradient-cta w-full h-12 rounded-xl text-[15px] font-bold disabled:opacity-40">
                 {importing ? 'Mengimpor...' : 'Commit Import'}
               </button>
             </div>
@@ -832,7 +832,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
               <button 
                 type="submit" 
                 disabled={saving}
-                className="w-full h-14 bg-[#FF6A00] text-white font-black rounded-2xl active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3 shadow-premium transition-all uppercase tracking-wider"
+                className="kaffe-gradient-cta w-full h-14 rounded-2xl text-[19px] font-extrabold disabled:opacity-50 flex items-center justify-center gap-3"
               >
                 {saving&&<div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"/>}
                 {saving?'Menyimpan...':'Simpan Perubahan'}
@@ -863,7 +863,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
             </div>
             <form onSubmit={handleSaveOpname} className="space-y-3">
               <div className="rounded-2xl bg-slate-50 border border-slate-100 p-3">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Stok sistem sekarang</p>
+                <p className="text-[12px] font-semibold text-slate-500">Stok sistem sekarang</p>
                 <p className="text-lg font-black text-slate-900 mt-1">{opnameTarget.stock.toLocaleString('id-ID')} {opnameTarget.unit}</p>
               </div>
               <div className="space-y-1.5">
@@ -897,7 +897,7 @@ export default function WarehouseTab({ toast }: { toast: ToastApi }) {
               <button
                 type="submit"
                 disabled={opnameSaving}
-                className="w-full h-14 bg-[#FF6A00] text-white font-black rounded-2xl active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3 shadow-premium transition-all uppercase tracking-wider"
+                className="kaffe-gradient-cta w-full h-14 rounded-2xl text-[19px] font-extrabold disabled:opacity-50 flex items-center justify-center gap-3"
               >
                 {opnameSaving&&<div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"/>}
                 {opnameSaving?'Menyimpan...':'Simpan Opname'}

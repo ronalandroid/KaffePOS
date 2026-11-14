@@ -42,7 +42,7 @@ function queueFeedback(payload: FeedbackDraft) {
   writeQueue([...readQueue(), payload]);
 }
 
-export default function BetaFeedbackButton({ storeId, toast }: { storeId?: string | null; toast: Toast }) {
+export default function BetaFeedbackButton({ storeId, toast, hideTrigger = false }: { storeId?: string | null; toast: Toast; hideTrigger?: boolean }) {
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(5);
   const [category, setCategory] = useState<'Bug' | 'Saran' | 'Fitur Baru' | 'Lainnya'>('Saran');
@@ -171,21 +171,22 @@ export default function BetaFeedbackButton({ storeId, toast }: { storeId?: strin
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="fixed bottom-[calc(78px+env(safe-area-inset-bottom,0px))] right-4 z-40 inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-orange-100 bg-white px-4 text-xs font-black uppercase tracking-wider text-[#FF6A00] shadow-[0_14px_34px_rgba(31,41,51,0.10)] transition-all hover:-translate-y-0.5 hover:bg-orange-50 lg:bottom-5 lg:right-5"
-        aria-label="Kirim feedback closed beta"
-        title="Kirim feedback closed beta"
-      >
-        <MessageSquareText size={17} />
-        <span className="hidden sm:inline">Kirim Feedback</span>
-        {queuedCount > 0 ? (
-          <span className="ml-1 rounded-full bg-orange-50 px-2 py-0.5 text-[10px] text-orange-700 ring-1 ring-orange-100">
-            {queuedCount}
-          </span>
-        ) : null}
-      </button>
+      {!hideTrigger && (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] right-3 z-40 inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--brand-panel-border)] bg-white text-[var(--brand-orange-text)] shadow-[0_2px_4px_rgba(31,41,51,0.06),0_8px_20px_rgba(31,41,51,0.10)] transition-colors hover:bg-[var(--brand-orange-soft)] lg:bottom-5 lg:right-5"
+          aria-label="Kirim feedback closed beta"
+          title="Kirim feedback closed beta"
+        >
+          <MessageSquareText size={18} />
+          {queuedCount > 0 ? (
+            <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#FF6A00] px-1 text-[10px] font-bold text-white ring-2 ring-white">
+              {queuedCount}
+            </span>
+          ) : null}
+        </button>
+      )}
 
       {open ? (
         <div className="kaffe-modal-overlay fixed inset-0 z-[70] flex items-end justify-center bg-slate-900/40 p-3 backdrop-blur-sm sm:items-center" onClick={onBackdropClick}>

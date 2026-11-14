@@ -11,6 +11,7 @@ import ProductPlaceholder from '@/components/ui/ProductPlaceholder';
 import { useStore } from '@/hooks/useStore';
 import DeleteConfirmSheet from '@/components/ui/DeleteConfirmSheet';
 import { MenuItemCard } from '@/components/menu/MenuItemCard';
+import Switch from '@/components/ui/Switch';
 import { normalizeUserFacingError } from '@/lib/errorMessages';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { usePagination } from '@/hooks/usePagination';
@@ -185,7 +186,7 @@ export default function MenuTab({ toast }:any) {
   const getProductStatus = (item: MenuItem) => {
     const stockStatus = getStockStatus(item);
     if (!item.is_available) {
-      return { label: 'Habis', className: 'bg-rose-50 text-rose-600 border-rose-100' };
+      return { label: 'Habis', className: 'bg-rose-50 text-rose-700 border-rose-100' };
     }
     if (stockStatus === 'low') {
       return { label: 'Menipis', className: 'bg-amber-50 text-amber-700 border-amber-100' };
@@ -196,65 +197,72 @@ export default function MenuTab({ toast }:any) {
   return (
     <div className="kaffe-app-bg kaffe-responsive-surface flex-1 flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="bg-white/95 border-b border-slate-200/70 px-4 pt-5 pb-4 z-10 backdrop-blur-xl sm:px-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
-          <div>
-            <h2 className="font-display text-xl font-extrabold text-slate-900 tracking-tight">Produk</h2>
-            <p className="text-slate-500 font-semibold text-[12px] mt-1">Manajemen produk, kategori, harga, dan resep.</p>
+      <div className="z-10 border-b border-[var(--brand-panel-border)] bg-white px-4 pt-5 pb-3 sm:px-6 lg:px-8">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0">
+            <h2 className="font-display text-2xl font-extrabold tracking-tight text-slate-900">Produk</h2>
+            <p className="mt-1 text-[13px] font-medium text-slate-500">
+              <span className="kaffe-num">{menu.length}</span> produk · <span className="kaffe-num">{menu.filter(m => m.is_available).length}</span> aktif dijual
+            </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <div className="flex shrink-0 items-center gap-2">
             <button type="button" onClick={openNewCombo}
-              className="flex items-center justify-center gap-1.5 h-11 px-4 rounded-lg border border-orange-200 bg-orange-50 text-[#FF6A00] text-[12px] font-black active:scale-95 transition-colors">
-              <Plus size={15}/>Paket Kombo
+              className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-[var(--brand-panel-border)] bg-white px-4 text-[13px] font-bold text-slate-700 transition-colors hover:border-orange-200 hover:bg-[var(--brand-orange-soft)]">
+              <Plus size={16} className="text-[var(--brand-orange-text)]"/>Paket Kombo
             </button>
             <button type="button" onClick={openNew}
-              className="kaffe-gradient-button flex items-center justify-center gap-2 h-11 px-5 rounded-lg text-[13px] font-bold active:scale-95 transition-all shrink-0">
+              className="kaffe-gradient-cta inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl px-5 text-[14px] font-bold sm:flex-none">
               <Plus size={16}/>Tambah Produk
             </button>
           </div>
         </div>
 
-        {/* Search */}
-        <div className="relative mb-5">
-          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"/>
-          <input
-            value={search}
-            onChange={e=>setSearch(e.target.value)}
-            placeholder="Cari nama menu..."
-            className="w-full h-12 bg-white border border-slate-200/90 rounded-lg pl-12 pr-4 text-[15px] focus:outline-none focus:ring-4 focus:ring-[#FF6A00]/10 focus:border-[#FF6A00]/30 transition-all font-medium text-slate-700 placeholder:text-slate-400 shadow-sm"
-          />
-        </div>
-
-        {/* Category Tabs */}
-        <div className="kaffe-scroll-tabs kaffe-command-bar flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:-mx-6 sm:px-6">
-          {cats.map(c=>(
-            <button type="button"
-              key={c}
-              onClick={()=>setCat(c)}
-              data-active={cat===c}
-              className="kaffe-filter-chip shrink-0 rounded-lg px-4 py-2 text-[12px] font-bold transition-all hover:border-orange-200 hover:text-[#FF6A00]"
-            >
-              {c === 'All' ? 'Semua' : c}
-            </button>
-          ))}
+        <div className="flex flex-col gap-3 md:flex-row md:items-center">
+          <div className="relative md:w-80 md:shrink-0">
+            <Search size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"/>
+            <label htmlFor="menu-search" className="sr-only">Cari nama menu</label>
+            <input
+              id="menu-search"
+              value={search}
+              onChange={e=>setSearch(e.target.value)}
+              placeholder="Cari nama menu..."
+              className="h-11 w-full rounded-xl border border-[var(--brand-panel-border)] bg-[var(--brand-canvas)] pl-11 pr-4 font-medium text-slate-800 placeholder:text-slate-500 transition-colors focus:border-[#FF6A00]/60 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#FF6A00]/15"
+            />
+          </div>
+          <div className="kaffe-scroll-tabs kaffe-command-bar -mx-4 flex min-w-0 gap-1.5 overflow-x-auto px-4 no-scrollbar sm:-mx-6 sm:px-6 md:mx-0 md:px-0">
+            {cats.map(c=>(
+              <button type="button"
+                key={c}
+                onClick={()=>setCat(c)}
+                aria-pressed={cat===c}
+                className={`h-9 shrink-0 rounded-full px-4 text-[13px] font-bold transition-colors ${
+                  cat===c
+                    ? 'border border-[#FF6A00]/50 bg-[var(--brand-orange-soft)] text-[var(--brand-orange-text)]'
+                    : 'border border-[var(--brand-panel-border)] bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900'
+                }`}
+              >
+                {c === 'All' ? 'Semua' : c}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto p-3 sm:p-5">
+      <div className="flex-1 overflow-y-auto p-3 pb-24 sm:p-5 lg:p-8 lg:pb-8">
         {search !== dSearch ? <LoadingSkeleton /> : filtered.length===0 ? (
-          <div className="kaffe-empty-state flex flex-col items-center justify-center h-48 rounded-3xl text-slate-400">
-            <div className="w-16 h-16 bg-slate-100 rounded-[24px] flex items-center justify-center mb-4 text-slate-300">
-               <ShoppingBag size={32} />
+          <div className="kaffe-empty-state flex flex-col items-center justify-center rounded-[20px] px-6">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--brand-canvas)] text-stone-300">
+               <ShoppingBag size={28} />
             </div>
-            <p className="text-sm font-bold">Belum ada menu di kategori ini</p>
-            <p className="mt-1 max-w-xs text-center text-xs font-semibold text-slate-400">
+            <p className="font-display text-base font-extrabold text-slate-800">Belum ada menu di kategori ini</p>
+            <p className="mt-1 max-w-xs text-center text-[13px] font-medium text-slate-500">
               Tambahkan produk pertama agar kasir bisa mulai transaksi dengan cepat.
             </p>
           </div>
         ) : (
           <>
-            <div className="kaffe-card-grid kaffe-product-grid grid grid-cols-1 gap-3 sm:grid-cols-2 lg:hidden">
+            <div className="kaffe-card-grid kaffe-product-grid grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:hidden">
               {visibleItems.map(item => (
                 <MenuItemCard
                   key={item.id}
@@ -271,22 +279,23 @@ export default function MenuTab({ toast }:any) {
             <div className="kaffe-table-surface hidden lg:block">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/70 text-[12px] font-bold text-slate-500">
-                    <th className="px-5 py-4">Produk</th>
-                    <th className="px-5 py-4">Kategori</th>
-                    <th className="px-5 py-4">Harga</th>
-                    <th className="px-5 py-4">Status</th>
-                    <th className="px-5 py-4 text-right">Aksi</th>
+                  <tr className="border-b border-[var(--brand-panel-border)] bg-[var(--brand-canvas)] text-[12px] font-semibold text-slate-600">
+                    <th className="px-5 py-3">Produk</th>
+                    <th className="px-5 py-3">Kategori</th>
+                    <th className="px-5 py-3 text-right">Harga</th>
+                    <th className="px-5 py-3">Status</th>
+                    <th className="px-5 py-3">Dijual</th>
+                    <th className="px-5 py-3 text-right"><span className="sr-only">Aksi</span></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-[var(--brand-hairline)]">
                   {visibleItems.map((item) => {
                     const status = getProductStatus(item);
                     return (
-                      <tr key={item.id} className={!item.is_available ? 'bg-slate-50/50 opacity-75' : 'bg-white'}>
-                        <td className="px-5 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="h-11 w-11 overflow-hidden rounded-lg border border-slate-100 bg-slate-50">
+                      <tr key={item.id} className={`transition-colors hover:bg-[#FCFBF9] ${!item.is_available ? 'bg-slate-50 text-slate-500' : 'bg-white'}`}>
+                        <td className="px-5 py-3">
+                          <div className={`flex items-center gap-3 ${!item.is_available ? 'opacity-60' : ''}`}>
+                            <div className="h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-[var(--brand-hairline)]">
                               {item.image_url
                                 ? <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
                                 : <ProductPlaceholder category={item.category} iconSize={18} />
@@ -294,27 +303,27 @@ export default function MenuTab({ toast }:any) {
                             </div>
                             <div className="min-w-0">
                               <p className="truncate text-sm font-bold text-slate-900">{item.name}</p>
-                              <p className="mt-0.5 text-[11px] font-medium text-slate-500">{item.recipe?.length ? `${item.recipe.length} bahan resep` : 'Tanpa resep'}</p>
+                              <p className="mt-0.5 text-[12px] font-medium text-slate-500">{item.recipe?.length ? `${item.recipe.length} bahan resep` : 'Tanpa resep'}</p>
                             </div>
                           </div>
                         </td>
-                        <td className="px-5 py-4 text-sm font-semibold text-slate-600">{item.category}</td>
-                        <td className="px-5 py-4 text-sm font-bold text-slate-900">{fRp(item.price)}</td>
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-3 text-[13px] font-medium text-slate-600">{item.category}</td>
+                        <td className="px-5 py-3 text-right text-[14px] font-bold text-slate-900 kaffe-num">{fRp(item.price)}</td>
+                        <td className="px-5 py-3">
                           <span className={`inline-flex rounded-full border px-3 py-1 text-[11px] font-bold ${status.className}`}>{status.label}</span>
                         </td>
-                        <td className="px-5 py-4">
-                          <div className="flex items-center justify-end gap-2">
-                            <button
-                              type="button"
-                              aria-label={`${item.is_available ? 'Nonaktifkan' : 'Aktifkan'} ${item.name}`}
-                              onClick={()=>toggleAvailable(item)}
-                              className={`w-11 h-7 rounded-full transition-all relative ${item.is_available ? 'bg-emerald-500 shadow-[0_0_10px_rgba(34,197,94,0.25)]' : 'bg-slate-200'}`}
-                            >
-                              <div className={`h-5 w-5 rounded-full bg-white shadow-sm absolute top-1 transition-all duration-300 ${item.is_available ? 'left-[20px]' : 'left-1'}`}/>
-                            </button>
-                            <button type="button" aria-label={`Edit ${item.name}`} onClick={()=>openEdit(item)} className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 hover:bg-orange-50 hover:text-[#FF6A00] transition-colors"><Edit size={15}/></button>
-                            <button type="button" aria-label={`Hapus ${item.name}`} onClick={() => setDeleteTarget(item)} className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-colors"><Trash2 size={15}/></button>
+                        <td className="px-5 py-1">
+                          <Switch
+                            checked={!!item.is_available}
+                            onChange={() => toggleAvailable(item)}
+                            label={`${item.is_available ? 'Nonaktifkan' : 'Aktifkan'} ${item.name}`}
+                            className="-ml-1.5"
+                          />
+                        </td>
+                        <td className="px-5 py-1">
+                          <div className="flex items-center justify-end">
+                            <button type="button" aria-label={`Edit ${item.name}`} onClick={()=>openEdit(item)} className="flex h-11 w-11 items-center justify-center rounded-xl text-slate-500 transition-colors hover:bg-[var(--brand-orange-soft)] hover:text-[var(--brand-orange-text)]"><Edit size={16}/></button>
+                            <button type="button" aria-label={`Hapus ${item.name}`} onClick={() => setDeleteTarget(item)} className="flex h-11 w-11 items-center justify-center rounded-xl text-slate-500 transition-colors hover:bg-rose-50 hover:text-rose-600"><Trash2 size={16}/></button>
                           </div>
                         </td>
                       </tr>
@@ -324,7 +333,7 @@ export default function MenuTab({ toast }:any) {
               </table>
             </div>
             {hasMore && (
-              <button type="button" onClick={loadMore} className="mt-4 w-full rounded-2xl border border-slate-200 bg-white py-3 text-sm font-black text-slate-600">
+              <button type="button" onClick={loadMore} className="mt-4 h-11 w-full rounded-xl border border-[var(--brand-panel-border)] bg-white text-[13px] font-bold text-slate-700 hover:bg-[var(--brand-canvas)]">
                 Muat Lebih Banyak ({remaining} lagi)
               </button>
             )}
