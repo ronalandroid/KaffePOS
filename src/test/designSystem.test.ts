@@ -76,7 +76,7 @@ describe('white and orange professional design system', () => {
 
     expect(menu).toContain('kaffe-table-surface');
     expect(menu).toContain('kaffe-product-grid');
-    expect(menu).toContain('kaffe-filter-chip');
+    expect(menu).toContain('aria-pressed={cat===c}');
     expect(menu).toContain('Tambah Produk');
   });
 

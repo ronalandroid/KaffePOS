@@ -1,6 +1,6 @@
 // src/components/report/ReportTab.tsx — v5 + Gemini AI Insight
 import { useState, useMemo, useCallback } from 'react';
-import { Download, FileText, TrendingUp, ShoppingBag, DollarSign, CreditCard, Wallet, Receipt } from 'lucide-react';
+import { Download, FileText, TrendingUp, ShoppingBag, DollarSign, CreditCard, Wallet, Receipt, Lock, AlertTriangle } from 'lucide-react';
 import { useStore } from '@/hooks/useStore';
 import { useAuth } from '@/contexts/AuthContext';
 import { generateProfessionalPDF, type ReportData } from '@/utils/pdfReport';
@@ -411,36 +411,37 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
   const hasAnyReportData = filtered.length > 0 || filteredExp.length > 0 || filteredCR.length > 0;
 
   return (
-    <div className="kaffe-responsive-surface flex-1 flex flex-col overflow-hidden bg-white lg:bg-slate-50/50">
-      <div className="bg-white border-b border-slate-100 px-4 sm:px-6 pt-6 pb-4 z-10">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+    <div className="kaffe-app-bg kaffe-responsive-surface flex-1 flex flex-col overflow-hidden">
+      <div className="z-10 border-b border-[var(--brand-panel-border)] bg-white px-4 pt-5 sm:px-6 lg:px-8">
+        <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
-            <h2 className="text-xl font-bold tracking-tight text-slate-900">Laporan & Analitik</h2>
-            <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Performa Bisnis Realtime</p>
+            <h2 className="font-display text-2xl font-extrabold tracking-tight text-slate-900">Laporan</h2>
+            <p className="mt-1 text-[13px] font-medium text-slate-500">Pendapatan, laba, kas, dan pengeluaran toko kamu.</p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <button type="button"
               onClick={() => setShowCashRegisterModal(true)}
               title="Edit saldo kasir"
-              className="flex items-center justify-center w-10 h-10 bg-white border border-slate-100 text-slate-400 rounded-2xl active:scale-95 transition-all hover:bg-orange-50 hover:text-[#FF6A00] shadow-sm"
+              aria-label="Edit saldo kasir"
+              className="kaffe-icon-btn"
             >
               <Wallet size={18} />
             </button>
             <button type="button"
               onClick={() => setShowExpenseModal(true)}
-              title="Catat pengeluaran"
-              className="flex items-center justify-center w-10 h-10 bg-white border border-slate-100 text-slate-400 rounded-2xl active:scale-95 transition-all hover:bg-orange-50 hover:text-[#FF6A00] shadow-sm"
+              aria-label="Catat pengeluaran"
+              className="inline-flex h-11 min-w-11 items-center justify-center gap-1.5 rounded-xl border border-[var(--brand-panel-border)] bg-white px-3 sm:px-4 text-[13px] font-bold text-slate-700 transition-colors hover:border-orange-200 hover:bg-[var(--brand-orange-soft)]"
             >
-              <Receipt size={18} />
+              <Receipt size={16} className="text-[var(--brand-orange-text)]" /><span className="hidden sm:inline">Catat Pengeluaran</span>
             </button>
             <button type="button" onClick={handleDownload} disabled={downloading}
-              className={`flex items-center gap-2 h-10 px-5 rounded-2xl text-[12px] font-black active:scale-95 disabled:opacity-50 transition-all shadow-premium ${canExportReports ? 'bg-[#FF6A00] text-white' : 'bg-slate-100 text-slate-400'}`}>
-              {downloading?<div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/>:<Download size={16}/>}
-              {downloading?'Proses...':canExportReports?'Ekspor PDF':'Premium'}
+              className={`inline-flex h-11 items-center gap-2 rounded-xl px-4 text-[14px] font-bold disabled:opacity-50 ${canExportReports ? 'kaffe-gradient-cta' : 'border border-[var(--brand-panel-border)] bg-white text-slate-700 hover:bg-[var(--brand-canvas)]'}`}>
+              {downloading?<div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"/>:<Download size={16}/>}
+              {downloading?'Memproses...':canExportReports?'Ekspor PDF':'Ekspor (Premium)'}
             </button>
           </div>
         </div>
-        <div className="kaffe-scroll-tabs kaffe-command-bar flex gap-6 overflow-x-auto no-scrollbar -mx-4 px-4 sm:-mx-6 sm:px-6 border-b border-slate-50">
+        <nav aria-label="Periode laporan" className="kaffe-scroll-tabs kaffe-command-bar -mx-4 flex gap-1 overflow-x-auto px-4 no-scrollbar sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           {REPORT_PERIODS.map((p) => {
             const locked = p.requiresAdvanced && !canUseAdvancedPeriods;
             const active = period === p.id;
@@ -460,82 +461,79 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
                   }
                   setPeriod(p.id as Period);
                 }}
-                className={`shrink-0 pb-3 text-[13px] font-black uppercase tracking-widest transition-all relative ${
+                aria-current={active ? 'page' : undefined}
+                className={`relative flex h-11 shrink-0 items-center gap-1.5 whitespace-nowrap px-3 text-[13px] transition-colors ${
                   active
-                    ? 'text-[#FF6A00]'
-                    : 'text-slate-400 hover:text-slate-600'
-                } ${locked ? 'opacity-30' : ''}`}
+                    ? 'font-bold text-[var(--brand-orange-text)] after:absolute after:inset-x-2 after:bottom-0 after:h-[3px] after:rounded-full after:bg-[#FF6A00]'
+                    : 'font-semibold text-slate-600 hover:text-slate-900'
+                }`}
               >
                 {p.l}
-                {active && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#FF6A00] rounded-full animate-in fade-in" />}
+                {locked && <Lock size={12} className="text-slate-500" aria-label="Terkunci" />}
               </button>
             );
           })}
-        </div>
+        </nav>
         {period === 'custom' && (
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+          <div className="grid gap-3 py-3 sm:grid-cols-2 md:max-w-xl">
+            <label className="text-[12.5px] font-semibold text-slate-600">
               Dari Tanggal
               <input
                 type="date"
                 value={customStart}
                 onChange={(event) => setCustomStart(event.target.value)}
-                className="mt-2 h-11 w-full rounded-2xl border border-slate-100 bg-slate-50 px-4 text-sm font-bold text-slate-700 outline-none focus:border-[#FF6A00]"
+                className="mt-1.5 h-11 w-full rounded-xl border border-[var(--brand-panel-border)] bg-white px-3 font-medium text-slate-800 outline-none focus:border-[#FF6A00]/60 focus:ring-4 focus:ring-[#FF6A00]/15"
               />
             </label>
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            <label className="text-[12.5px] font-semibold text-slate-600">
               Sampai Tanggal
               <input
                 type="date"
                 value={customEnd}
                 onChange={(event) => setCustomEnd(event.target.value)}
-                className="mt-2 h-11 w-full rounded-2xl border border-slate-100 bg-slate-50 px-4 text-sm font-bold text-slate-700 outline-none focus:border-[#FF6A00]"
+                className="mt-1.5 h-11 w-full rounded-xl border border-[var(--brand-panel-border)] bg-white px-3 font-medium text-slate-800 outline-none focus:border-[#FF6A00]/60 focus:ring-4 focus:ring-[#FF6A00]/15"
               />
             </label>
           </div>
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto p-5 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 pb-24 sm:p-5 lg:p-8 lg:pb-8 space-y-4">
         {!hasAnyReportData && (
-          <div className="kaffe-empty-state bg-white rounded-[32px] border border-dashed border-slate-200 p-10 text-center shadow-soft">
-            <div className="w-20 h-20 bg-slate-50 rounded-[32px] flex items-center justify-center mx-auto mb-6 text-slate-200">
-               <Receipt size={40} />
+          <div className="kaffe-empty-state rounded-[20px] p-10 text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--brand-canvas)] text-stone-300">
+               <Receipt size={28} />
             </div>
-            <p className="font-display text-lg font-extrabold text-slate-800 mb-2 tracking-tight">Belum ada data laporan</p>
-            <p className="mx-auto max-w-md text-sm font-semibold leading-relaxed text-slate-500">
-              Laporan akan terisi otomatis setelah transaksi, saldo kasir, atau pengeluaran dicatat pada periode ini.
-            </p>
-            <p className="text-[13px] text-slate-400 max-w-md mx-auto font-medium leading-relaxed">
-              Mulai transaksi, buka kas harian, atau catat pengeluaran agar laporan ini terisi otomatis secara realtime.
+            <p className="mb-1 font-display text-base font-extrabold text-slate-800">Belum ada data laporan</p>
+            <p className="mx-auto max-w-md text-[13px] font-medium leading-relaxed text-slate-500">
+              Laporan terisi otomatis setelah transaksi, saldo kasir, atau pengeluaran dicatat pada periode ini.
             </p>
           </div>
         )}
         {/* KPI */}
-        <div className="kaffe-card-grid grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
-          <StatCard label="Pendapatan" value={fRp(totalRevenue)} sub={`${filtered.length} transaksi`} icon={<DollarSign size={20}/>} color="orange"/>
-          <StatCard label="Laba Bersih" value={fRp(netProfit)} sub={`Margin ${grossMargin}%`} icon={<TrendingUp size={20}/>} color={netProfit>=0?'green':'red'}/>
-
-          <AiInsightPanel
-            aiData={aiData}
-            aiLoading={aiLoading}
-            aiError={aiError}
-            aiOpen={aiOpen}
-            canUseAiInsight={canUseAiInsight}
-            onToggle={() => setAiOpen(o => !o)}
-            onFetch={() => fetchAI()}
-            onRefresh={() => fetchAI(true)}
-            onOpenLicense={handleOpenLicense}
-            onEmailCopy={handleEmailInsight}
-          />
-
-          <StatCard label="Total HPP" value={fRp(totalCogs)} sub={`Pengeluaran: ${fRp(totalExpenses)}`} icon={<CreditCard size={20}/>} color="red"/>
-          <StatCard label="Avg Transaksi" value={fRp(avgTrx)} sub={`Laba Kotor: ${fRp(grossProfit)}`} icon={<ShoppingBag size={20}/>} color="blue"/>
-          <StatCard label="Saldo Kasir" value={fRp(totalCashRegister)} sub={`${filteredCR.length}× buka kasir`} icon={<Wallet size={20}/>} color="orange"/>
-          <StatCard label="Pengeluaran Ops" value={fRp(totalExpOps)} sub="Di luar bahan baku" icon={<Receipt size={20}/>} color="red"/>
+        <div className="kaffe-card-grid grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+          <StatCard label="Pendapatan" value={fRp(totalRevenue)} sub={`${filtered.length} transaksi`} icon={<DollarSign size={16}/>} color="orange"/>
+          <StatCard label="Laba Bersih" value={fRp(netProfit)} sub={`Margin ${grossMargin}%`} icon={<TrendingUp size={16}/>} color={netProfit>=0?'green':'red'}/>
+          <StatCard label="Total HPP" value={fRp(totalCogs)} sub={`Pengeluaran ${fRp(totalExpenses)}`} icon={<CreditCard size={16}/>} color="red"/>
+          <StatCard label="Rata-rata Transaksi" value={fRp(avgTrx)} sub={`Laba kotor ${fRp(grossProfit)}`} icon={<ShoppingBag size={16}/>} color="blue"/>
+          <StatCard label="Saldo Kasir" value={fRp(totalCashRegister)} sub={`${filteredCR.length}× buka kasir`} icon={<Wallet size={16}/>} color="orange"/>
+          <StatCard label="Pengeluaran Ops" value={fRp(totalExpOps)} sub="Di luar bahan baku" icon={<Receipt size={16}/>} color="red"/>
         </div>
 
-        {lowStockCount>0&&<div className="bg-rose-50 border border-rose-100 rounded-3xl p-4 flex items-center gap-4 shadow-soft"><div className="w-10 h-10 rounded-2xl bg-rose-500 text-white flex items-center justify-center font-display font-extrabold shadow-premium shrink-0">!</div><div><p className="font-bold text-rose-800 text-sm">{lowStockCount} bahan kritis</p><p className="text-rose-500 text-[11px] font-bold uppercase tracking-widest mt-0.5">Restock di tab Gudang</p></div></div>}
+        <AiInsightPanel
+          aiData={aiData}
+          aiLoading={aiLoading}
+          aiError={aiError}
+          aiOpen={aiOpen}
+          canUseAiInsight={canUseAiInsight}
+          onToggle={() => setAiOpen(o => !o)}
+          onFetch={() => fetchAI()}
+          onRefresh={() => fetchAI(true)}
+          onOpenLicense={handleOpenLicense}
+          onEmailCopy={handleEmailInsight}
+        />
+
+        {lowStockCount>0&&<div className="flex items-center gap-3 rounded-[20px] border border-rose-200 bg-rose-50 p-4"><AlertTriangle size={18} className="shrink-0 text-rose-600" aria-hidden="true"/><p className="text-[13.5px] font-medium text-rose-800"><span className="font-bold">{lowStockCount} bahan kritis.</span> Restock dari tab Stok.</p></div>}
 
         {/* Charts */}
         <ReportChartsPanel
@@ -578,10 +576,10 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
         {/* ── Pengeluaran Operasional ───────────────────── */}
         <ExpenseOpsPanel totalExpOps={totalExpOps} entries={filteredExpOps} />
 
-        <div className="bg-orange-50 border border-orange-100 rounded-2xl p-3 flex items-center gap-3">
-          <FileText size={20} strokeWidth={2} className="shrink-0 text-orange-500" aria-hidden="true" />
-          <div><p className="font-bold text-orange-700 text-sm">PDF lengkap dengan semua chart</p><p className="text-orange-400 text-xs">{filtered.length} transaksi + pie chart + inventaris</p></div>
-        </div>
+        <p className="flex items-center justify-center gap-2 px-4 py-2 text-center text-[12px] font-medium text-slate-500">
+          <FileText size={14} className="shrink-0" aria-hidden="true" />
+          Ekspor PDF memuat {filtered.length} transaksi, semua grafik, dan inventaris.
+        </p>
       </div>
       {showExpenseModal && (
         <ExpenseModal

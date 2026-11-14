@@ -34,7 +34,7 @@ export function AiInsightPanel({
   };
 
   return (
-    <div className="col-span-2 md:col-span-4 lg:col-span-2 border border-orange-100 bg-orange-50/60 rounded-2xl overflow-hidden">
+    <div className="kaffe-card overflow-hidden">
       {/* Header tombol */}
       <div
         role="button"
@@ -48,15 +48,15 @@ export function AiInsightPanel({
           }
         }}
         onClick={handleActivate}
-        className="w-full flex items-center justify-between px-4 py-3 active:bg-orange-100 transition-colors cursor-pointer select-none"
+        className="flex w-full cursor-pointer select-none items-center justify-between gap-3 px-5 py-4 transition-colors hover:bg-[#FCFBF9]"
       >
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-orange-500 rounded-lg flex items-center justify-center">
-            <Sparkles size={13} className="text-white" />
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-orange-soft)] text-[var(--brand-orange-text)]">
+            <Sparkles size={16} />
            </div>
           <div className="text-left">
-            <p className="text-sm font-black text-orange-950">AI Insight</p>
-            <p className="text-[10px] text-orange-700">
+            <p className="font-display text-[15px] font-extrabold text-slate-900">AI Insight</p>
+            <p className="text-[12px] font-medium text-slate-500">
               {aiData
                 ? aiData.source === 'local'
                   ? 'Analisis pintar lokal'
@@ -71,31 +71,32 @@ export function AiInsightPanel({
           {aiData && (
             <button type="button"
               onClick={e => { e.stopPropagation(); onRefresh(); }}
-              className="p-1 text-orange-500 active:scale-90"
+              className="flex h-11 w-11 items-center justify-center rounded-xl text-slate-500 hover:bg-[var(--brand-orange-soft)] hover:text-[var(--brand-orange-text)]"
+              aria-label="Refresh analisis"
               disabled={aiLoading}
               title="Refresh analisis"
             >
-              <RefreshCw size={13} className={aiLoading ? 'animate-spin' : ''} />
+              <RefreshCw size={15} className={aiLoading ? 'animate-spin' : ''} />
             </button>
           )}
           {aiLoading
             ? <div className="w-4 h-4 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
             : aiData
-            ? (aiOpen ? <ChevronUp size={15} className="text-orange-500" /> : <ChevronDown size={15} className="text-orange-500" />)
-            : <span className="text-[11px] font-black text-orange-700 bg-white px-2.5 py-1 rounded-lg ring-1 ring-orange-100">{canUseAiInsight ? 'Analisis' : 'Locked'}</span>
+            ? (aiOpen ? <ChevronUp size={18} className="text-slate-500" /> : <ChevronDown size={18} className="text-slate-500" />)
+            : <span className="rounded-full border border-[var(--brand-panel-border)] bg-[var(--brand-canvas)] px-2.5 py-1 text-[12px] font-bold text-slate-600">{canUseAiInsight ? 'Analisis' : 'Terkunci'}</span>
           }
         </div>
       </div>
 
       {!canUseAiInsight && (
-        <div className="px-4 pb-4">
+        <div className="flex flex-col gap-3 border-t border-[var(--brand-hairline)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-[13px] font-medium leading-relaxed text-slate-600">Ringkasan dan saran otomatis dari data penjualan. Tersedia mulai paket Signature.</p>
           <button
             type="button"
             onClick={onOpenLicense}
-            className="w-full rounded-2xl border border-orange-100 bg-white px-4 py-3 text-left transition-all active:scale-[0.98] hover:bg-orange-50"
+            className="inline-flex h-11 shrink-0 items-center justify-center rounded-xl border border-[var(--brand-panel-border)] bg-white px-4 text-[13px] font-bold text-[var(--brand-orange-text)] transition-colors hover:bg-[var(--brand-orange-soft)]"
           >
-            <p className="text-sm font-black text-slate-900">Buka AI Insight</p>
-            <p className="mt-1 text-xs font-medium leading-relaxed text-slate-500">Tersedia mulai paket Signature.</p>
+            Buka AI Insight
           </button>
         </div>
       )}
