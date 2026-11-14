@@ -189,16 +189,6 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
       .slice(0, 8);
   }, [filtered]);
 
-  const kopiScore = useMemo(() => {
-    const revenueScore = totalRevenue > 0 ? Math.min(35, Math.round(totalRevenue / 100000) * 4) : 0;
-    const marginScore = Math.max(0, Math.min(30, Math.round(grossMargin * 0.3)));
-    const stockScore = inventory.length ? Math.max(0, 20 - lowStockCount * 4) : 12;
-    const activityScore = Math.min(15, filtered.length * 2);
-    const score = Math.max(0, Math.min(100, revenueScore + marginScore + stockScore + activityScore));
-    const label = score >= 85 ? 'Excellent' : score >= 70 ? 'Stabil' : score >= 55 ? 'Perlu Optimasi' : 'Perlu Perhatian';
-    return { score, label };
-  }, [filtered.length, grossMargin, inventory.length, lowStockCount, totalRevenue]);
-
   const stockData = useMemo(()=>
     inventory.map((i: InventoryItem)=>({label:i.name,stock:i.stock,unit:i.unit,min:i.min_stock,pct:i.min_stock>0?Math.round((i.stock/i.min_stock)*100):999}))
       .sort((a,b)=>a.pct-b.pct).slice(0,10)
@@ -212,8 +202,8 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
         trigger: 'ai_insight',
         promptKey: 'feature:ai_insight',
         recommendedPlan: 'signature',
-        title: 'AI Insight ada di paket Signature',
-        description: 'Upgrade saat kamu butuh analisis menu terlaris, prediksi stok, dan rekomendasi operasional yang lebih tajam.',
+        title: 'Analisis penjualan tersedia di paket Signature',
+        description: 'Upgrade untuk melihat menu terlaris, perkiraan stok, dan saran operasional.',
       });
       return;
     }
@@ -259,8 +249,8 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
       trigger: 'ai_insight',
       promptKey: 'feature:ai_insight',
       recommendedPlan: 'signature',
-      title: 'AI Insight ada di paket Signature',
-      description: 'Upgrade saat kamu butuh analisis menu terlaris, prediksi stok, dan rekomendasi operasional yang lebih tajam.',
+      title: 'Analisis penjualan tersedia di paket Signature',
+      description: 'Upgrade untuk melihat menu terlaris, perkiraan stok, dan saran operasional.',
     });
   }, []);
 
@@ -307,7 +297,6 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
       stockData,
       categorySales,
       staffPerformance,
-      kopiScore,
       recentTransactions: filtered
         .slice()
         .sort((a: Transaction, b: Transaction) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -352,7 +341,6 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
     filteredCR,
     categorySales,
     staffPerformance,
-    kopiScore,
     customStart,
     customEnd,
     aiData,
@@ -402,7 +390,7 @@ export default function ReportTab({ toast, subscriptionAccess }: { toast: ToastA
       `Menu terbaik: ${aiData.bestMenu}\n\n` +
       `Status stok: ${aiData.stockAlert}\n\n` +
       `Prediksi: ${aiData.prediction}\n\n` +
-      `Tips Aksi:\n- ${aiData.tips.join('\n- ')}\n\n` +
+      `Saran:\n- ${aiData.tips.join('\n- ')}\n\n` +
       `-- Dikirim OTOMATIS oleh KaffePOS AI`
     );
     window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;

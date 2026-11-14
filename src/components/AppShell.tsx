@@ -379,7 +379,7 @@ export default function AppShell() {
       title: 'Sudah 14 hari memakai KaffePOS',
       description: role === 'cashier'
         ? 'Outlet ini sudah aktif dipakai. Minta Owner/Admin meninjau paket Signature saat fitur premium mulai dibutuhkan.'
-        : 'Jika operasional sudah mulai rutin, paket Signature membuka AI Insight, multi kasir, laporan lanjutan, dan printer thermal dalam satu paket.',
+        : 'Jika operasional sudah mulai rutin, paket Signature membuka analisis penjualan, multi kasir, laporan lanjutan, dan printer thermal dalam satu paket.',
       metadata: { daysSinceFirstActivity: effectiveUsage.daysSinceFirstActivity },
     });
   }, [appAgePromptKey, effectiveUsage.daysSinceFirstActivity, effectiveUsage.shouldShowAppAgePrompt, ready, role, subscriptionAccess.isTrial, upgradePrompt, user?.id]);
@@ -421,8 +421,8 @@ export default function AppShell() {
       description: role === 'cashier'
         ? 'Minta Owner/Admin memilih paket agar fitur premium tetap aktif setelah trial.'
         : isExpiredPrompt
-          ? 'Pilih paket agar Gamification, Advanced Kopi Passport Loyalty, AI Insights, dan Notification Center tetap aktif untuk operasional cafe.'
-          : 'Upgrade ke Signature kapan saja agar Gamification, Advanced Kopi Passport Loyalty, AI Insights, dan Notification Center tetap aktif setelah trial.',
+          ? 'Pilih paket agar misi dan peringkat tim, Kopi Passport lengkap, analisis penjualan, dan pusat notifikasi tetap aktif untuk operasional cafe.'
+          : 'Upgrade ke Signature kapan saja agar misi dan peringkat tim, Kopi Passport lengkap, analisis penjualan, dan pusat notifikasi tetap aktif setelah trial.',
       metadata: { daysUsed, daysLeft, trialEndsAt: subscriptionAccess.expiryDate },
     });
   }, [ready, role, showToast, subscriptionAccess.daysRemaining, subscriptionAccess.expiryDate, subscriptionAccess.isTrial, upgradePrompt, user?.id]);

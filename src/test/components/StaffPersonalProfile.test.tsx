@@ -77,7 +77,9 @@ describe('StaffPersonalProfile', () => {
   it('keeps cashier view personal without exposing other staff names', () => {
     render(<StaffPersonalProfile profile={profile} role="cashier" />);
 
-    expect(screen.getAllByText('Peringkat saya').length).toBeGreaterThan(0); expect(screen.queryByText('Peringkat tim')).not.toBeInTheDocument().toBeInTheDocument();
+    expect(screen.getAllByText('Peringkat saya').length).toBeGreaterThan(0);
+    expect(screen.queryByText('Peringkat tim')).not.toBeInTheDocument();
+    expect(screen.queryByText('Peringkat tim')).not.toBeInTheDocument();
     expect(screen.queryByText('Budi')).not.toBeInTheDocument();
   });
 

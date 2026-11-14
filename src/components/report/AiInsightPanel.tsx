@@ -1,5 +1,5 @@
 // src/components/report/AiInsightPanel.tsx
-import { Sparkles, RefreshCw, ChevronDown, ChevronUp, Mail } from 'lucide-react';
+import { LineChart, RefreshCw, ChevronDown, ChevronUp, Mail } from 'lucide-react';
 import type { AIInsight } from '@/lib/aiInsight';
 
 type AiInsightPanelProps = {
@@ -40,7 +40,7 @@ export function AiInsightPanel({
         role="button"
         tabIndex={0}
         aria-expanded={aiOpen}
-        aria-label="Toggle AI Insight"
+        aria-label="Buka atau tutup analisis penjualan"
         onKeyDown={e => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
@@ -51,19 +51,17 @@ export function AiInsightPanel({
         className="flex w-full cursor-pointer select-none items-center justify-between gap-3 px-5 py-4 transition-colors hover:bg-[#FCFBF9]"
       >
         <div className="flex min-w-0 items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-orange-soft)] text-[var(--brand-orange-text)]">
-            <Sparkles size={16} />
-           </div>
+          <LineChart size={20} className="shrink-0 text-slate-500" aria-hidden="true" />
           <div className="text-left">
-            <p className="font-display text-[15px] font-extrabold text-slate-900">AI Insight</p>
+            <p className="font-display text-[15px] font-extrabold text-slate-900">Analisis penjualan</p>
             <p className="text-[12px] font-medium text-slate-500">
               {aiData
                 ? aiData.source === 'local'
-                  ? 'Analisis pintar lokal'
-                  : 'Dianalisis oleh Gemini'
+                  ? 'Dihitung di perangkat, tanpa AI'
+                  : 'Dianalisis oleh Google Gemini'
                 : canUseAiInsight
-                ? 'Signature · analisis AI siap dipakai'
-                : 'Buka di paket Signature'}
+                ? 'Ketuk untuk menganalisis periode ini'
+                : 'Tersedia di paket Signature'}
             </p>
           </div>
         </div>
@@ -96,7 +94,7 @@ export function AiInsightPanel({
             onClick={onOpenLicense}
             className="inline-flex h-11 shrink-0 items-center justify-center rounded-xl border border-[var(--brand-panel-border)] bg-white px-4 text-[13px] font-bold text-[var(--brand-orange-text)] transition-colors hover:bg-[var(--brand-orange-soft)]"
           >
-            Buka AI Insight
+            Lihat paket Signature
           </button>
         </div>
       )}
@@ -148,7 +146,7 @@ export function AiInsightPanel({
           {/* Tips */}
           {aiData.tips?.length > 0 && (
             <div>
-              <p className="text-[10px] font-black text-green-600 uppercase tracking-wider mb-2">Tips Aksi</p>
+              <p className="text-[10px] font-black text-green-600 uppercase tracking-wider mb-2">Saran</p>
               <div className="space-y-1.5">
                 {aiData.tips.map((tip, i) => (
                   <div key={i} className="flex items-start gap-2 bg-white rounded-xl px-3 py-2">
@@ -165,11 +163,11 @@ export function AiInsightPanel({
               onClick={onEmailCopy}
               className="w-full bg-white hover:bg-orange-50 text-orange-700 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition ring-1 ring-orange-100"
             >
-              <Mail size={14}/> Kirim Copy ke Email Saya
+              <Mail size={16} aria-hidden="true" /> Kirim salinan ke email saya
             </button>
-            <p className="text-[9px] text-orange-300 text-center uppercase tracking-wider mt-1">
+            <p className="text-[11px] text-slate-500 text-center mt-1">
               {aiData.source === 'local'
-                ? 'Analisis cadangan lokal · Hanya sebagai referensi'
+                ? 'Dihitung di perangkat, tanpa AI · Hanya sebagai referensi'
                 : 'Dianalisis oleh Google Gemini · Hanya sebagai referensi'}
             </p>
           </div>
