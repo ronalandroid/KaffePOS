@@ -9,7 +9,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import {
   Bluetooth, BluetoothOff, RefreshCw, Printer,
-  CheckCircle, Circle, Trash2, Zap, AlertCircle
+  CheckCircle, Circle, Trash2, AlertCircle
 } from 'lucide-react';
 import {
   scanPairedDevices, connectPrinter, disconnectPrinter,
@@ -116,7 +116,7 @@ export default function PrinterSettings({ toast }: Props) {
 
   const handleTestPrint = useCallback(async () => {
     if (connStatus !== 'connected') {
-      toast.showToast('Hubungkan printer dulu', 'warning'); return;
+      toast.showToast('Hubungkan printer dulu.', 'warning'); return;
     }
     setTesting(true);
     try {
@@ -198,9 +198,9 @@ export default function PrinterSettings({ toast }: Props) {
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500 text-white text-xs font-bold rounded-xl active:scale-95 disabled:opacity-50">
                 {testing
                   ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"/>
-                  : <Zap size={12}/>
+                  : <Printer size={16} aria-hidden="true" />
                 }
-                {testing ? '...' : 'Test'}
+                {testing ? 'Mencetak...' : 'Cetak tes'}
               </button>
               <button type="button" onClick={handleDisconnect}
                 className="p-1.5 bg-red-100 text-red-500 rounded-xl active:scale-95">
@@ -221,7 +221,7 @@ export default function PrinterSettings({ toast }: Props) {
 
       {/* Paper size selector */}
       <div className="bg-white rounded-2xl border border-slate-100 p-4">
-        <p className="text-xs font-black text-slate-400 mb-3">UKURAN KERTAS</p>
+        <p className="text-xs font-black text-slate-400 mb-3">Ukuran kertas</p>
         <div className="flex gap-3">
           {([58, 80] as const).map(size => (
             <button type="button" key={size} onClick={() => handlePaperSize(size)}
@@ -242,7 +242,7 @@ export default function PrinterSettings({ toast }: Props) {
       {/* Scan & daftar device */}
       <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
         <div className="flex items-center justify-between p-4 border-b border-slate-50">
-          <p className="text-xs font-black text-slate-400">PILIH PRINTER</p>
+          <p className="text-xs font-black text-slate-400">Pilih printer</p>
           <button type="button" onClick={handleScan} disabled={scanning}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500 text-white text-xs font-bold rounded-xl active:scale-95 disabled:opacity-50">
             <RefreshCw size={12} className={scanning ? 'animate-spin' : ''}/>

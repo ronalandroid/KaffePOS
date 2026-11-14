@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { RefreshCw, ShieldCheck, X } from 'lucide-react';
+import { RefreshCw, CheckCircle2, X } from 'lucide-react';
 import {
   checkRemoteAppVersion,
   CLIENT_APP_VERSION,
@@ -137,7 +137,7 @@ export default function AppVersionSync({ ready, storeId, userId, onSync, showToa
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 items-start gap-3">
             <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white text-[#FF6A00] ring-1 ring-orange-100">
-              {isSyncing ? <RefreshCw size={16} className="animate-spin" /> : <ShieldCheck size={16} />}
+              {isSyncing ? <RefreshCw size={16} className="animate-spin" /> : <CheckCircle2 size={16} aria-hidden="true" />}
             </div>
             <div className="min-w-0">
               <p className="font-black">{isHard ? 'Update aplikasi diperlukan' : 'Update data aplikasi'}</p>

@@ -1,4 +1,4 @@
-import { CheckCircle2, Palette, RotateCcw, Wand2 } from 'lucide-react';
+import { CheckCircle2, Palette, RotateCcw, Info } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useStore } from '@/hooks/useStore';
 import {
@@ -59,7 +59,7 @@ export default function ThemeCustomizer({ toast }: { toast: { showToast: (messag
   return (
     <div className="space-y-4">
       <div className="bg-white rounded-2xl border border-slate-100 p-4">
-        <p className="text-xs font-black text-slate-400 mb-3">PRESET TEMA</p>
+        <p className="text-xs font-black text-slate-400 mb-3">Preset tema</p>
         <div className="space-y-3">
           {THEME_PRESETS.map((preset) => {
             const isActive = appTheme === preset.id;
@@ -148,7 +148,7 @@ export default function ThemeCustomizer({ toast }: { toast: { showToast: (messag
         {evaluation.warnings.length > 0 && (
           <div className="mt-4 rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3">
             <div className="flex items-start gap-2">
-              <Wand2 size={18} strokeWidth={2} className="mt-0.5 shrink-0 text-blue-600" />
+              <Info size={20} className="mt-0.5 shrink-0 text-blue-700" aria-hidden="true" />
               <div className="space-y-1">
                 <p className="text-xs font-bold text-blue-800">Warna disesuaikan agar tetap terbaca</p>
                 {evaluation.warnings.map((warning) => (

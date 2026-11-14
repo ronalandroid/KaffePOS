@@ -11,7 +11,7 @@ import {
   FileText,
   Palette,
   Users,
-  ShieldCheck,
+  KeyRound,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { ReceiptSettings } from '@/utils/receipt';
@@ -68,7 +68,7 @@ const SETTINGS_NAV: Array<{ id: Section; l: string; icon: LucideIcon }> = [
   { id: 'printer', l: 'Printer', icon: Printer },
   { id: 'theme', l: 'Tema', icon: Palette },
   { id: 'cashiers', l: 'Kasir', icon: Users },
-  { id: 'license', l: 'Lisensi', icon: ShieldCheck },
+  { id: 'license', l: 'Lisensi', icon: KeyRound },
 ];
 
 export default function SettingsTab({ toast, isPro, profile, subscriptionAccess }: { toast: ToastApi; isPro: boolean; profile: Profile | null; subscriptionAccess: SubscriptionAccess }) {

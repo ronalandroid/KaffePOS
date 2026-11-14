@@ -426,7 +426,7 @@ export default function SubscriptionCheckoutFlow({ open, plan, billingCycle, onC
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-bold text-slate-500">Durasi: {BILLING_CYCLE_LABELS[quote.billingCycle]}</span>
-                    <span className="text-xs font-black text-slate-400">TERPILIH</span>
+                    <span className="text-xs font-black text-slate-400">Terpilih</span>
                   </div>
                   <div className="flex flex-col gap-2 rounded-2xl bg-slate-50 p-3 text-sm sm:flex-row sm:items-center sm:justify-between">
                     <span className="font-bold text-slate-500">Metode</span>

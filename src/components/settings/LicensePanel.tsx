@@ -38,7 +38,7 @@ export default function LicensePanel({
     <>
       {IS_PAYMENT_DISABLED ? (
         <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-2">
-          <p className="text-xs font-black text-slate-400">LISENSI</p>
+          <p className="text-xs font-black text-slate-400">Lisensi</p>
           {isPro ? (
             <div className="flex items-start gap-3">
               <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600"><BadgeCheck size={18} /></span>
@@ -67,7 +67,7 @@ export default function LicensePanel({
       )}
 
       <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
-        <p className="text-xs font-black text-slate-400">NAMA KASIR</p>
+        <p className="text-xs font-black text-slate-400">Nama kasir</p>
         <p className="text-xs text-slate-400">Nama ini akan muncul di setiap struk sebagai identitas kasir</p>
         <div className="flex gap-2">
           <div className="flex-1">
@@ -83,7 +83,7 @@ export default function LicensePanel({
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-100 p-4">
-        <p className="text-xs font-black text-slate-400 mb-3">INFO AKUN</p>
+        <p className="text-xs font-black text-slate-400 mb-3">Info akun</p>
         <div className="space-y-3 mb-4">
           <div className="flex justify-between items-center py-1.5 border-b border-slate-50">
             <span className="text-sm text-slate-500">Username</span>

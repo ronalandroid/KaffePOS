@@ -17,7 +17,7 @@ export default function StoreProfilePanel({ form, update, setForm, triggerSave, 
   return (
     <>
       <div className="bg-white rounded-2xl border border-slate-100 p-4">
-        <p className="text-xs font-black text-slate-400 mb-3">LOGO TOKO</p>
+        <p className="text-xs font-black text-slate-400 mb-3">Logo toko</p>
         <div className="flex items-center gap-4 mb-3">
           <div className="w-20 h-20 rounded-2xl border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden bg-slate-50 shrink-0">
             {form.logo_url?<img src={form.logo_url} alt="logo" className="w-full h-full object-contain"/>:<div className="text-center"><Coffee size={26} strokeWidth={2} className="mx-auto text-slate-300" /><p className="text-[10px] text-slate-400 mt-1">Belum ada</p></div>}
@@ -39,7 +39,7 @@ export default function StoreProfilePanel({ form, update, setForm, triggerSave, 
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
-        <p className="text-xs font-black text-slate-400">IDENTITAS BRAND</p>
+        <p className="text-xs font-black text-slate-400">Identitas brand</p>
         <Inp label="Nama Brand / Toko *" value={form.store_name} onChange={(v:string)=>update('store_name',v)} placeholder="KaffePOS Coffee"/>
         <Inp label="Tagline" value={form.tagline} onChange={(v:string)=>update('tagline',v)} placeholder="Kopi Terbaik di Kota"/>
         <Inp label="Alamat" value={form.address} onChange={(v:string)=>update('address',v)} placeholder="Jl. Kopi No. 1"/>
@@ -49,7 +49,7 @@ export default function StoreProfilePanel({ form, update, setForm, triggerSave, 
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
-        <p className="text-xs font-black text-slate-400">KEUANGAN</p>
+        <p className="text-xs font-black text-slate-400">Keuangan</p>
         <div>
           <label className="text-xs font-bold text-slate-500 mb-2 block">Pajak / PPN: <span className="text-orange-500">{form.tax_percent||0}%</span></label>
           <input type="range" min="0" max="20" value={form.tax_percent||0} onChange={e=>update('tax_percent',parseInt(e.target.value))} className="w-full accent-orange-500 h-2"/>

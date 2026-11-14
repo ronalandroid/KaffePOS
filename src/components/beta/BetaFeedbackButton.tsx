@@ -228,7 +228,7 @@ export default function BetaFeedbackButton({ storeId, toast, hideTrigger = false
                           ? 'border-orange-100 bg-orange-50 text-[#FF6A00]'
                           : 'border-slate-100 bg-white text-slate-300 hover:bg-slate-50'
                       }`}
-                      aria-label={`Rating ${value}`}
+                      aria-label={`Beri nilai ${value} dari 5`}
                     >
                       <Star size={18} fill={value <= rating ? '#FF6A00' : 'none'} />
                     </button>
