@@ -1,4 +1,4 @@
-import { ArrowRight, MessageCircle, Sparkles } from 'lucide-react';
+import { ArrowRight, MessageCircle, Lock } from 'lucide-react';
 import { INSTAGRAM_ADMIN_URL, formatRupiah, getPlanDefinition, getPlanPrice } from '@/lib/subscriptionPlans';
 
 interface UpgradePromptProps {
@@ -35,16 +35,14 @@ export default function UpgradePrompt({
       <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-orange-50 blur-2xl" />
 
       <div className="relative z-10">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-100 text-orange-600 mb-4">
-          <Sparkles size={24} />
-        </div>
+        <Lock size={24} className="mb-4 text-slate-500" aria-hidden="true" />
 
         <h3 className="text-xl font-black text-slate-900 md:text-2xl">{title}</h3>
         <p className="mt-2 text-sm font-medium leading-relaxed text-slate-500">{description}</p>
 
         <div className="mt-6 flex flex-col gap-4 rounded-3xl bg-slate-50 p-5 border border-slate-100 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Rekomendasi Terbaik</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Paket yang membuka fitur ini</p>
             <p className="mt-1 text-lg font-black text-slate-900">{plan.name}</p>
           </div>
           <div className="text-right sm:text-right">

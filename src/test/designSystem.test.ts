@@ -50,7 +50,7 @@ describe('white and orange professional design system', () => {
     expect(authContent).toContain('icon: MonitorSmartphone');
     expect(authContent).toContain('supportIcon: BarChart3');
     expect(authContent).toContain('icon: Store');
-    expect(authContent).toContain('icon: ShieldCheck');
+    expect(authContent).toContain('icon: KeyRound');
     expect(authContent).toContain('supportIcon: RefreshCw');
     expect(authPanels).toContain('kaffe-preview-icon-panel');
     expect(authPanels).toContain('kaffe-mobile-preview-icon');

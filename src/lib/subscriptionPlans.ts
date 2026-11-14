@@ -29,10 +29,10 @@ export const INSTAGRAM_ADMIN_URL = 'https://instagram.com/kaffepos';
 export const RENEWAL_URL = 'https://kaffepos.my.id/perpanjang';
 export const TRIAL_DAYS = 14;
 export const TRIAL_GRACE_DAYS = 3;
-export const TRIAL_MESSAGE = 'Gratis 14 Hari • Full Akses Signature • Otomatis Rp49.000/bulan setelah trial berakhir';
-export const PRICING_MAIN_HEADLINE = 'Coba KaffePOS Gratis 14 Hari Full Fitur Premium';
-export const PRICING_SUB_HEADLINE = 'Rasakan Gamification, AI Insights, dan Kopi Passport Loyalty selama 14 hari tanpa bayar. Setelah itu hanya Rp49.000/bulan.';
-export const SIGNATURE_TAGLINE = 'Paling Populer • Full Gamification + AI Insights + Advanced Loyalty';
+export const TRIAL_MESSAGE = 'Gratis 14 hari dengan semua fitur Signature. Setelah itu otomatis Rp49.000/bulan.';
+export const PRICING_MAIN_HEADLINE = 'Coba KaffePOS gratis 14 hari dengan semua fitur';
+export const PRICING_SUB_HEADLINE = 'Pakai misi tim, analisis penjualan, dan Kopi Passport selama 14 hari tanpa bayar. Setelah itu mulai Rp49.000/bulan.';
+export const SIGNATURE_TAGLINE = 'Misi dan peringkat tim, analisis penjualan, Kopi Passport lengkap, dan multi kasir.';
 export const ACTIVE_SUBSCRIPTION_PLAN_IDS: SubscriptionPlanId[] = ['secangkir', 'kopi_susu', 'signature'];
 
 export const SUBSCRIPTION_PLANS: Record<SubscriptionPlanId, SubscriptionPlanDefinition> = {
@@ -40,20 +40,20 @@ export const SUBSCRIPTION_PLANS: Record<SubscriptionPlanId, SubscriptionPlanDefi
     id: 'secangkir',
     name: 'Secangkir',
     shortName: 'Secangkir',
-    badge: 'TRIAL 14 HARI',
+    badge: 'Trial 14 hari',
     accentClass: 'text-orange-700',
     accentSoftClass: 'bg-orange-50 border-orange-200',
     gradient: 'linear-gradient(135deg,#FF6A00 0%,#FF8A1C 100%)',
     prices: { free: 0 },
     description: TRIAL_MESSAGE,
-    audience: 'Gratis 14 hari full fitur premium',
+    audience: 'Gratis 14 hari, semua fitur',
     isFree: true,
     features: [
-      'Full access semua fitur Signature selama 14 hari',
-      'POS, inventory + resep, KDS, dan laporan lengkap',
-      'Full Gamification: Kopi Score, Badges, Leaderboard, Daily Challenges',
-      'Advanced Kopi Passport Loyalty',
-      'AI Insights pintar dan Notification Center',
+      'Semua fitur Signature selama 14 hari',
+      'Kasir, stok dan resep, layar dapur (KDS), dan laporan lengkap',
+      'Misi harian, badge, dan peringkat tim',
+      'Kopi Passport lengkap',
+      'Analisis penjualan dan pusat notifikasi',
       'Otomatis menjadi Kopi Susu Rp49.000/bulan setelah trial',
     ],
   },
@@ -61,59 +61,59 @@ export const SUBSCRIPTION_PLANS: Record<SubscriptionPlanId, SubscriptionPlanDefi
     id: 'kopi_susu',
     name: 'Kopi Susu',
     shortName: 'Kopi Susu',
-    badge: 'CAFE KECIL',
+    badge: 'Cafe kecil',
     accentClass: 'text-amber-700',
     accentSoftClass: 'bg-amber-50 border-amber-200',
     gradient: 'linear-gradient(135deg,#b45309 0%,#f59e0b 100%)',
     prices: { monthly: 49000, quarterly: 129000, semiannual: 249000, yearly: 449000 },
-    description: 'Untuk Cafe Kecil yang Serius. Unlimited transaksi, cetak browser, loyalty dasar, dan laporan lengkap. Mulai Rp49.000/bulan.',
-    audience: 'Paling cocok untuk cafe kecil',
+    description: 'Transaksi tanpa batas, cetak dari browser, Kopi Passport dasar, dan laporan lengkap. Mulai Rp49.000/bulan.',
+    audience: 'Untuk cafe dengan satu kasir',
     features: [
       'Transaksi tanpa batas',
       'Cetak browser',
-      'Inventory + resep',
-      'Kitchen Display',
-      'Kopi Passport Loyalty dasar',
+      'Stok dan resep',
+      'Layar dapur (KDS)',
+      'Kopi Passport dasar',
     ],
   },
   signature: {
     id: 'signature',
     name: 'Signature',
     shortName: 'Signature',
-    badge: 'PALING POPULER',
+    badge: 'Multi kasir',
     accentClass: 'text-orange-700',
     accentSoftClass: 'bg-orange-50 border-orange-200',
     gradient: 'linear-gradient(135deg,#9a3412 0%,#f97316 100%)',
     prices: { monthly: 129000, quarterly: 349000, semiannual: 649000, yearly: 1199000 },
     description: SIGNATURE_TAGLINE,
-    audience: 'Recommended - paling populer',
+    audience: 'Untuk outlet dengan beberapa kasir',
     features: [
       'Semua fitur Kopi Susu',
-      'Full Gamification',
-      'Advanced Kopi Passport Loyalty',
-      'AI Insights pintar',
-      'Notification Center',
-      'Multi kasir dan cashier session',
+      'Misi harian, badge, dan peringkat tim',
+      'Kopi Passport lengkap',
+      'Analisis penjualan',
+      'Pusat notifikasi',
+      'Multi kasir dengan sesi per kasir',
     ],
   },
   founder: {
     id: 'founder',
     name: 'Founder',
     shortName: 'Founder',
-    badge: 'PREMIUM',
+    badge: 'Multi outlet',
     accentClass: 'text-slate-100',
     accentSoftClass: 'bg-slate-900 border-slate-700',
     gradient: 'linear-gradient(135deg,#0f172a 0%,#334155 100%)',
     prices: { monthly: 249000, quarterly: 679000, semiannual: 1249000, yearly: 2299000 },
-    description: 'Solusi profesional untuk cafe yang sedang berkembang. Semua fitur Signature + Multi Outlet, dedicated support, dan bantuan setup bisnis.',
-    audience: 'Untuk cafe berkembang dan rantai',
+    description: 'Semua fitur Signature, ditambah multi outlet, pendamping khusus, dan bantuan penyiapan awal.',
+    audience: 'Untuk cafe dengan beberapa cabang',
     features: [
       'Semua fitur Signature',
-      'Multi Outlet',
-      'Dedicated support',
-      'Bantuan setup bisnis',
-      'Review operasional berkala',
-      'Prioritas roadmap dan onboarding',
+      'Multi outlet',
+      'Pendamping khusus',
+      'Bantuan penyiapan awal',
+      'Tinjauan operasional berkala',
+      'Prioritas saat onboarding',
     ],
   },
 };

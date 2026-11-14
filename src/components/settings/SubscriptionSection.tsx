@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AlertCircle, Clock3, ExternalLink, History, RefreshCw, Shield, Sparkles, CreditCard, Calendar } from 'lucide-react';
+import { AlertCircle, Clock3, ExternalLink, History, RefreshCw, Shield, CreditCard, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { getSubscriptions, type SubscriptionPaymentConfig } from '@/lib/backendApi';
@@ -305,7 +305,6 @@ export default function SubscriptionSection({ isPro, profile, toast, onRefreshSt
             onClick={() => openCheckout()}
             className="kaffe-gradient-cta group inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl px-6 text-sm font-black transition-all active:scale-95"
           >
-            <Sparkles size={18} className="transition-transform group-hover:rotate-12" />
             {primaryCta}
           </button>
           <button type="button"

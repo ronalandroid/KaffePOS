@@ -1,4 +1,4 @@
-import { Copy, Gift, Link2, Share2 } from 'lucide-react';
+import { Copy, Link2, Share2, UserPlus } from 'lucide-react';
 import { trackAnalyticsEvent } from '@/lib/analytics';
 import type { ReferralCode } from '@/types/affiliate';
 import type { ToastType } from '@/types';
@@ -74,9 +74,7 @@ export default function ReferralCodeCard({ referralCode, referralLink, generatin
       <section className="rounded-3xl border border-orange-100 bg-white p-5 shadow-sm sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-orange-100 bg-orange-50 text-[#FF6A00]">
-              <Gift size={22} />
-            </div>
+            <UserPlus size={24} className="mt-0.5 shrink-0 text-orange-700" aria-hidden="true" />
             <div>
               <h2 className="text-lg font-black text-slate-900">Buat kode referral kamu</h2>
               <p className="mt-1 max-w-xl text-sm font-medium leading-relaxed text-slate-500">

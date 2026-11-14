@@ -14,7 +14,6 @@ import {
   EyeOff,
   Lock,
   RefreshCw,
-  ShieldCheck,
   Store,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -791,7 +790,6 @@ export default function AuthPage() {
                         >
                           <div className="flex items-center justify-between w-full mb-0.5">
                             <div className="flex items-center gap-1.5">
-                              <ShieldCheck size={14} className="text-[#FF6A00]" />
                               <span className="text-xs font-extrabold text-slate-900 group-hover:text-[#FF6A00] transition-colors">
                                 Demo Owner
                               </span>

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ArrowRight, Check, CreditCard, Sparkles, X } from 'lucide-react';
+import { ArrowRight, Check, CreditCard, X } from 'lucide-react';
 import type { UserRole } from '@/lib/accessControl';
 import { logUpgradePromptEvent } from '@/lib/backendApi';
 import {
@@ -153,10 +153,6 @@ export default function UpgradeModal({
           <div className="shrink-0 border-b border-slate-100 bg-white px-5 py-4 sm:px-6 md:px-8">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-orange-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-orange-700 ring-1 ring-orange-100">
-                  <Sparkles size={12} />
-                  Upgrade Plan
-                </div>
                 <h3 id="upgrade-modal-title" className="break-words text-xl font-black text-slate-900 sm:text-2xl">{title}</h3>
                 <p className="mt-2 max-w-2xl text-sm font-medium leading-relaxed text-slate-500">{description}</p>
               </div>
