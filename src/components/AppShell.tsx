@@ -714,17 +714,17 @@ export default function AppShell() {
         <main className="kaffe-responsive-surface flex-1 min-h-0 min-w-0 overflow-hidden flex flex-col"
           style={{ paddingBottom: 'calc(env(safe-area-inset-bottom,0px))' }}>
           <Suspense fallback={<TabSpinner />}>
-            {renderTabPanel('dashboard', 'Beranda', <DashboardTab />)}
+            {renderTabPanel('dashboard', 'Dashboard', <DashboardTab />)}
             {renderTabPanel('performance', 'Performa', <StaffPersonalProfileTab profile={profile} role={role} />)}
-            {renderTabPanel('challenges', 'Misi Harian', <ChallengesTab profile={profile} role={role} subscriptionAccess={subscriptionAccess} />)}
-            {renderTabPanel('referrals', 'Referral', <ReferralDashboardTab toast={toast} />)}
-            {renderTabPanel('affiliate', 'Affiliate', <AffiliateDashboardTab toast={toast} />)}
-            {renderTabPanel('pos', 'POS', <POSTab toast={toast} profile={profile} subscriptionAccess={subscriptionAccess} />)}
+            {renderTabPanel('challenges', 'Misi', <ChallengesTab profile={profile} role={role} subscriptionAccess={subscriptionAccess} />)}
+            {renderTabPanel('referrals', 'Ajak outlet', <ReferralDashboardTab toast={toast} />)}
+            {renderTabPanel('affiliate', 'Afiliasi', <AffiliateDashboardTab toast={toast} />)}
+            {renderTabPanel('pos', 'Kasir', <POSTab toast={toast} profile={profile} subscriptionAccess={subscriptionAccess} />)}
             {renderTabPanel('loyalty', 'Loyalty', <LoyaltyTab toast={toast} profile={profile} role={role} subscriptionAccess={subscriptionAccess} />)}
             {renderTabPanel('kitchen', 'Dapur', <KitchenTab toast={toast} profile={profile} />)}
             {renderTabPanel('warehouse', 'Stok', <WarehouseTab toast={toast} />)}
-            {renderTabPanel('menu', 'Menu', <MenuTab toast={toast} />)}
-            {renderTabPanel('history', 'Riwayat', <HistoryTab toast={toast} subscriptionAccess={subscriptionAccess} />)}
+            {renderTabPanel('menu', 'Produk', <MenuTab toast={toast} />)}
+            {renderTabPanel('history', 'Transaksi', <HistoryTab toast={toast} subscriptionAccess={subscriptionAccess} />)}
             {renderTabPanel('report', 'Laporan', <ReportTab toast={toast} subscriptionAccess={subscriptionAccess} />)}
             {renderTabPanel('settings', 'Pengaturan', <SettingsTab toast={toast} isPro={isPro} profile={profile} subscriptionAccess={subscriptionAccess} />)}
           </Suspense>

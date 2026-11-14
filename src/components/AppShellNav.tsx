@@ -61,7 +61,7 @@ export function AppSidebarNav({ role, tab, changeTab, syncing, hasOpenChallenge 
                         : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                     }`}
                   >
-                    <Icon size={18} strokeWidth={active ? 2.4 : 2} className="shrink-0" />
+                    <Icon size={20} className="shrink-0" aria-hidden="true" />
                     <span className={`hidden flex-1 truncate text-[13.5px] xl:inline ${active ? 'font-bold' : 'font-semibold'}`}>{label}</span>
                     <span className="absolute right-2 top-2 xl:static">
                       <NavDot show={id === 'pos' && syncing} tone="sync" />
@@ -107,7 +107,7 @@ export function AppBottomNav({ role, tab, changeTab, syncing, hasOpenChallenge }
                 active ? 'bg-[var(--brand-orange-soft)]' : ''
               }`}
             >
-              <Icon size={20} strokeWidth={active ? 2.4 : 2} />
+              <Icon size={20} aria-hidden="true" />
               {id === 'pos' && syncing && (
                 <span className="absolute right-2 top-0.5 h-2 w-2 rounded-full border border-white bg-emerald-500" />
               )}
