@@ -22,7 +22,7 @@ export default function AffiliateDashboardPage({ toast }: { toast: ToastApi }) {
     return (
       <div className="flex h-full items-center justify-center p-6">
         <div className="max-w-md rounded-3xl border border-orange-100 bg-white p-6 text-center shadow-sm">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl bg-orange-50 text-[#FF6A00]"><Handshake size={26} /></div>
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl bg-orange-50 text-[#FF6A00]"><Handshake size={24} /></div>
           <h1 className="text-xl font-black text-slate-900">Affiliate belum bisa dimuat</h1>
           <p className="mt-2 text-sm font-medium text-slate-500">{error}</p>
           <button type="button" onClick={() => void reload('initial')} className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-[#FF6A00] px-5 py-3 text-sm font-black text-white transition hover:bg-orange-600"><RefreshCw size={16} /> Coba Lagi</button>

@@ -20,3 +20,11 @@ Key patterns:
 - Reference users with `auth.users(id)`; use `auth.uid()` in RLS policies.
 - For storage uploads, persist both the returned `url` and `key`.
 <!-- INSFORGE:END -->
+
+## Pekerjaan UI dan teks
+
+Untuk setiap perubahan tampilan, ikon, atau teks yang terlihat pengguna:
+
+1. Baca `DESIGN.md` untuk arah desain (identitas, warna, tipografi, ikon, penamaan).
+2. Pakai skill `antislop`, `antislop-ui`, dan `antislop-copywriting` sebagai saringan, lalu jalankan Delivery Gate sebelum menyerahkan hasil. Pasang dengan `npx skills add miqdadbadjuber/anti-slop`.
+3. Jangan pakai `ui-ux-pro-max` atau `taste-skill` untuk layar kasir: default geraknya bertentangan dengan dial MOTION 1.

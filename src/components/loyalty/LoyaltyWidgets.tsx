@@ -1,5 +1,5 @@
 /** Presentational widgets for the loyalty tab (badges, stamp grid, cards, states). */
-import { Coffee, Gift, Loader2, Plus, Sparkles, Stamp, TicketPercent, UserRound } from 'lucide-react';
+import { Coffee, Gift, Loader2, Plus, Stamp, TicketPercent, UserRound } from 'lucide-react';
 import type { LoyaltyPassport, LoyaltyReward, LoyaltySettings } from '@/lib/loyalty';
 import { canRedeemReward, getStampProgress, getTierLabel, getTierProgress } from '@/lib/loyalty';
 import { fRp, fNum } from './loyaltyFormat';
@@ -22,7 +22,6 @@ export function TierBadge({ tier }: { tier: LoyaltyPassport['tier'] }) {
       className="inline-flex items-center gap-1.5 rounded-full border border-orange-100 bg-orange-50 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-orange-700"
       title="Tier naik otomatis dari total transaksi pelanggan."
     >
-      <Sparkles size={12} />
       {label}
     </span>
   );
@@ -45,7 +44,7 @@ export function PassportStampGrid({ passport, settings }: { passport: LoyaltyPas
             aria-label={`Stamp ${index + 1}${filled ? ' terisi' : ' kosong'}`}
             title={filled ? `Stamp ${index + 1} sudah terisi` : `Stamp ${index + 1} belum terisi`}
           >
-            {filled ? <Coffee size={20} strokeWidth={2.6} /> : <Stamp size={18} strokeWidth={2} />}
+            {filled ? <Coffee size={20} /> : <Stamp size={20} />}
           </div>
         );
       })}
@@ -64,7 +63,7 @@ export function StampCard({ passport, settings }: { passport: LoyaltyPassport; s
       <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-orange-100 bg-orange-50 text-[#FF6A00]">
-            <UserRound size={22} />
+            <UserRound size={20} />
           </div>
           <div className="min-w-0">
             <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -129,7 +128,7 @@ export function RewardCard({ reward, passport }: { reward: LoyaltyReward; passpo
     >
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-orange-100 bg-orange-50 text-[#FF6A00]">
-          {reward.type === 'free_item' ? <Gift size={19} /> : <TicketPercent size={19} />}
+          {reward.type === 'free_item' ? <Gift size={20} /> : <TicketPercent size={20} />}
         </div>
         <span
           className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-wider ${
@@ -165,7 +164,7 @@ export function LoadingState() {
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 px-4 py-5 sm:px-6 lg:px-8">
         <section className="kaffe-panel rounded-2xl p-6">
           <div className="flex items-center justify-center gap-3 py-16 text-sm font-bold text-slate-400">
-            <Loader2 size={26} className="animate-spin text-[#FF6A00]" />
+            <Loader2 size={24} className="animate-spin text-[#FF6A00]" />
             Memuat Kopi Passport...
           </div>
         </section>
@@ -180,7 +179,7 @@ export function EmptyState({ onFocus }: { onFocus: () => void }) {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-orange-100 bg-orange-50 text-[#FF6A00]">
-            <Coffee size={22} />
+            <Coffee size={20} />
           </div>
           <div className="min-w-0">
             <p className="text-sm font-black text-slate-900">Belum ada pelanggan loyalty</p>

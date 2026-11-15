@@ -1,29 +1,29 @@
 /** Static branding content for the auth page (logo, highlights, preview cards). */
-import { BarChart3, MonitorSmartphone, Palette, RefreshCw, Shield, ShieldCheck, Store, Zap } from 'lucide-react';
+import { BarChart3, KeyRound, Lock, MonitorSmartphone, Palette, ReceiptText, RefreshCw, Store } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export const LOGO_ICON = '/logo-kaffeposappicon.svg';
 
 export const brandHighlights = [
   {
-    title: 'Mudah digunakan',
+    title: 'Semua dalam satu tempat',
     copy: 'Kelola penjualan, stok, pelanggan, dan laporan dari satu aplikasi.',
-    icon: Zap,
+    icon: Store,
   },
   {
     title: 'Transaksi cepat',
-    copy: 'Alur kasir dibuat ringkas agar tim bisa melayani pelanggan tanpa jeda.',
-    icon: BarChart3,
+    copy: 'Alur kasir dibuat ringkas agar antrean tidak menumpuk.',
+    icon: ReceiptText,
   },
   {
     title: 'Laporan lengkap',
-    copy: 'Ringkasan penjualan, stok, dan riwayat transaksi tersaji rapi.',
-    icon: ShieldCheck,
+    copy: 'Ringkasan penjualan, stok, dan riwayat transaksi dalam satu tempat.',
+    icon: BarChart3,
   },
   {
-    title: 'Keamanan terjamin',
-    copy: 'Akses akun dan data outlet berjalan dengan pembatasan per pengguna.',
-    icon: Shield,
+    title: 'Akses per pengguna',
+    copy: 'Owner, Admin, dan Kasir hanya melihat data sesuai perannya.',
+    icon: Lock,
   },
 ];
 
@@ -48,9 +48,9 @@ export const authPreviewCards = [
   },
   {
     title: 'Lisensi sinkron',
-    label: 'Billing',
+    label: 'Langganan',
     copy: 'Paket dan masa aktif mudah dicek tanpa berpindah aplikasi.',
-    icon: ShieldCheck,
+    icon: KeyRound,
     supportIcon: RefreshCw,
     accent: 'from-emerald-50 via-white to-orange-50 text-emerald-700 ring-emerald-100',
     supportAccent: 'bg-emerald-500 text-white',

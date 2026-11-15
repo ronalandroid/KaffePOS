@@ -163,11 +163,11 @@ export function buildEnhancedAiInsights(input: {
   insights.push({
     id: 'sales-trend',
     type: 'sales_trend',
-    title: revenueTrendPct >= 0 ? 'Sales trend naik' : 'Sales trend perlu dijaga',
+    title: revenueTrendPct >= 0 ? 'Penjualan naik' : 'Penjualan turun',
     description: revenueTrendPct >= 0
-      ? `Revenue 14 hari terakhir naik ${revenueTrendPct}% dibanding periode sebelumnya. Pertahankan promo dan jam ramai yang sudah bekerja.`
-      : `Revenue 14 hari terakhir turun ${Math.abs(revenueTrendPct)}%. Fokuskan promo ke menu terlaris dan jam paling ramai.`,
-    impact: revenueTrendPct >= 0 ? 'Potensi menjaga momentum +8-12% revenue' : 'Potensi recovery +10-15% revenue',
+      ? `Penjualan 14 hari terakhir naik ${revenueTrendPct}% dibanding 14 hari sebelumnya.`
+      : `Penjualan 14 hari terakhir turun ${Math.abs(revenueTrendPct)}% dibanding 14 hari sebelumnya. Arahkan promo ke menu terlaris di jam paling ramai.`,
+    impact: revenueTrendPct >= 0 ? 'Penjualan terjaga' : 'Penjualan kembali naik',
     confidence: recent.length >= 20 ? 86 : 68,
     metricLabel: '14 hari',
     metricValue: `${revenueTrendPct >= 0 ? '+' : ''}${revenueTrendPct}%`,
@@ -177,11 +177,11 @@ export function buildEnhancedAiInsights(input: {
     insights.push({
       id: 'menu-optimization',
       type: 'menu_optimization',
-      title: `${bestMenu.label} jadi menu anchor`,
-      description: `${bestMenu.label} menyumbang ${new Intl.NumberFormat('id-ID').format(bestMenu.qty)} item terjual. Letakkan di tombol atas dan jadikan bundling dengan modifier bernilai tinggi.`,
-      impact: 'Estimated impact +12-18% revenue',
+      title: `${bestMenu.label} paling laku`,
+      description: `${bestMenu.label} menyumbang ${new Intl.NumberFormat('id-ID').format(bestMenu.qty)} item terjual. Taruh di tombol teratas kasir dan tawarkan tambahan yang cocok.`,
+      impact: 'Kasir lebih cepat menemukan menu terlaris',
       confidence: bestMenu.qty >= 10 ? 88 : 70,
-      metricLabel: 'Revenue menu',
+      metricLabel: 'Penjualan menu',
       metricValue: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(bestMenu.revenue),
     });
   }
@@ -190,9 +190,9 @@ export function buildEnhancedAiInsights(input: {
     insights.push({
       id: 'peak-hour',
       type: 'peak_hour',
-      title: `Peak hour ${bestHour.label}`,
-      description: `Jam terbaik outlet ada di ${bestHour.label}. Tambahkan promo ringan atau highlight add-on pada window ini saat traffic sedang hangat.`,
-      impact: 'Potential lift +7-14% pada jam ramai',
+      title: `Jam ramai ${bestHour.label}`,
+      description: `Transaksi terbanyak terjadi pukul ${bestHour.label}. Siapkan stok dan tenaga di jam ini, lalu tawarkan menu tambahan.`,
+      impact: 'Antrean lebih lancar di jam ramai',
       confidence: bestHour.transactions >= 8 ? 84 : 66,
       metricLabel: 'Transaksi',
       metricValue: `${bestHour.transactions}`,
@@ -203,11 +203,11 @@ export function buildEnhancedAiInsights(input: {
     insights.push({
       id: 'staff-performance',
       type: 'staff_performance',
-      title: `${bestStaff.label} paling kuat upsell`,
-      description: `${bestStaff.label} punya upsell rate ${bestStaff.upsellRate}%. Jadikan trainer singkat untuk script add-on dan rekomendasi menu di kasir.`,
-      impact: 'Potential +5-10% average ticket',
+      title: `${bestStaff.label} paling sering menjual tambahan`,
+      description: `${bestStaff.upsellRate}% transaksi ${bestStaff.label} berisi menu tambahan. Minta ia berbagi cara menawarkannya ke staf lain.`,
+      impact: 'Nilai per transaksi tim ikut naik',
       confidence: bestStaff.transactions >= 8 ? 82 : 64,
-      metricLabel: 'Upsell rate',
+      metricLabel: 'Transaksi dengan tambahan',
       metricValue: `${bestStaff.upsellRate}%`,
     });
   }
@@ -217,8 +217,8 @@ export function buildEnhancedAiInsights(input: {
       id: 'stock-waste',
       type: 'stock_waste',
       title: `${lowStock[0].label} perlu restock`,
-      description: `${lowStock[0].label} sudah di bawah minimum. Prioritaskan restock bahan menu terlaris agar tidak kehilangan sales saat peak hour.`,
-      impact: 'Mengurangi risiko lost sales hari ini',
+      description: `${lowStock[0].label} sudah di bawah stok minimum. Restock sebelum jam ramai supaya menu tidak kosong.`,
+      impact: 'Menu tetap bisa dijual hari ini',
       confidence: 90,
       metricLabel: 'Sisa stok',
       metricValue: `${lowStock[0].stock} ${lowStock[0].unit}`.trim(),
@@ -230,41 +230,41 @@ export function buildEnhancedAiInsights(input: {
       id: 'move-top-menu',
       type: 'menu_optimization' as InsightType,
       priority: 'high',
-      title: `Move ${bestMenu.label} to top button`,
-      action: `Pindahkan ${bestMenu.label} ke tombol paling atas dan pasangkan dengan add-on paling relevan.`,
-      impact: 'Potential +18% revenue',
+      title: `Pindahkan ${bestMenu.label} ke tombol teratas`,
+      action: `Atur urutan menu supaya ${bestMenu.label} muncul paling atas di kasir.`,
+      impact: 'Kasir lebih cepat menemukan menu terlaris',
     } : null,
     bestHour ? {
       id: 'peak-promo',
       type: 'peak_hour' as InsightType,
       priority: 'high',
       title: `Promo ringan di ${bestHour.label}`,
-      action: `Buat promo add-on atau bundle kecil pada ${bestHour.label}, bukan diskon besar sepanjang hari.`,
-      impact: 'Potential +7-14% revenue saat peak hour',
+      action: `Buat promo tambahan atau paket kecil khusus pukul ${bestHour.label}, bukan diskon besar sepanjang hari.`,
+      impact: 'Promo hanya berjalan saat paling banyak pembeli',
     } : null,
     bestStaff && staffPerformance.length > 1 ? {
       id: 'staff-trainer',
       type: 'staff_performance' as InsightType,
       priority: 'medium',
-      title: `${bestStaff.label} sebagai trainer upsell`,
-      action: `Minta ${bestStaff.label} share script rekomendasi add-on ke staff lain selama briefing 10 menit.`,
-      impact: 'Potential +5-10% average ticket',
+      title: `${bestStaff.label} berbagi cara menawarkan tambahan`,
+      action: `Minta ${bestStaff.label} mencontohkan cara menawarkan menu tambahan ke staf lain saat briefing 10 menit.`,
+      impact: 'Nilai per transaksi tim ikut naik',
     } : null,
     lowStock.length > 0 ? {
       id: 'stock-restock',
       type: 'stock_waste' as InsightType,
       priority: 'high',
       title: `Restock ${lowStock[0].label}`,
-      action: `Restock ${lowStock[0].label} sebelum peak hour agar menu utama tidak kosong.`,
-      impact: 'Mengurangi lost sales dan void akibat stok kosong',
+      action: `Restock ${lowStock[0].label} sebelum jam ramai supaya menu utama tidak kosong.`,
+      impact: 'Tidak ada pesanan batal karena stok habis',
     } : null,
     slowMenu ? {
       id: 'slow-menu',
       type: 'menu_optimization' as InsightType,
       priority: 'low',
-      title: `Review ${slowMenu.label}`,
-      action: `Uji foto, nama, atau posisi ${slowMenu.label}. Jika tetap rendah, pertimbangkan seasonal menu.`,
-      impact: 'Kurangi menu clutter dan waste bahan',
+      title: `Tinjau ${slowMenu.label}`,
+      action: `Coba ganti foto, nama, atau posisi ${slowMenu.label}. Jika tetap jarang dipesan, jadikan menu musiman.`,
+      impact: 'Daftar menu lebih ringkas dan bahan tidak terbuang',
     } : null,
   ].filter(Boolean).slice(0, 5);
 
@@ -282,17 +282,17 @@ export function buildEnhancedAiInsights(input: {
     fromCache: false,
     kopiScore: {
       score: kopiScore,
-      label: kopiScore >= 85 ? 'Excellent' : kopiScore >= 72 ? 'Healthy' : kopiScore >= 60 ? 'Needs Focus' : 'At Risk',
-      explanation: `${input.storeName} punya score ${kopiScore}/100 berdasarkan sales trend, menu mix, staff upsell, peak hour, dan risiko stok.`,
+      label: kopiScore >= 85 ? 'Sangat baik' : kopiScore >= 72 ? 'Baik' : kopiScore >= 60 ? 'Perlu perhatian' : 'Berisiko',
+      explanation: `Dihitung dari tren penjualan, jumlah transaksi, penjualan tambahan staf, dan stok yang menipis.`,
       drivers: [
-        `Sales trend ${revenueTrendPct >= 0 ? '+' : ''}${revenueTrendPct}%`,
+        `Penjualan ${revenueTrendPct >= 0 ? 'naik' : 'turun'} ${Math.abs(revenueTrendPct)}% dalam 14 hari`,
         `${recent.length} transaksi dianalisis`,
-        lowStock.length > 0 ? `${lowStock.length} stok perlu perhatian` : 'Stok utama aman',
+        lowStock.length > 0 ? `${lowStock.length} bahan di bawah stok minimum` : 'Tidak ada bahan di bawah stok minimum',
       ],
     },
     summary: recent.length === 0
-      ? 'Belum cukup transaksi untuk analisis penuh. Mulai dari transaksi hari ini, lalu refresh insight setelah data masuk.'
-      : `AI Insights membaca ${recent.length} transaksi terakhir. Fokus utama: ${bestMenu?.label || 'menu mix'}, ${bestHour?.label || 'peak hour'}, dan ${lowStock[0]?.label || 'stock health'}.`,
+      ? 'Belum cukup transaksi untuk dianalisis. Catat transaksi hari ini, lalu ketuk Segarkan.'
+      : `Dari ${recent.length} transaksi terakhir, yang perlu dilihat: ${[bestMenu?.label, bestHour ? `jam ${bestHour.label}` : null, lowStock[0] ? `stok ${lowStock[0].label}` : null].filter(Boolean).join(', ') || 'belum ada'}.`,
     insights: insights.slice(0, 5),
     recommendations,
     charts: {

@@ -44,7 +44,7 @@ const OptionRowsEditor = memo(function OptionRowsEditor({ title, subtitle, addLa
         </div>
         <button type="button" onClick={onAdd}
           className="flex items-center gap-1.5 px-4 py-2 bg-orange-50 text-orange-600 rounded-xl text-xs font-black active:scale-95 transition-colors border border-orange-100">
-          <Plus size={14}/>{addLabel}
+          <Plus size={16}/>{addLabel}
         </button>
       </div>
       {rows.length === 0 ? (
@@ -219,7 +219,7 @@ export default function MenuTab({ toast }:any) {
 
         <div className="flex flex-col gap-3 md:flex-row md:items-center">
           <div className="relative md:w-80 md:shrink-0">
-            <Search size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"/>
+            <Search size={20} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"/>
             <label htmlFor="menu-search" className="sr-only">Cari nama menu</label>
             <input
               id="menu-search"
@@ -253,7 +253,7 @@ export default function MenuTab({ toast }:any) {
         {search !== dSearch ? <LoadingSkeleton /> : filtered.length===0 ? (
           <div className="kaffe-empty-state flex flex-col items-center justify-center rounded-[20px] px-6">
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--brand-canvas)] text-stone-300">
-               <ShoppingBag size={28} />
+               <ShoppingBag size={24} />
             </div>
             <p className="font-display text-base font-extrabold text-slate-800">Belum ada menu di kategori ini</p>
             <p className="mt-1 max-w-xs text-center text-[13px] font-medium text-slate-500">
@@ -298,7 +298,7 @@ export default function MenuTab({ toast }:any) {
                             <div className="h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-[var(--brand-hairline)]">
                               {item.image_url
                                 ? <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
-                                : <ProductPlaceholder category={item.category} iconSize={18} />
+                                : <ProductPlaceholder category={item.category} />
                               }
                             </div>
                             <div className="min-w-0">
@@ -367,13 +367,13 @@ export default function MenuTab({ toast }:any) {
                   <div className="w-20 h-20 rounded-2xl border-2 border-dashed border-slate-200 overflow-hidden bg-slate-50 shrink-0 flex items-center justify-center">
                     {form.image_url
                       ? <img src={form.image_url} alt="" className="w-full h-full object-cover"/>
-                      : <ProductPlaceholder {...(form.category ? { category: form.category } : {})} iconSize={24} />
+                      : <ProductPlaceholder {...(form.category ? { category: form.category } : {})} />
                     }
                   </div>
                   <div className="flex-1 space-y-2">
                     <button type="button" onClick={()=>imgRef.current?.click()}
                       className="w-full py-2.5 border-2 border-orange-200 text-orange-600 font-bold rounded-xl text-sm flex items-center justify-center gap-2 active:scale-95">
-                      <Image size={14}/>Upload Foto
+                      <Image size={16}/>Upload Foto
                     </button>
                     {form.image_url&&(
                       <button type="button" onClick={()=>setForm(f=>({...f,image_url:''}))}
@@ -421,7 +421,7 @@ export default function MenuTab({ toast }:any) {
                         {['Coffee','Non-Coffee','Food','Snack','Other'].map(c=><option key={c} value={c}>{c}</option>)}
                       </select>
                       <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                        <ChevronDown size={18} />
+                        <ChevronDown size={20} />
                       </div>
                     </div>
                   </div>
@@ -450,7 +450,7 @@ export default function MenuTab({ toast }:any) {
                     onClick={addRecipeLine}
                     className="flex items-center gap-1.5 px-4 py-2 bg-orange-50 text-orange-600 rounded-xl text-xs font-black active:scale-95 transition-colors border border-orange-100"
                   >
-                    <Plus size={14}/>Tambah Bahan
+                    <Plus size={16}/>Tambah Bahan
                   </button>
                 </div>
                 {inventory.length===0?(
@@ -476,7 +476,7 @@ export default function MenuTab({ toast }:any) {
                             {inventory.map(inv=><option key={inv.id} value={inv.id}>{inv.name} ({inv.stock} {inv.unit})</option>)}
                           </select>
                           <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                            <ChevronDown size={14} />
+                            <ChevronDown size={16} />
                           </div>
                         </div>
                         <div className="w-24 relative shrink-0">

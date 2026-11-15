@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ArrowRight, Check, CreditCard, Sparkles, X } from 'lucide-react';
+import { ArrowRight, Check, CreditCard, X } from 'lucide-react';
 import type { UserRole } from '@/lib/accessControl';
 import { logUpgradePromptEvent } from '@/lib/backendApi';
 import {
@@ -56,7 +56,7 @@ const COMPARISON_ROWS = [
 function Capability({ enabled }: { enabled: boolean }) {
   return enabled ? (
     <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-orange-100 text-orange-700">
-      <Check size={14} strokeWidth={3} />
+      <Check size={16} />
     </span>
   ) : (
     <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-300">-</span>
@@ -153,10 +153,6 @@ export default function UpgradeModal({
           <div className="shrink-0 border-b border-slate-100 bg-white px-5 py-4 sm:px-6 md:px-8">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-orange-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-orange-700 ring-1 ring-orange-100">
-                  <Sparkles size={12} />
-                  Upgrade Plan
-                </div>
                 <h3 id="upgrade-modal-title" className="break-words text-xl font-black text-slate-900 sm:text-2xl">{title}</h3>
                 <p className="mt-2 max-w-2xl text-sm font-medium leading-relaxed text-slate-500">{description}</p>
               </div>
@@ -165,7 +161,7 @@ export default function UpgradeModal({
                 className="shrink-0 rounded-full p-2 text-slate-300 transition-colors hover:bg-slate-50 hover:text-slate-900"
                 aria-label="Tutup upgrade"
               >
-                <X size={22} />
+                <X size={20} />
               </button>
             </div>
           </div>
@@ -254,13 +250,13 @@ export default function UpgradeModal({
               >
                 {isOwner ? (
                   <>
-                    <CreditCard size={17} />
+                    <CreditCard size={16} />
                     Lanjut Checkout
                   </>
                 ) : (
                   'Minta Owner/Admin Upgrade'
                 )}
-                <ArrowRight size={17} className="transition-transform group-hover:translate-x-1" />
+                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
               </button>
             </div>
           </div>

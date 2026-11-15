@@ -1,22 +1,22 @@
 /** AppShell support: nav config, storage helpers, loading/error chrome. */
-import { BadgePercent, BarChart3, ChefHat, Gift, Handshake, History, LayoutDashboard, Package, Settings, ShoppingBag, Tag, Target, Trophy } from 'lucide-react';
+import { BarChart3, ChefHat, Handshake, History, LayoutDashboard, ListChecks, Package, Settings, ShoppingBag, Stamp, Tag, UserPlus, Users } from 'lucide-react';
 import type { Tab } from '@/types';
 import { getStoreCacheKey } from '@/utils/sessionIsolation';
 
 export const NAV = [
   { id: 'dashboard' as Tab, label: 'Dashboard',  icon: LayoutDashboard },
-  { id: 'performance' as Tab, label: 'Performa', icon: Trophy },
-  { id: 'challenges' as Tab, label: 'Misi', icon: Target },
-  { id: 'referrals' as Tab, label: 'Referral', icon: Gift },
-  { id: 'affiliate' as Tab, label: 'Affiliate', icon: Handshake },
+  { id: 'performance' as Tab, label: 'Performa', icon: Users },
+  { id: 'challenges' as Tab, label: 'Misi', icon: ListChecks },
+  { id: 'referrals' as Tab, label: 'Ajak outlet', icon: UserPlus },
+  { id: 'affiliate' as Tab, label: 'Afiliasi', icon: Handshake },
   { id: 'pos'       as Tab, label: 'Kasir',      icon: ShoppingBag },
-  { id: 'loyalty'   as Tab, label: 'Loyalty',    icon: BadgePercent },
+  { id: 'loyalty'   as Tab, label: 'Loyalty',    icon: Stamp },
   { id: 'kitchen'   as Tab, label: 'Dapur',     icon: ChefHat },
   { id: 'warehouse' as Tab, label: 'Stok',       icon: Package     },
   { id: 'menu'      as Tab, label: 'Produk',     icon: Tag         },
   { id: 'history'   as Tab, label: 'Transaksi',  icon: History     },
   { id: 'report'    as Tab, label: 'Laporan',    icon: BarChart3   },
-  { id: 'settings'  as Tab, label: 'Lainnya',    icon: Settings    },
+  { id: 'settings'  as Tab, label: 'Pengaturan', icon: Settings    },
 ] as const;
 
 export const LS_LAST_TAB  = 'kpos_last_tab';

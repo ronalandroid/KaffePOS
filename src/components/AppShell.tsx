@@ -379,7 +379,7 @@ export default function AppShell() {
       title: 'Sudah 14 hari memakai KaffePOS',
       description: role === 'cashier'
         ? 'Outlet ini sudah aktif dipakai. Minta Owner/Admin meninjau paket Signature saat fitur premium mulai dibutuhkan.'
-        : 'Jika operasional sudah mulai rutin, paket Signature membuka AI Insight, multi kasir, laporan lanjutan, dan printer thermal dalam satu paket.',
+        : 'Jika operasional sudah mulai rutin, paket Signature membuka analisis penjualan, multi kasir, laporan lanjutan, dan printer thermal dalam satu paket.',
       metadata: { daysSinceFirstActivity: effectiveUsage.daysSinceFirstActivity },
     });
   }, [appAgePromptKey, effectiveUsage.daysSinceFirstActivity, effectiveUsage.shouldShowAppAgePrompt, ready, role, subscriptionAccess.isTrial, upgradePrompt, user?.id]);
@@ -421,8 +421,8 @@ export default function AppShell() {
       description: role === 'cashier'
         ? 'Minta Owner/Admin memilih paket agar fitur premium tetap aktif setelah trial.'
         : isExpiredPrompt
-          ? 'Pilih paket agar Gamification, Advanced Kopi Passport Loyalty, AI Insights, dan Notification Center tetap aktif untuk operasional cafe.'
-          : 'Upgrade ke Signature kapan saja agar Gamification, Advanced Kopi Passport Loyalty, AI Insights, dan Notification Center tetap aktif setelah trial.',
+          ? 'Pilih paket agar misi dan peringkat tim, Kopi Passport lengkap, analisis penjualan, dan pusat notifikasi tetap aktif untuk operasional cafe.'
+          : 'Upgrade ke Signature kapan saja agar misi dan peringkat tim, Kopi Passport lengkap, analisis penjualan, dan pusat notifikasi tetap aktif setelah trial.',
       metadata: { daysUsed, daysLeft, trialEndsAt: subscriptionAccess.expiryDate },
     });
   }, [ready, role, showToast, subscriptionAccess.daysRemaining, subscriptionAccess.expiryDate, subscriptionAccess.isTrial, upgradePrompt, user?.id]);
@@ -573,7 +573,7 @@ export default function AppShell() {
               title="Keluar"
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-500 hover:bg-rose-50 hover:text-rose-600"
             >
-              <LogOut size={17} />
+              <LogOut size={16} />
             </button>
           </div>
         </div>
@@ -671,7 +671,7 @@ export default function AppShell() {
                   ? 'bg-slate-900'
                   : 'bg-amber-500'
           }`}>
-            {syncStatus === 'syncing' ? <RefreshCw size={12} className="text-white animate-spin" /> : <WifiOff size={12} className="text-white" />}
+            {syncStatus === 'syncing' ? <RefreshCw size={16} className="text-white animate-spin" /> : <WifiOff size={16} className="text-white" />}
             <p className="min-w-0 break-words text-white text-[12px] font-bold leading-tight">
               {syncStatus === 'sync_failed'
                 ? `${failedSyncCount || pendingSyncCount} data gagal sinkron`
@@ -714,17 +714,17 @@ export default function AppShell() {
         <main className="kaffe-responsive-surface flex-1 min-h-0 min-w-0 overflow-hidden flex flex-col"
           style={{ paddingBottom: 'calc(env(safe-area-inset-bottom,0px))' }}>
           <Suspense fallback={<TabSpinner />}>
-            {renderTabPanel('dashboard', 'Beranda', <DashboardTab />)}
+            {renderTabPanel('dashboard', 'Dashboard', <DashboardTab />)}
             {renderTabPanel('performance', 'Performa', <StaffPersonalProfileTab profile={profile} role={role} />)}
-            {renderTabPanel('challenges', 'Misi Harian', <ChallengesTab profile={profile} role={role} subscriptionAccess={subscriptionAccess} />)}
-            {renderTabPanel('referrals', 'Referral', <ReferralDashboardTab toast={toast} />)}
-            {renderTabPanel('affiliate', 'Affiliate', <AffiliateDashboardTab toast={toast} />)}
-            {renderTabPanel('pos', 'POS', <POSTab toast={toast} profile={profile} subscriptionAccess={subscriptionAccess} />)}
+            {renderTabPanel('challenges', 'Misi', <ChallengesTab profile={profile} role={role} subscriptionAccess={subscriptionAccess} />)}
+            {renderTabPanel('referrals', 'Ajak outlet', <ReferralDashboardTab toast={toast} />)}
+            {renderTabPanel('affiliate', 'Afiliasi', <AffiliateDashboardTab toast={toast} />)}
+            {renderTabPanel('pos', 'Kasir', <POSTab toast={toast} profile={profile} subscriptionAccess={subscriptionAccess} />)}
             {renderTabPanel('loyalty', 'Loyalty', <LoyaltyTab toast={toast} profile={profile} role={role} subscriptionAccess={subscriptionAccess} />)}
             {renderTabPanel('kitchen', 'Dapur', <KitchenTab toast={toast} profile={profile} />)}
             {renderTabPanel('warehouse', 'Stok', <WarehouseTab toast={toast} />)}
-            {renderTabPanel('menu', 'Menu', <MenuTab toast={toast} />)}
-            {renderTabPanel('history', 'Riwayat', <HistoryTab toast={toast} subscriptionAccess={subscriptionAccess} />)}
+            {renderTabPanel('menu', 'Produk', <MenuTab toast={toast} />)}
+            {renderTabPanel('history', 'Transaksi', <HistoryTab toast={toast} subscriptionAccess={subscriptionAccess} />)}
             {renderTabPanel('report', 'Laporan', <ReportTab toast={toast} subscriptionAccess={subscriptionAccess} />)}
             {renderTabPanel('settings', 'Pengaturan', <SettingsTab toast={toast} isPro={isPro} profile={profile} subscriptionAccess={subscriptionAccess} />)}
           </Suspense>

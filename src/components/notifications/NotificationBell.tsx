@@ -48,7 +48,7 @@ export default function NotificationBell({
       className={`relative flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--brand-panel-border)] bg-white text-slate-600 transition-colors hover:bg-[var(--brand-orange-soft)] hover:text-[var(--brand-orange-text)] ${className}`}
       aria-label="Buka notifikasi"
     >
-      <Bell size={19} />
+      <Bell size={20} />
       {unreadCount > 0 && (
         <span className="absolute -right-1 -top-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-[#FF6A00] px-1.5 text-[10px] font-black leading-none text-white ring-2 ring-white">
           {unreadCount > 99 ? '99+' : unreadCount}

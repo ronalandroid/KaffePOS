@@ -1,16 +1,6 @@
 
 import { useEffect, useMemo, useState } from 'react';
-import {
-  TrendingUp,
-  Package,
-  ShoppingCart,
-  Wallet,
-  AlertTriangle,
-  Clock3,
-  RefreshCw,
-  CheckCircle2,
-  X,
-} from 'lucide-react';
+import { Package, AlertTriangle, RefreshCw, CheckCircle2, X } from 'lucide-react';
 import {
   LineChart,
   Line,
@@ -67,27 +57,14 @@ function DashboardCard({
   title,
   value,
   sub,
-  icon,
-  color,
 }: {
   title: string;
   value: string;
   sub: string;
-  icon: React.ReactNode;
-  color: string;
 }) {
   return (
     <div className="kaffe-metric-card kaffe-card-interactive flex min-w-0 flex-col p-4 sm:p-5">
-      <div className="flex items-center justify-between gap-2">
-        <p className="line-clamp-2 text-[12.5px] font-semibold leading-snug text-slate-600 sm:truncate">{title}</p>
-        <span
-          className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-lg sm:flex"
-          style={{ backgroundColor: `${color}14`, color }}
-          aria-hidden="true"
-        >
-          {icon}
-        </span>
-      </div>
+      <p className="line-clamp-2 text-[12.5px] font-semibold leading-snug text-slate-600 sm:truncate">{title}</p>
       <p className="mt-2 truncate font-display text-[20px] font-extrabold leading-tight text-slate-900 kaffe-num sm:mt-3 sm:text-[26px]">{value}</p>
       <p className="mt-1 line-clamp-2 text-[12px] font-medium leading-snug text-slate-500">{sub}</p>
     </div>
@@ -342,7 +319,7 @@ export default function Dashboard() {
                     aria-label="Sembunyikan badge beta"
                     title="Sembunyikan badge beta"
                   >
-                    <X size={12} aria-hidden="true" />
+                    <X size={16} aria-hidden="true" />
                   </button>
                 </span>
               ) : null}
@@ -377,7 +354,7 @@ export default function Dashboard() {
               title="Segarkan data"
               className="kaffe-icon-btn shrink-0 disabled:opacity-50"
             >
-              <RefreshCw size={18} aria-hidden="true" className={refreshing || syncing ? 'animate-spin text-[var(--brand-orange-text)]' : ''} />
+              <RefreshCw size={20} aria-hidden="true" className={refreshing || syncing ? 'animate-spin text-[var(--brand-orange-text)]' : ''} />
             </button>
           </div>
         </div>
@@ -385,7 +362,7 @@ export default function Dashboard() {
         {!hasAnyBusinessData && (
           <div className="kaffe-empty-state rounded-[20px] p-10 text-center">
             <div className="w-14 h-14 bg-[var(--brand-canvas)] rounded-2xl flex items-center justify-center mx-auto mb-4 text-stone-300">
-               <Package size={40} />
+               <Package size={24} />
             </div>
             <p className="font-display text-lg font-extrabold text-slate-800 mb-2">Dashboard masih kosong</p>
             <p className="text-[13px] text-slate-400 max-w-md mx-auto font-medium leading-relaxed">
@@ -456,7 +433,7 @@ export default function Dashboard() {
                 >
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <span className={`text-[13px] font-bold ${step.done ? 'text-slate-600 line-through decoration-slate-300' : 'text-slate-900'}`}>{step.title}</span>
-                    {step.done ? <CheckCircle2 size={18} className="text-emerald-600" /> : <span className="h-4 w-4 rounded-full border-2 border-slate-200" />}
+                    {step.done ? <CheckCircle2 size={20} className="text-emerald-600" /> : <span className="h-4 w-4 rounded-full border-2 border-slate-200" />}
                   </div>
                   <p className="min-h-[34px] text-[12px] font-medium leading-relaxed text-slate-600">{step.description}</p>
                   <p className={`mt-3 text-[12px] font-bold ${step.done ? 'text-emerald-700' : 'text-[var(--brand-orange-text)]'}`}>
@@ -496,29 +473,21 @@ export default function Dashboard() {
             title="Penjualan Hari Ini"
             value={fRp(salesToday)}
             sub={`${nonVoidTransactions.filter((t: Transaction) => isSameDay(new Date(t.date), now)).length} transaksi`}
-            icon={<TrendingUp size={17} />}
-            color="#C44500"
           />
           <DashboardCard
             title="Penjualan Minggu Ini"
             value={fRp(salesWeek)}
             sub="Live dari transaksi toko"
-            icon={<ShoppingCart size={17} />}
-            color="#1d4ed8"
           />
           <DashboardCard
             title="Penjualan Bulan Ini"
             value={fRp(salesMonth)}
             sub={`${fRp(avgTransaction)} rata-rata transaksi`}
-            icon={<Wallet size={17} />}
-            color="#047857"
           />
           <DashboardCard
             title="Kasir Aktif"
             value={activeCashier?.opened_by || 'Belum buka kas'}
             sub={activeCashier ? `Modal ${fRp(activeCashier.amount || 0)}` : 'Belum ada sesi hari ini'}
-            icon={<Clock3 size={17} />}
-            color="#6d28d9"
           />
         </div>
 
@@ -532,13 +501,11 @@ export default function Dashboard() {
           <div className="kaffe-panel xl:col-span-2 rounded-[20px] p-5 md:p-6">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="font-display text-[16px] font-extrabold text-slate-900 flex items-center gap-2">
-                  <TrendingUp size={17} className="text-slate-500" />
-                  Grafik Penjualan
+                <h3 className="font-display text-[16px] font-extrabold text-slate-900 flex items-center gap-2">Grafik Penjualan
                 </h3>
                 <p className="text-[12px] font-medium text-slate-500 mt-0.5">Live dari transaksi toko</p>
               </div>
-              {syncing && <RefreshCw size={18} className="text-[#FF6A00] animate-spin" />}
+              {syncing && <RefreshCw size={20} className="text-[#FF6A00] animate-spin" />}
             </div>
             <div className="h-[280px] w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -564,9 +531,7 @@ export default function Dashboard() {
           </div>
 
           <div className="kaffe-panel rounded-[20px] p-5 md:p-6">
-            <h3 className="font-display text-[16px] font-extrabold text-slate-900 mb-5 flex items-center gap-2">
-              <Wallet size={17} className="text-slate-500" />
-              Metode Bayar
+            <h3 className="font-display text-[16px] font-extrabold text-slate-900 mb-5 flex items-center gap-2">Metode Bayar
             </h3>
             {paymentData.length === 0 ? (
               <div className="h-[280px] flex items-center justify-center text-sm text-slate-400">
@@ -617,9 +582,7 @@ export default function Dashboard() {
 
         <div className="kaffe-card-grid grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-5">
           <div className="kaffe-panel rounded-[20px] p-5 md:p-6">
-            <h3 className="font-display text-[16px] font-extrabold text-slate-900 mb-5 flex items-center gap-2">
-              <Package size={17} className="text-slate-500" />
-              Terlaris
+            <h3 className="font-display text-[16px] font-extrabold text-slate-900 mb-5 flex items-center gap-2">Terlaris
             </h3>
             {topProducts.length === 0 ? (
               <p className="text-sm text-slate-400">Belum ada produk terjual pada periode ini.</p>
@@ -644,9 +607,7 @@ export default function Dashboard() {
           </div>
 
           <div className="kaffe-panel rounded-[20px] p-5 md:p-6">
-            <h3 className="font-display text-[16px] font-extrabold text-slate-900 mb-5 flex items-center gap-2">
-              <AlertTriangle size={17} className="text-slate-500" />
-              Peringatan Stok
+            <h3 className="font-display text-[16px] font-extrabold text-slate-900 mb-5 flex items-center gap-2">Peringatan Stok
             </h3>
             {lowStockItems.length === 0 ? (
               <p className="text-sm text-slate-400">Semua stok utama masih aman.</p>
@@ -680,13 +641,11 @@ export default function Dashboard() {
           </div>
 
           <div className="kaffe-panel rounded-[20px] p-5 md:p-6">
-            <h3 className="font-display text-[16px] font-extrabold text-slate-900 mb-5 flex items-center gap-2">
-              <TrendingUp size={17} className="text-slate-500" />
-              Operasional
+            <h3 className="font-display text-[16px] font-extrabold text-slate-900 mb-5 flex items-center gap-2">Operasional
             </h3>
             <div className="divide-y divide-[var(--brand-hairline)]">
               <div className="flex items-center justify-between gap-3 py-3 first:pt-0">
-                <p className="flex items-center gap-2 text-[13px] font-semibold text-slate-600"><span className="h-2 w-2 rounded-full bg-blue-600" aria-hidden="true" />Revenue periode</p>
+                <p className="flex items-center gap-2 text-[13px] font-semibold text-slate-600"><span className="h-2 w-2 rounded-full bg-blue-600" aria-hidden="true" />Penjualan periode</p>
                 <p className="text-[15px] font-extrabold text-slate-900 kaffe-num">{fRp(totalRangeRevenue)}</p>
               </div>
               <div className="flex items-center justify-between gap-3 py-3">

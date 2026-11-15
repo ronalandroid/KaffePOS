@@ -1,5 +1,4 @@
 // src/components/report/ExpenseOpsPanel.tsx
-import { Receipt } from 'lucide-react';
 import { fRp } from './reportFormat';
 
 type ExpenseEntry = { description: string; category: string; date: string; amount: number };
@@ -10,9 +9,6 @@ export function ExpenseOpsPanel({ totalExpOps, entries }: ExpenseOpsPanelProps) 
     <div className="kaffe-card overflow-hidden">
       <div className="px-5 py-4 flex items-center justify-between border-b border-[var(--brand-hairline)]">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--brand-canvas)] text-slate-600" aria-hidden="true">
-            <Receipt size={16}/>
-          </div>
           <h3 className="font-display text-[15px] font-extrabold text-slate-900">Pengeluaran Operasional</h3>
         </div>
         <p className="text-[15px] font-extrabold text-rose-700 kaffe-num">{fRp(totalExpOps)}</p>

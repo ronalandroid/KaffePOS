@@ -29,7 +29,7 @@ export const MenuItemCard = memo(function MenuItemCard({
       <div className={`h-[72px] w-[72px] shrink-0 overflow-hidden rounded-2xl border border-[var(--brand-hairline)] ${!item.is_available ? 'opacity-60' : ''}`}>
         {item.image_url
           ? <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
-          : <ProductPlaceholder category={item.category} iconSize={22} />
+          : <ProductPlaceholder category={item.category} />
         }
       </div>
 

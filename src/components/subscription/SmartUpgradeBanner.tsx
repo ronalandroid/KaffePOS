@@ -32,7 +32,7 @@ export default function SmartUpgradeBanner({ used, limit, percent, role, onUpgra
           className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-xl bg-white px-3 text-[12px] font-bold text-[var(--brand-orange-text)] ring-1 ring-orange-200 hover:bg-orange-50"
         >
           {role === 'cashier' ? 'Beritahu Owner' : 'Lihat Paket'}
-          <ArrowRight size={14} />
+          <ArrowRight size={16} />
         </button>
         <button
           type="button"

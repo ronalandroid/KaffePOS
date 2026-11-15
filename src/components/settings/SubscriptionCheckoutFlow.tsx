@@ -349,7 +349,7 @@ export default function SubscriptionCheckoutFlow({ open, plan, billingCycle, onC
               <div>
                 <div className="mb-4 flex items-center gap-3">
                   <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-100 text-orange-600">
-                    <Wallet size={18} />
+                    <Wallet size={20} />
                   </div>
                   <h4 className="text-sm font-black text-slate-800">QRIS (Otomatis & Cepat)</h4>
                 </div>
@@ -382,7 +382,7 @@ export default function SubscriptionCheckoutFlow({ open, plan, billingCycle, onC
               <div>
                 <div className="mb-4 flex items-center gap-3">
                   <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
-                    <CreditCard size={18} />
+                    <CreditCard size={20} />
                   </div>
                   <h4 className="text-sm font-black text-slate-800">Virtual Account</h4>
                 </div>
@@ -426,7 +426,7 @@ export default function SubscriptionCheckoutFlow({ open, plan, billingCycle, onC
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-bold text-slate-500">Durasi: {BILLING_CYCLE_LABELS[quote.billingCycle]}</span>
-                    <span className="text-xs font-black text-slate-400">TERPILIH</span>
+                    <span className="text-xs font-black text-slate-400">Terpilih</span>
                   </div>
                   <div className="flex flex-col gap-2 rounded-2xl bg-slate-50 p-3 text-sm sm:flex-row sm:items-center sm:justify-between">
                     <span className="font-bold text-slate-500">Metode</span>
@@ -461,7 +461,7 @@ export default function SubscriptionCheckoutFlow({ open, plan, billingCycle, onC
                       onClick={() => setShowVoucherInput(true)}
                       className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-orange-700 transition-colors hover:text-orange-800"
                     >
-                      <Percent size={14} />
+                      <Percent size={16} />
                       Punya Kode Voucher
                     </button>
                   ) : (
@@ -504,7 +504,7 @@ export default function SubscriptionCheckoutFlow({ open, plan, billingCycle, onC
 
               <div className="flex items-start gap-4 rounded-[28px] border border-orange-100 bg-orange-50/50 p-6">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-orange-100 text-orange-700 shadow-sm">
-                  <ShieldCheck size={22} />
+                  <ShieldCheck size={20} />
                 </div>
                 <div>
                   <p className="text-sm font-black text-orange-950 leading-tight">Keamanan Terjamin</p>
@@ -525,7 +525,7 @@ export default function SubscriptionCheckoutFlow({ open, plan, billingCycle, onC
               className="kaffe-gradient-cta group flex h-14 w-full items-center justify-center gap-3 rounded-2xl px-6 text-sm font-black transition-all active:scale-[0.98]"
             >
               Lanjut Pilih Pembayaran
-              <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+              <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />
             </button>
           )}
 
@@ -535,7 +535,7 @@ export default function SubscriptionCheckoutFlow({ open, plan, billingCycle, onC
                 onClick={() => setStep('plan')}
                 className="flex h-14 flex-1 items-center justify-center gap-3 rounded-2xl border-2 border-slate-100 bg-white px-6 text-sm font-bold text-slate-500 transition-all active:scale-[0.98] hover:bg-slate-50"
               >
-                <ChevronLeft size={18} />
+                <ChevronLeft size={20} />
                 Kembali
               </button>
               <button type="button"
@@ -548,7 +548,7 @@ export default function SubscriptionCheckoutFlow({ open, plan, billingCycle, onC
                 ) : (
                   <>
                     Lanjut Review
-                    <ChevronRight size={18} className="transition-transform group-hover:translate-x-1" />
+                    <ChevronRight size={20} className="transition-transform group-hover:translate-x-1" />
                   </>
                 )}
               </button>
@@ -562,7 +562,7 @@ export default function SubscriptionCheckoutFlow({ open, plan, billingCycle, onC
                 disabled={submitting}
                 className="flex h-14 flex-1 items-center justify-center gap-3 rounded-2xl border-2 border-slate-100 bg-white px-6 text-sm font-bold text-slate-500 transition-all active:scale-[0.98] disabled:opacity-50"
               >
-                <ChevronLeft size={18} />
+                <ChevronLeft size={20} />
                 Ganti Metode
               </button>
               <button type="button"
@@ -574,7 +574,7 @@ export default function SubscriptionCheckoutFlow({ open, plan, billingCycle, onC
                   <Loader2 size={20} className="animate-spin" />
                 ) : (
                   <>
-                    <Lock size={18} />
+                    <Lock size={20} />
                     Bayar Sekarang · {formatRupiah(quote.total)}
                   </>
                 )}

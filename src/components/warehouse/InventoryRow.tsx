@@ -70,10 +70,10 @@ export const InventoryRow = memo(function InventoryRow({
 
       <div className="mt-auto flex gap-2 pt-3">
         <button type="button" onClick={()=>onRestock(item)} aria-label={`Restock ${item.name}`} className="flex h-11 flex-1 items-center justify-center gap-1.5 rounded-xl border border-[var(--brand-panel-border)] bg-white text-[13px] font-bold text-slate-700 transition-colors hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-800">
-          <Plus size={15}/> Restock
+          <Plus size={16}/> Restock
         </button>
         <button type="button" aria-label={`Opname ${item.name}`} onClick={()=>onOpname(item)} className="flex h-11 flex-1 items-center justify-center gap-1.5 rounded-xl border border-[var(--brand-panel-border)] bg-white text-[13px] font-bold text-slate-700 transition-colors hover:border-orange-200 hover:bg-[var(--brand-orange-soft)] hover:text-[var(--brand-orange-text)]">
-          <ClipboardCheck size={15}/> Opname
+          <ClipboardCheck size={16}/> Opname
         </button>
       </div>
     </div>

@@ -156,7 +156,7 @@ export default function NotificationCenter({
                 className="hidden h-10 items-center gap-2 rounded-xl bg-orange-50 px-3 text-[11px] font-black uppercase tracking-widest text-[#FF6A00] sm:flex"
                 disabled={syncingRead}
               >
-                {syncingRead ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+                {syncingRead ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
                 Mark read
               </button>
             )}
@@ -190,7 +190,7 @@ export default function NotificationCenter({
       <div className="flex-1 overflow-y-auto px-4 py-5">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 size={26} className="animate-spin text-[#FF6A00]" />
+            <Loader2 size={24} className="animate-spin text-[#FF6A00]" />
             <p className="mt-3 text-sm font-bold text-slate-400">Memuat notifikasi...</p>
           </div>
         ) : paginatedNotifications.length === 0 ? (
@@ -213,7 +213,7 @@ export default function NotificationCenter({
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3">
           <div className="flex min-w-0 items-center gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-[#FF6A00]">
-              <Smartphone size={18} />
+              <Smartphone size={20} />
             </div>
             <div className="min-w-0">
               <p className="text-xs font-black text-slate-800">Push notifications</p>

@@ -40,16 +40,16 @@ export function LandingFooter({
             </p>
             <div className="mt-5 flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1 font-mono text-[10px] font-bold text-slate-700">
-                <Database size={12} className="text-[#FF6A00]" />
+                <Database size={16} className="text-[#FF6A00]" />
                 InsForge Cloud RLS
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1 font-mono text-[10px] font-bold text-slate-700">
-                <CreditCard size={12} className="text-[#FF6A00]" />
+                <CreditCard size={16} className="text-[#FF6A00]" />
                 Mayar API v2
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200/80 bg-emerald-50 px-2.5 py-1 font-mono text-[10px] font-bold text-emerald-800">
-                <ShieldCheck size={12} />
-                AES-GCM Secured
+                <ShieldCheck size={16} />
+                Data pelanggan dienkripsi
               </span>
             </div>
           </div>
@@ -175,7 +175,7 @@ export function LandingFooter({
                 className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-50 text-[#FF6A00] ring-1 ring-orange-200/70 transition-colors hover:bg-orange-100"
                 aria-label="WhatsApp KaffePOS"
               >
-                <MessageCircle size={18} />
+                <MessageCircle size={20} />
               </a>
               <a
                 href="https://instagram.com/kaffepos"
@@ -184,7 +184,7 @@ export function LandingFooter({
                 className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-50 text-[#FF6A00] ring-1 ring-orange-200/70 transition-colors hover:bg-orange-100"
                 aria-label="Instagram KaffePOS"
               >
-                <Instagram size={18} />
+                <Instagram size={20} />
               </a>
             </div>
           </div>
@@ -193,7 +193,7 @@ export function LandingFooter({
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-orange-100 pt-6 text-xs font-medium text-slate-500 sm:flex-row">
           <p>© 2026 KaffePOS v2. Seluruh hak cipta dilindungi undang-undang.</p>
           <p className="font-mono text-[11px] text-slate-500">
-            Powered by InsForge Cloud PostgreSQL &amp; Mayar Headless API v2
+            Pembayaran diproses oleh Mayar. Data disimpan di InsForge Cloud.
           </p>
         </div>
       </div>

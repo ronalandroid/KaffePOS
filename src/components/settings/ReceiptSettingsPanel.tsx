@@ -65,7 +65,7 @@ export default function ReceiptSettingsPanel({ form, update, previewOpen, setPre
     <>
       <button type="button" onClick={()=>setPrev(!previewOpen)}
         className={`w-full flex items-center justify-center gap-2 py-3 rounded-2xl border-2 font-bold text-sm ${previewOpen?'border-orange-400 bg-orange-50 text-orange-600':'border-slate-200 text-slate-600'}`}>
-        {previewOpen?<EyeOff size={15}/>:<Eye size={15}/>}
+        {previewOpen?<EyeOff size={16}/>:<Eye size={16}/>}
         {previewOpen?'Tutup Preview':'Preview Struk (Realtime)'}
       </button>
       {previewOpen&&<div className="bg-white rounded-2xl border border-slate-100 p-4">
@@ -98,7 +98,7 @@ export default function ReceiptSettingsPanel({ form, update, previewOpen, setPre
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
-        <p className="text-xs font-black text-slate-400">LOGO DI STRUK</p>
+        <p className="text-xs font-black text-slate-400">Logo di struk</p>
         <Toggle label="Tampilkan Logo" value={form.show_logo_on_receipt} onChange={(v:boolean)=>update('show_logo_on_receipt',v)}/>
         {form.show_logo_on_receipt&&<>
           <div>
@@ -118,7 +118,7 @@ export default function ReceiptSettingsPanel({ form, update, previewOpen, setPre
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
-        <p className="text-xs font-black text-slate-400">TEKS STRUK</p>
+        <p className="text-xs font-black text-slate-400">Teks struk</p>
         <Inp label="Teks Header" value={form.receipt_header} onChange={(v:string)=>update('receipt_header',v)} placeholder="Selamat datang!"/>
         <Inp label="Teks Footer" value={form.receipt_footer} onChange={(v:string)=>update('receipt_footer',v)} placeholder="Terima kasih!"/>
         <Inp label="Baris Custom 1" value={form.receipt_custom_line1} onChange={(v:string)=>update('receipt_custom_line1',v)} placeholder="Follow IG: @namatoko"/>
@@ -126,7 +126,7 @@ export default function ReceiptSettingsPanel({ form, update, previewOpen, setPre
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-100 p-4">
-        <p className="text-xs font-black text-slate-400 mb-1">ELEMEN STRUK</p>
+        <p className="text-xs font-black text-slate-400 mb-1">Elemen struk</p>
         <Toggle label="Tampilkan Alamat" value={form.receipt_show_address} onChange={(v:boolean)=>update('receipt_show_address',v)}/>
         <Toggle label="Tampilkan WhatsApp" value={form.receipt_show_whatsapp} onChange={(v:boolean)=>update('receipt_show_whatsapp',v)}/>
         <Toggle label="Tampilkan ID Transaksi" value={form.receipt_show_trx_id} onChange={(v:boolean)=>update('receipt_show_trx_id',v)}/>

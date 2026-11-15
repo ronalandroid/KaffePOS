@@ -11,7 +11,7 @@ import {
   FileText,
   Palette,
   Users,
-  ShieldCheck,
+  KeyRound,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { ReceiptSettings } from '@/utils/receipt';
@@ -68,7 +68,7 @@ const SETTINGS_NAV: Array<{ id: Section; l: string; icon: LucideIcon }> = [
   { id: 'printer', l: 'Printer', icon: Printer },
   { id: 'theme', l: 'Tema', icon: Palette },
   { id: 'cashiers', l: 'Kasir', icon: Users },
-  { id: 'license', l: 'Lisensi', icon: ShieldCheck },
+  { id: 'license', l: 'Lisensi', icon: KeyRound },
 ];
 
 export default function SettingsTab({ toast, isPro, profile, subscriptionAccess }: { toast: ToastApi; isPro: boolean; profile: Profile | null; subscriptionAccess: SubscriptionAccess }) {
@@ -284,14 +284,14 @@ export default function SettingsTab({ toast, isPro, profile, subscriptionAccess 
           </div>
           <div className="flex shrink-0 items-center gap-3">
             {saving&&<div className="w-5 h-5 border-2 border-[#FF6A00] border-t-transparent rounded-full animate-spin"/>}
-            {saved&&!saving&&<div className="flex items-center gap-1.5 text-emerald-500 text-[10px] font-black uppercase tracking-widest"><CheckCircle2 size={14}/>Tersimpan</div>}
+            {saved&&!saving&&<div className="flex items-center gap-1.5 text-emerald-500 text-[10px] font-black uppercase tracking-widest"><CheckCircle2 size={16}/>Tersimpan</div>}
             <button type="button" onClick={handleSaveNow} disabled={saving}
               className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6A00] text-white rounded-2xl text-[12px] font-black active:scale-95 disabled:opacity-50 shadow-premium transition-all">
-              <Save size={14}/>{saving?'Memproses...':'Simpan'}
+              <Save size={16}/>{saving?'Memproses...':'Simpan'}
             </button>
           </div>
         </div>
-        {saveErr&&<div className="flex items-center gap-2 bg-rose-50 border border-rose-100 rounded-2xl px-4 py-2.5 mb-3"><AlertCircle size={14} className="text-rose-500 shrink-0"/><p className="text-xs text-rose-700 font-bold">{saveErr}</p></div>}
+        {saveErr&&<div className="flex items-center gap-2 bg-rose-50 border border-rose-100 rounded-2xl px-4 py-2.5 mb-3"><AlertCircle size={16} className="text-rose-500 shrink-0"/><p className="text-xs text-rose-700 font-bold">{saveErr}</p></div>}
         <div className="kaffe-scroll-tabs kaffe-command-bar flex gap-4 overflow-x-auto pb-1 no-scrollbar -mx-4 px-4 sm:-mx-6 sm:px-6 border-b border-slate-50">
           {SETTINGS_NAV.map((n) => {
             const NavIcon = n.icon;
@@ -317,7 +317,7 @@ export default function SettingsTab({ toast, isPro, profile, subscriptionAccess 
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <NavIcon size={15} strokeWidth={2.6} aria-hidden="true" />
+                  <NavIcon size={16} aria-hidden="true" />
                   <span>{n.l}</span>
                 </div>
                 {section === n.id && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#FF6A00] rounded-full animate-in fade-in" />}
@@ -349,7 +349,7 @@ export default function SettingsTab({ toast, isPro, profile, subscriptionAccess 
               </p>
             </div>
           </div>
-          <ChevronRight size={18} className="text-slate-300 relative z-10" />
+          <ChevronRight size={20} className="text-slate-300 relative z-10" />
         </button>
       </div>
 

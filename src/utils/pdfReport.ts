@@ -365,7 +365,6 @@ export interface ReportData {
   stockData: { label: string; stock: number; unit: string; min: number; pct: number }[];
   categorySales?: { label: string; qty: number; revenue: number }[];
   staffPerformance?: { name: string; transactions: number; revenue: number; points: number }[];
-  kopiScore?: { score: number; label: string };
   recentTransactions?: any[];
   expensesByCategory: { label: string; value: number }[];
   expenseList: any[];
@@ -421,7 +420,6 @@ async function buildProfessionalPDF(
     stockData,
     categorySales = [],
     staffPerformance = [],
-    kopiScore,
     recentTransactions = [],
     expensesByCategory,
     expenseList,
@@ -581,7 +579,7 @@ async function buildProfessionalPDF(
     { label: 'Pendapatan', value: fRp(totalRevenue), bg: C.bgOrange, color: C.orangeDark, sub: `${fNum(txCount)} transaksi` },
     { label: 'Laba Bersih', value: fRp(netProfit), bg: netProfit >= 0 ? C.bgGreen : C.bgRed, color: netProfit >= 0 ? C.green : C.red, sub: `${netMargin}% margin bersih` },
     { label: 'Margin Kotor', value: `${grossMargin}%`, bg: C.bgBlue, color: C.blue, sub: `${cogsRatio}% HPP` },
-    { label: 'Kopi Score', value: kopiScore ? String(kopiScore.score) : '-', bg: C.bgPurple, color: C.purple, sub: kopiScore?.label || 'belum tersedia' },
+    { label: 'Beban Operasional', value: fRp(totalExpenses), bg: C.bgRed, color: C.red, sub: 'di luar bahan baku' },
   ];
   const coverCardW = (CW - 9) / 4;
   coverMetrics.forEach((item, index) => {
@@ -635,7 +633,7 @@ async function buildProfessionalPDF(
     { label: 'Laba Kotor', value: fRp(grossProfit), sub: `${grossMargin}% margin kotor`, bg: grossProfit >= 0 ? C.bgGreen : C.bgRed, color: grossProfit >= 0 ? C.green : C.red },
     { label: 'Rata-rata Transaksi', value: fRp(avgTrx), sub: 'nilai per transaksi', bg: C.bgBlue, color: C.blue },
     { label: 'Beban Operasional', value: fRp(totalExpenses), sub: `${expenseList.length} catatan`, bg: C.bgRed, color: C.red },
-    { label: 'Kopi Score', value: kopiScore ? String(kopiScore.score) : '-', sub: kopiScore?.label || 'belum tersedia', bg: C.bgPurple, color: C.purple },
+    { label: 'Margin Bersih', value: `${netMargin}%`, sub: 'setelah HPP dan beban', bg: netProfit >= 0 ? C.bgGreen : C.bgRed, color: netProfit >= 0 ? C.green : C.red },
   ];
   summaryKpis.forEach((item, index) => {
     kpiBox(

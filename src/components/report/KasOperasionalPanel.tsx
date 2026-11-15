@@ -1,6 +1,5 @@
 // src/components/report/KasOperasionalPanel.tsx
 import type { ComponentProps } from 'react';
-import { Scale } from 'lucide-react';
 import { fRp } from './reportFormat';
 import KasDailyPanel from './KasDailyPanel';
 
@@ -19,9 +18,6 @@ export function KasOperasionalPanel({ kasSelisih, cashRegister, expenses, transa
     <div className="kaffe-card overflow-hidden">
       <div className="px-5 py-4 flex items-center justify-between border-b border-[var(--brand-hairline)]">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--brand-canvas)] text-slate-600" aria-hidden="true">
-            <Scale size={16}/>
-          </div>
           <div>
             <h3 className="font-display text-[15px] font-extrabold text-slate-900">Kas Operasional</h3>
             <p className="text-[12px] text-slate-500">Saldo kasir vs pengeluaran · selisih & sumber dana</p>

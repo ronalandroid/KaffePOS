@@ -127,7 +127,7 @@ describe('staff gamification stats', () => {
     });
 
     expect(levelTwoStats.level).toBe(2);
-    expect(levelTwoStats.levelLabel).toBe('Barista Fokus');
+    expect(levelTwoStats.levelLabel).toBe('Kasir terlatih');
     expect(levelTwoStats.levelProgress).toBe(0);
     expect(maxLevelStats.level).toBe(5);
     expect(maxLevelStats.isMaxLevel).toBe(true);

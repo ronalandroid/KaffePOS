@@ -40,7 +40,7 @@ export default function ReferralHistoryTable({ items }: { items: ReferralHistory
       {items.length === 0 ? (
         <div className="flex flex-col items-center justify-center px-5 py-12 text-center">
           <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-3xl bg-orange-50 text-[#FF6A00]">
-            <Inbox size={26} />
+            <Inbox size={24} />
           </div>
           <p className="text-base font-black text-slate-900">Belum ada referral</p>
           <p className="mt-1 max-w-sm text-sm font-medium text-slate-500">Bagikan link referral kamu untuk mulai mengajak teman memakai KaffePOS.</p>
@@ -66,7 +66,7 @@ export default function ReferralHistoryTable({ items }: { items: ReferralHistory
                     <p className="mt-0.5 text-xs font-semibold text-slate-400">{item.referred_user?.email || 'Email disamarkan'}</p>
                   </td>
                   <td className="px-5 py-4 text-slate-600">
-                    <span className="inline-flex items-center gap-1 font-semibold"><CalendarDays size={14} />{formatOptionalDate(item.registered_at)}</span>
+                    <span className="inline-flex items-center gap-1 font-semibold"><CalendarDays size={16} />{formatOptionalDate(item.registered_at)}</span>
                   </td>
                   <td className="px-5 py-4 text-slate-600">{item.trial_started_at ? 'Mulai' : '-'}</td>
                   <td className="px-5 py-4 text-slate-600">{paymentLabel(item)}</td>

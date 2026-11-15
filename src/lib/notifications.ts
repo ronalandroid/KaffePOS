@@ -44,11 +44,11 @@ const MARK_READ_QUEUE_PREFIX = 'kpos_notifications_mark_read_queue';
 
 export const NOTIFICATION_CATEGORIES: Array<{ id: NotificationCategory; label: string }> = [
   { id: 'all', label: 'Semua' },
-  { id: 'gamification', label: 'Gamification' },
-  { id: 'challenges', label: 'Challenges' },
-  { id: 'business_alert', label: 'Business Alert' },
-  { id: 'stock', label: 'Stock' },
-  { id: 'system', label: 'System' },
+  { id: 'gamification', label: 'Pencapaian' },
+  { id: 'challenges', label: 'Misi' },
+  { id: 'business_alert', label: 'Info usaha' },
+  { id: 'stock', label: 'Stok' },
+  { id: 'system', label: 'Sistem' },
 ];
 
 export function getNotificationCategory(notification: KaffeNotification): Exclude<NotificationCategory, 'all'> {
