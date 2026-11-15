@@ -71,7 +71,7 @@ export default function CashRegisterModal({ onClose, cashierName, toast, existin
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 bg-orange-100 rounded-xl flex items-center justify-center">
-              <Wallet size={18} className="text-orange-500" />
+              <Wallet size={20} className="text-orange-500" />
             </div>
             <div>
               <h3 id="cash-register-modal-title" className="font-black text-slate-800">{existingEntry ? 'Edit Saldo Kasir Awal' : 'Saldo Awal Kasir'}</h3>

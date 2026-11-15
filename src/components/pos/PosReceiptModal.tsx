@@ -112,11 +112,11 @@ export default function PosReceiptModal({
         {/* Receipt action buttons */}
         <button type="button" onClick={onPrint}
           className="w-full py-3.5 mb-3 bg-white border-2 border-stone-200 text-stone-700 hover:bg-stone-50 hover:border-stone-300 font-black rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-all">
-          <Printer size={16} strokeWidth={2.5}/> Cetak Struk Fisik
+          <Printer size={16}/> Cetak Struk Fisik
         </button>
         <button type="button" onClick={onShareWhatsApp}
           className="w-full py-3.5 mb-3 bg-orange-50 border-2 border-orange-100 text-orange-600 hover:bg-orange-100 font-black rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-all">
-          <Share2 size={16} strokeWidth={2.5}/> Share WA
+          <Share2 size={16}/> Share WA
         </button>
         <button type="button" onClick={onClose}
           className="w-full py-4 font-black rounded-2xl active:scale-95 transition-all text-white bg-gradient-to-r from-[#FF6A00] to-[#FF8A1C] shadow-[0_8px_24px_rgba(255,106,0,0.35)] hover:shadow-[0_12px_32px_rgba(255,106,0,0.45)]">

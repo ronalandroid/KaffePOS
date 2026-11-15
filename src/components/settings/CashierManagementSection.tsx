@@ -275,7 +275,7 @@ export default function CashierManagementSection({ toast }: Props) {
         ) : filteredCashiers.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-8 text-center">
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
-              <Users size={22} />
+              <Users size={20} />
             </div>
             <p className="text-sm font-black text-slate-700">Belum ada kasir</p>
             <p className="mt-1 text-xs text-slate-400">Tambahkan akun kasir untuk outletmu.</p>
@@ -303,7 +303,7 @@ export default function CashierManagementSection({ toast }: Props) {
                       onClick={() => openEdit(cashier)}
                       className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 px-3 text-xs font-black text-slate-600 active:scale-95"
                     >
-                      <Edit3 size={14} />
+                      <Edit3 size={16} />
                       Edit
                     </button>
                     <button
@@ -314,7 +314,7 @@ export default function CashierManagementSection({ toast }: Props) {
                         active ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-700'
                       }`}
                     >
-                      {active ? <PowerOff size={14} /> : <Power size={14} />}
+                      {active ? <PowerOff size={16} /> : <Power size={16} />}
                       {active ? 'Nonaktifkan' : 'Aktifkan'}
                     </button>
                   </div>

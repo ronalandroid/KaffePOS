@@ -63,9 +63,9 @@ function buildPrompt(ctx: InsightContext): string {
     .map(p => `${p.method}:${p.pct}%`)
     .join(', ');
 
-  return `Kamu adalah analis bisnis kafe profesional. Analisis data POS berikut dan berikan insight dalam bahasa Indonesia yang singkat, padat, dan actionable.
+  return `Kamu adalah analis bisnis kafe profesional. Analisis data POS berikut dan berikan insight dalam bahasa Indonesia yang singkat, padat, dan bisa langsung dikerjakan.
 
-DATA KAFE "${ctx.storeName}" — Periode: ${ctx.period}:
+DATA KAFE "${ctx.storeName}", periode: ${ctx.period}:
 - Revenue: ${fRpShort(ctx.totalRevenue)} | HPP: ${fRpShort(ctx.totalCogs)} | Laba: ${fRpShort(ctx.netProfit)} | Margin: ${ctx.grossMargin}%
 - Jumlah transaksi: ${ctx.txCount} | Rata-rata transaksi: ${fRpShort(ctx.avgTrx)}
 - Pengeluaran ops: ${fRpShort(ctx.totalExpenses)}
@@ -80,7 +80,7 @@ Balas HANYA dalam format JSON ini (tanpa markdown, tanpa komentar):
   "bestMenu": "1 kalimat rekomendasi menu yang harus difokuskan/dioptimalkan.",
   "stockAlert": "1 kalimat tentang stok yang perlu diperhatikan. Jika aman, tulis 'Stok semua bahan dalam kondisi aman.'",
   "prediction": "1 kalimat prediksi pendapatan ${ctx.period === 'Hari Ini' ? 'besok' : ctx.period === 'Minggu Ini' ? 'minggu depan' : 'bulan depan'} berdasarkan tren. Sebutkan estimasi angka.",
-  "tips": ["tip actionable 1 maksimal 15 kata", "tip actionable 2 maksimal 15 kata", "tip actionable 3 maksimal 15 kata"]
+  "tips": ["saran 1 yang bisa langsung dikerjakan, maksimal 15 kata", "saran 2 yang bisa langsung dikerjakan, maksimal 15 kata", "saran 3 yang bisa langsung dikerjakan, maksimal 15 kata"]
 }`;
 }
 

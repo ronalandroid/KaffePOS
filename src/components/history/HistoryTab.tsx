@@ -140,7 +140,7 @@ export default function HistoryTab({
 
         {/* Search */}
         <div className="relative mb-5">
-          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"/>
+          <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"/>
           <input
             value={search}
             onChange={e=>setSearch(e.target.value)}
@@ -171,7 +171,7 @@ export default function HistoryTab({
       <div className="flex-1 overflow-y-auto p-4 md:p-6">
         {search !== dSearch ? <HistorySkeleton /> : paginated.length === 0 ? (
           <div className="kaffe-empty-state flex flex-col items-center justify-center h-60 rounded-3xl text-slate-300">
-            <Search size={40} className="mb-3 opacity-20" />
+            <Search size={24} className="mb-3 opacity-20" />
             <p className="text-[12px] font-black uppercase tracking-[0.2em]">Belum ada transaksi</p>
             <p className="mt-2 max-w-xs text-center text-xs font-semibold text-slate-400">
               Riwayat penjualan akan muncul setelah transaksi pertama selesai.

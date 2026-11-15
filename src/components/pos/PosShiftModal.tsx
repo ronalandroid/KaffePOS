@@ -225,7 +225,7 @@ export default function PosShiftModal({ open, onClose, profile, toast }: Props) 
             aria-label="Tutup modal shift kasir"
             className="rounded-2xl border border-stone-100 bg-stone-50 p-2.5 text-stone-400 transition-colors hover:bg-orange-50 hover:text-[#FF6A00]"
           >
-            <X size={18} />
+            <X size={20} />
           </button>
         </div>
 
@@ -364,7 +364,7 @@ export default function PosShiftModal({ open, onClose, profile, toast }: Props) 
                   disabled={saving}
                   className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FF6A00] py-4 text-xs font-black uppercase tracking-wider text-white shadow-md hover:bg-[#E05A00] disabled:opacity-50"
                 >
-                  <CheckCircle2 size={18} /> Simpan Rekap & Tutup Shift Kasir
+                  <CheckCircle2 size={20} /> Simpan Rekap & Tutup Shift Kasir
                 </button>
               </div>
             </>
@@ -442,7 +442,7 @@ export default function PosShiftModal({ open, onClose, profile, toast }: Props) 
             <div className="space-y-3">
               {shiftHistory.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-stone-200 p-8 text-center">
-                  <History size={28} className="mx-auto mb-2 text-stone-300" />
+                  <History size={24} className="mx-auto mb-2 text-stone-300" />
                   <p className="text-sm font-black text-stone-700">Belum Ada Riwayat Tutup Shift</p>
                   <p className="mt-1 text-xs font-medium text-stone-400">
                     Rekap tutup shift yang disimpan kasir akan tercatat di sini beserta selisih kasnya.

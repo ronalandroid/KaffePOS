@@ -1,4 +1,4 @@
-import { Check, Sparkles, Users, Zap } from 'lucide-react';
+import { Check, Clock, Users } from 'lucide-react';
 import {
   ACTIVE_SUBSCRIPTION_PLAN_IDS,
   BILLING_CYCLE_LABELS,
@@ -38,17 +38,17 @@ const COMPARISON_ROWS: Array<{
   kopi_susu: string;
   signature: string;
 }> = [
-  { feature: 'POS', secangkir: 'Full akses 14 hari', kopi_susu: 'Unlimited', signature: 'Unlimited' },
-  { feature: 'Inventory + Resep', secangkir: 'Full akses 14 hari', kopi_susu: 'yes', signature: 'yes' },
-  { feature: 'KDS', secangkir: 'Full akses 14 hari', kopi_susu: 'yes', signature: 'yes' },
-  { feature: 'Cetak Browser', secangkir: 'Full akses 14 hari', kopi_susu: 'yes', signature: 'yes' },
-  { feature: 'Printer Thermal', secangkir: 'Full akses 14 hari', kopi_susu: '-', signature: 'yes' },
-  { feature: 'Gamification', secangkir: 'Full Signature 14 hari', kopi_susu: 'Dasar', signature: 'Full Kopi Score' },
-  { feature: 'Kopi Passport Loyalty', secangkir: 'Advanced 14 hari', kopi_susu: 'Dasar', signature: 'Advanced' },
-  { feature: 'AI Insights', secangkir: 'Full akses 14 hari', kopi_susu: '-', signature: 'yes' },
-  { feature: 'Notification Center', secangkir: 'Full akses 14 hari', kopi_susu: '-', signature: 'yes' },
-  { feature: 'Multi Kasir', secangkir: 'Full akses 14 hari', kopi_susu: '-', signature: 'yes' },
-  { feature: 'Support', secangkir: 'Trial support', kopi_susu: 'Standar', signature: 'Prioritas' },
+  { feature: 'Kasir', secangkir: 'Selama trial 14 hari', kopi_susu: 'Tanpa batas', signature: 'Tanpa batas' },
+  { feature: 'Stok dan resep', secangkir: 'Selama trial 14 hari', kopi_susu: 'yes', signature: 'yes' },
+  { feature: 'Layar dapur (KDS)', secangkir: 'Selama trial 14 hari', kopi_susu: 'yes', signature: 'yes' },
+  { feature: 'Cetak dari browser', secangkir: 'Selama trial 14 hari', kopi_susu: 'yes', signature: 'yes' },
+  { feature: 'Printer thermal', secangkir: 'Selama trial 14 hari', kopi_susu: '-', signature: 'yes' },
+  { feature: 'Misi dan peringkat tim', secangkir: 'Selama trial 14 hari', kopi_susu: 'Dasar', signature: 'Semua misi' },
+  { feature: 'Kopi Passport', secangkir: 'Lengkap selama trial', kopi_susu: 'Dasar', signature: 'Lengkap' },
+  { feature: 'Analisis penjualan', secangkir: 'Selama trial 14 hari', kopi_susu: '-', signature: 'yes' },
+  { feature: 'Pusat notifikasi', secangkir: 'Selama trial 14 hari', kopi_susu: '-', signature: 'yes' },
+  { feature: 'Multi kasir', secangkir: 'Selama trial 14 hari', kopi_susu: '-', signature: 'yes' },
+  { feature: 'Bantuan', secangkir: 'Selama trial', kopi_susu: 'Standar', signature: 'Prioritas' },
 ];
 
 function SavingsBadge({ plan, cycle }: { plan: SubscriptionPlanId; cycle: BillingCycle }) {
@@ -77,19 +77,16 @@ export default function PricingPage({
     <section className={`kaffe-responsive-surface rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm md:p-8 ${className}`}>
       <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
         <div className="min-w-0">
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-orange-100 bg-orange-50 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#FF6A00]">
-            <Sparkles size={13} />
-            {TRIAL_MESSAGE}
-          </div>
           <h2 className="font-display text-2xl font-extrabold tracking-tight text-slate-900 md:text-3xl">
             {PRICING_MAIN_HEADLINE}
           </h2>
           <p className="mt-3 max-w-3xl text-sm font-semibold leading-relaxed text-slate-500 md:text-base">
             {PRICING_SUB_HEADLINE}
           </p>
+          <p className="mt-2 max-w-3xl text-[13px] font-semibold text-slate-600">{TRIAL_MESSAGE}</p>
           {isTrial && trialDaysRemaining !== null && trialDaysRemaining !== undefined ? (
             <div className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-orange-100 bg-orange-50 px-4 py-3 text-xs font-black text-orange-800">
-              <Zap size={15} />
+              <Clock size={16} aria-hidden="true" />
               Trial Signature tersisa {trialDaysRemaining} hari
             </div>
           ) : null}
@@ -143,11 +140,6 @@ export default function PricingPage({
               ) : null}
 
               <div className="mb-4 flex items-start justify-between gap-3">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${
-                  isRecommended ? 'border-orange-100 bg-white text-[#FF6A00]' : 'border-slate-100 bg-slate-50 text-[#FF6A00]'
-                }`}>
-                  {planId === 'secangkir' ? <Zap size={21} /> : planId === 'kopi_susu' ? <Users size={21} /> : <Sparkles size={21} />}
-                </div>
                 <span className="rounded-full border border-orange-100 bg-white px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-orange-700">
                   {plan.badge}
                 </span>
@@ -172,7 +164,7 @@ export default function PricingPage({
               <div className="mt-5 flex-1 space-y-2.5">
                 {plan.features.slice(0, 6).map((feature) => (
                   <div key={feature} className="flex min-w-0 items-start gap-2">
-                    <Check size={14} className="mt-0.5 shrink-0 text-[#FF6A00]" />
+                    <Check size={16} className="mt-0.5 shrink-0 text-[#FF6A00]" />
                     <span className="min-w-0 text-[11px] font-bold leading-relaxed text-slate-500">{feature}</span>
                   </div>
                 ))}
@@ -203,7 +195,7 @@ export default function PricingPage({
             <h3 className="font-display mt-1 text-xl font-extrabold text-slate-900">Pilih paket sesuai tahap cafe kamu</h3>
           </div>
           <div className="inline-flex w-fit items-center gap-2 rounded-full border border-orange-100 bg-white px-3 py-2 text-[10px] font-black uppercase tracking-wider text-orange-700">
-            <Users size={13} />
+            <Users size={16} />
             Mobile-first & siap APK
           </div>
         </div>
@@ -229,7 +221,7 @@ export default function PricingPage({
                     const included = value === 'yes';
                     return (
                       <td key={planId} className={`border-b border-slate-100 px-4 py-3 text-center font-bold ${included ? 'text-[#FF6A00]' : value === '-' ? 'text-slate-300' : 'text-slate-500'}`}>
-                        {included ? <Check size={16} strokeWidth={2.5} className="mx-auto" aria-label="Termasuk" /> : value}
+                        {included ? <Check size={16} className="mx-auto" aria-label="Termasuk" /> : value}
                       </td>
                     );
                   })}

@@ -187,7 +187,7 @@ export default function DailyOpeningModal({ cashierName, toast, onDone }: Props)
         {/* Header gradient */}
         <div className="bg-slate-900 px-6 pt-7 pb-10 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-8 opacity-10">
-             <Coffee size={80} strokeWidth={1} className="text-white" />
+             <Coffee size={24} className="text-white" />
           </div>
           <div className="flex items-center gap-4 mb-3 relative z-10">
             <div className="w-12 h-12 bg-[#FF6A00]/20 rounded-2xl flex items-center justify-center border border-[#FF6A00]/30">
@@ -199,7 +199,7 @@ export default function DailyOpeningModal({ cashierName, toast, onDone }: Props)
             </div>
             {!isOnline && (
               <div className="ml-auto flex items-center gap-1.5 bg-rose-500/20 border border-rose-500/30 rounded-full px-2.5 py-1">
-                <WifiOff size={12} className="text-rose-400" />
+                <WifiOff size={16} className="text-rose-400" />
                 <span className="text-rose-400 text-[10px] font-bold uppercase tracking-wider">Offline</span>
               </div>
             )}
@@ -257,7 +257,7 @@ export default function DailyOpeningModal({ cashierName, toast, onDone }: Props)
             className="w-full py-5 bg-[#FF6A00] text-white font-bold text-[16px] rounded-2xl flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50 transition-all shadow-premium hover:-translate-y-0.5">
             {saving
               ? <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              : <><span>{isOnline ? 'Mulai Jualan Sekarang' : 'Simpan Saldo (Offline)'}</span><ChevronRight size={18} strokeWidth={3} /></>
+              : <><span>{isOnline ? 'Mulai Jualan Sekarang' : 'Simpan Saldo (Offline)'}</span><ChevronRight size={20} /></>
             }
           </button>
 

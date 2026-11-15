@@ -40,9 +40,9 @@ export function AuthPreviewStage() {
                   data-testid="auth-preview-card-icon"
                   className={`relative z-10 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br shadow-sm ring-1 ${card.accent}`}
                 >
-                  <Icon size={30} strokeWidth={2.35} aria-hidden="true" />
+                  <Icon size={24} aria-hidden="true" />
                   <span className={`absolute -bottom-1.5 -right-1.5 flex h-7 w-7 items-center justify-center rounded-xl border-2 border-white shadow-sm ${card.supportAccent}`}>
-                    <SupportIcon size={14} strokeWidth={2.7} aria-hidden="true" />
+                    <SupportIcon size={16} aria-hidden="true" />
                   </span>
                 </div>
               </div>
@@ -68,9 +68,9 @@ export function AuthMobilePreviewStrip() {
         return (
           <div key={card.title} className="kaffe-mobile-preview-card kaffe-float-soft" style={{ animationDelay: `${index * -1.2}s` }}>
             <div className={`kaffe-mobile-preview-icon bg-gradient-to-br ${card.accent}`}>
-              <Icon size={22} strokeWidth={2.4} aria-hidden="true" />
+              <Icon size={20} aria-hidden="true" />
               <span className={`kaffe-mobile-preview-badge ${card.supportAccent}`}>
-                <SupportIcon size={11} strokeWidth={2.7} aria-hidden="true" />
+                <SupportIcon size={16} aria-hidden="true" />
               </span>
             </div>
             <span>{card.title}</span>

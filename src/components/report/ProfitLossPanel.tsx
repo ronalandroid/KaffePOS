@@ -18,30 +18,30 @@ type PnlRow = { l: string; v: number; color: string; bold: boolean; sep?: boolea
 export function ProfitLossPanel({ totalRevenue, totalCogs, grossProfit, totalExpenses, netProfit, avgTrx, grossMargin, txCount, totalStockVal }: ProfitLossPanelProps) {
   const rows: PnlRow[] = [
     {l:'Pendapatan Kotor',v:totalRevenue,color:'text-slate-700',bold:false},
-    {l:'(-) HPP',v:-totalCogs,color:'text-red-500',bold:false},
-    {l:'Laba Kotor',v:grossProfit,color:grossProfit>=0?'text-green-600':'text-red-500',bold:true,sep:true},
-    {l:'(-) Pengeluaran',v:-totalExpenses,color:'text-red-500',bold:false},
-    {l:'LABA BERSIH',v:netProfit,color:netProfit>=0?'text-green-600':'text-red-500',bold:true,sep:true},
+    {l:'HPP',v:-totalCogs,color:'text-rose-700',bold:false},
+    {l:'Laba Kotor',v:grossProfit,color:grossProfit>=0?'text-slate-900':'text-rose-700',bold:true,sep:true},
+    {l:'Pengeluaran',v:-totalExpenses,color:'text-rose-700',bold:false},
+    {l:'Laba Bersih',v:netProfit,color:netProfit>=0?'text-emerald-700':'text-rose-700',bold:true,sep:true},
   ];
   const summary: { l: string; v: string }[] = [
-    {l:'Avg Trx',v:fRp(avgTrx)},{l:'Margin',v:`${grossMargin}%`},{l:'Jumlah Trx',v:`${txCount}`},{l:'Nilai Stok',v:fRp(totalStockVal)},
+    {l:'Rata-rata transaksi',v:fRp(avgTrx)},{l:'Margin',v:`${grossMargin}%`},{l:'Jumlah transaksi',v:`${txCount}`},{l:'Nilai Stok',v:fRp(totalStockVal)},
   ];
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 p-4">
-      <p className="text-xs font-black text-slate-400 mb-3">LABA RUGI</p>
+    <div className="kaffe-card p-5">
+      <h3 className="mb-2 font-display text-[16px] font-extrabold text-slate-900">Laba Rugi</h3>
       <div className="space-y-0">
         {rows.map((row,i)=>(
-          <div key={i} className={`flex justify-between py-2 ${row.sep?'border-t border-slate-100 mt-1':''}`}>
-            <span className={`text-sm ${row.bold?'font-black text-slate-800':'text-slate-500'}`}>{row.l}</span>
-            <span className={`text-sm font-black ${row.color}`}>{row.v<0?`-${fRp(Math.abs(row.v))}`:fRp(row.v)}</span>
+          <div key={i} className={`flex justify-between py-2.5 ${row.sep?'mt-1 border-t border-[var(--brand-panel-border)]':''}`}>
+            <span className={`text-[14px] ${row.bold?'font-bold text-slate-900':'font-medium text-slate-600'}`}>{row.l}</span>
+            <span className={`text-[14px] kaffe-num ${row.bold?'font-extrabold':'font-semibold'} ${row.color}`}>{row.v<0?`-${fRp(Math.abs(row.v))}`:fRp(row.v)}</span>
           </div>
         ))}
       </div>
-      <div className="mt-3 pt-3 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <div className="mt-3 grid grid-cols-2 gap-2 border-t border-[var(--brand-panel-border)] pt-4 sm:grid-cols-4">
         {summary.map((s,i)=>(
-          <div key={i} className="bg-slate-50 rounded-xl p-2.5 text-center">
-            <p className="text-[11px] text-slate-400">{s.l}</p>
-            <p className="font-black text-sm text-slate-800">{s.v}</p>
+          <div key={i} className="rounded-xl bg-[var(--brand-canvas)] px-3 py-2.5">
+            <p className="text-[12px] font-medium text-slate-500">{s.l}</p>
+            <p className="mt-0.5 text-[14px] font-bold text-slate-900 kaffe-num">{s.v}</p>
           </div>
         ))}
       </div>

@@ -4,7 +4,18 @@
 import { memo } from 'react';
 import { SKELETON_KEYS } from './posHelpers';
 
-export const CoffeeCupIcon = ({ className }: { className?: string }) => <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}><path d="M9 18L31 18L28 35Q27.5 37 25.5 37L14.5 37Q12.5 37 12 35Z" stroke="currentColor" strokeWidth="1.5" fill="currentColor" fillOpacity="0.2" strokeLinejoin="round"/><path d="M31 22Q38 22 38 27Q38 32 31 32" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round"/><path d="M6 18L34 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><path d="M15 14Q18 9 15 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><path d="M20 13Q17 8 20 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><path d="M25 14Q28 9 25 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>;
+/**
+ * Cangkir kopi untuk empty state kasir. Digambar di grid 24 dengan stroke 2 dan
+ * ujung bulat supaya segaris dengan ikon lucide. Tanpa uap dan tanpa isi: bentuk
+ * cangkirnya sudah cukup dikenali di 24 px.
+ */
+export const CoffeeCupIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
+    <path d="M4 8h13l-1.2 9.2A2 2 0 0 1 13.8 19H7.2a2 2 0 0 1-2-1.8L4 8Z" />
+    <path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H16.4" />
+    <path d="M3 22h15" />
+  </svg>
+);
 
 export const POSSkeleton = memo(function POSSkeleton() {
   return (

@@ -30,19 +30,19 @@ interface ToastItemProps {
 const TOAST_STYLES: Record<ToastType, { accent: string; icon: JSX.Element }> = {
   success: {
     accent: 'border-emerald-400/30',
-    icon: <CheckCircle2 size={18} strokeWidth={2} className="text-emerald-400 shrink-0 mt-px" />,
+    icon: <CheckCircle2 size={20} className="text-emerald-400 shrink-0 mt-px" />,
   },
   warning: {
     accent: 'border-amber-400/30',
-    icon: <AlertTriangle size={18} strokeWidth={2} className="text-amber-400 shrink-0 mt-px" />,
+    icon: <AlertTriangle size={20} className="text-amber-400 shrink-0 mt-px" />,
   },
   error: {
     accent: 'border-rose-400/30',
-    icon: <XCircle size={18} strokeWidth={2} className="text-rose-400 shrink-0 mt-px" />,
+    icon: <XCircle size={20} className="text-rose-400 shrink-0 mt-px" />,
   },
   info: {
     accent: 'border-sky-400/30',
-    icon: <Info size={18} strokeWidth={2} className="text-sky-400 shrink-0 mt-px" />,
+    icon: <Info size={20} className="text-sky-400 shrink-0 mt-px" />,
   },
 };
 
@@ -74,7 +74,7 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
             }}
             className="mt-2 inline-flex items-center gap-1.5 rounded-lg text-xs font-semibold text-orange-300 transition-colors hover:text-orange-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400/60"
           >
-            <FolderOpen size={13} strokeWidth={2} />
+            <FolderOpen size={16} />
             {toast.action.label}
           </button>
         )}
@@ -85,7 +85,7 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
         onClick={() => onDismiss(toast.id)}
         className="-mr-1 -mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg text-zinc-500 transition-colors hover:bg-white/5 hover:text-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
       >
-        <X size={14} strokeWidth={2} />
+        <X size={16} />
       </button>
     </div>
   );

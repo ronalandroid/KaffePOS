@@ -71,7 +71,7 @@ export default function PrinterPanel({ printer, toast, canThermalPrint, canBrows
           {printer.btConnected ? (
             <button type="button" onClick={() => { printer.disconnectBt(); toast.showToast('Printer diputus', 'info'); }}
               className="flex-1 py-2.5 border-2 border-red-200 text-red-500 font-bold rounded-xl flex items-center justify-center gap-2 active:scale-95 text-sm">
-              <BluetoothOff size={14}/>Putuskan
+              <BluetoothOff size={16}/>Putuskan
             </button>
           ) : (
             <button type="button"
@@ -97,14 +97,14 @@ export default function PrinterPanel({ printer, toast, canThermalPrint, canBrows
               className="flex-1 py-2.5 bg-slate-900 text-white font-bold rounded-xl flex items-center justify-center gap-2 active:scale-95 disabled:opacity-40 text-sm">
               {printer.btReconnecting
                 ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/>
-                : <Bluetooth size={14}/>}
+                : <Bluetooth size={16}/>}
               {printer.btReconnecting ? 'Menghubungkan...' : canThermalPrint ? 'Hubungkan Printer' : 'Butuh Signature'}
             </button>
           )}
           {printer.btConnected && (
             <button type="button" onClick={handleTestPrint}
               className="px-4 py-2.5 border-2 border-orange-200 text-orange-600 font-bold rounded-xl flex items-center justify-center gap-1.5 active:scale-95 text-sm">
-              <Printer size={14}/>Test
+              <Printer size={16}/>Test
             </button>
           )}
         </div>
@@ -127,13 +127,13 @@ export default function PrinterPanel({ printer, toast, canThermalPrint, canBrows
 
       <div className="bg-white rounded-[32px] border border-slate-100 p-6 shadow-soft">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-8 bg-orange-50 rounded-xl flex items-center justify-center"><Wifi size={18} className="text-[#FF6A00]"/></div>
+          <div className="w-8 h-8 bg-orange-50 rounded-xl flex items-center justify-center"><Wifi size={20} className="text-[#FF6A00]"/></div>
           <div><p className="font-black text-slate-800 text-[14px] tracking-tight">Cetak via Browser</p><p className={`text-[10px] font-black uppercase tracking-widest ${canBrowserPrint ? 'text-emerald-500' : 'text-slate-300'}`}>{canBrowserPrint ? 'Tersedia' : 'Butuh Kopi Susu'}</p></div>
         </div>
         <p className="text-xs font-bold text-slate-400 mb-6 leading-relaxed">Printer WiFi atau browser print cocok untuk operasional ringan dan review struk dari desktop.</p>
         <button type="button" onClick={handleTestPrint}
           className={`w-full py-4 border-2 font-black rounded-2xl flex items-center justify-center gap-3 active:scale-95 text-[12px] transition-all ${canBrowserPrint ? 'border-orange-100 text-[#FF6A00] hover:bg-orange-50' : 'border-slate-100 text-slate-300'}`}>
-          <Printer size={18}/> {canBrowserPrint ? 'Test Cetak Browser' : 'Upgrade Browser Print'}
+          <Printer size={20}/> {canBrowserPrint ? 'Test Cetak Browser' : 'Upgrade Browser Print'}
         </button>
       </div>
     </>

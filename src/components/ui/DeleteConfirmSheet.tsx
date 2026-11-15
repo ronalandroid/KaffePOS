@@ -38,7 +38,7 @@ export default function DeleteConfirmSheet({ visible, title, message, onConfirm,
 
         {/* Icon */}
         <div className="w-14 h-14 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <Trash2 size={26} className="text-red-500" />
+          <Trash2 size={24} className="text-red-500" />
         </div>
 
         {/* Text */}

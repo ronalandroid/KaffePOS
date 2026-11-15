@@ -136,7 +136,7 @@ export default function PosTableAndBillModal({
             aria-label="Tutup manajemen meja"
             className="rounded-2xl border border-stone-100 bg-stone-50 p-2.5 text-stone-400 transition-colors hover:bg-orange-50 hover:text-[#FF6A00]"
           >
-            <X size={18} />
+            <X size={20} />
           </button>
         </div>
 
@@ -169,7 +169,7 @@ export default function PosTableAndBillModal({
 
           <div className="flex items-center gap-2">
             <span className="flex items-center gap-1 text-xs font-bold text-stone-500">
-              <Users size={14} className="text-stone-400" /> Jumlah Tamu (Pax):
+              <Users size={16} className="text-stone-400" /> Jumlah Tamu (Pax):
             </span>
             <div className="flex items-center gap-1">
               {[1, 2, 4, 6, 8].map((n) => (
@@ -305,7 +305,7 @@ export default function PosTableAndBillModal({
                           </div>
                         ) : (
                           <div className="mt-3 flex items-center gap-1.5 text-xs font-bold text-emerald-700">
-                            {isSelected ? <Check size={14} /> : <Plus size={14} />}
+                            {isSelected ? <Check size={16} /> : <Plus size={16} />}
                             <span>{isSelected ? `Aktif (${selectedPax} Pax)` : 'Pilih Meja Ini'}</span>
                           </div>
                         )}
@@ -323,7 +323,7 @@ export default function PosTableAndBillModal({
                             title="Pindah ke meja kosong lain"
                             className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-white px-2 py-1.5 text-[10px] font-black uppercase text-stone-600 border border-stone-200 hover:border-[#FF6A00] hover:text-[#FF6A00]"
                           >
-                            <ArrowRightLeft size={11} /> Pindah
+                            <ArrowRightLeft size={16} /> Pindah
                           </button>
                           {occupiedCount > 1 && (
                             <button
@@ -335,7 +335,7 @@ export default function PosTableAndBillModal({
                               title="Gabung tagihan ke meja terisi lain"
                               className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-white px-2 py-1.5 text-[10px] font-black uppercase text-stone-600 border border-stone-200 hover:border-[#FF6A00] hover:text-[#FF6A00]"
                             >
-                              <Merge size={11} /> Gabung
+                              <Merge size={16} /> Gabung
                             </button>
                           )}
                         </div>
@@ -350,7 +350,7 @@ export default function PosTableAndBillModal({
             <div className="space-y-3">
               {openBills.length === 0 ? (
                 <div className="rounded-3xl border border-dashed border-stone-200 p-10 text-center">
-                  <Receipt size={32} className="mx-auto mb-3 text-stone-300" />
+                  <Receipt size={24} className="mx-auto mb-3 text-stone-300" />
                   <p className="font-display text-base font-black text-stone-700">Belum Ada Open Bill Aktif</p>
                   <p className="mt-1 text-xs font-medium text-stone-400">
                     Masukkan pesanan ke keranjang lalu tekan tombol &ldquo;Simpan Bill&rdquo; untuk menyimpan tagihan meja yang belum dibayar.
@@ -405,7 +405,7 @@ export default function PosTableAndBillModal({
                           aria-label={`Batalkan open bill ${bill.customer_name || bill.table_number || ''}`}
                           className="rounded-xl border border-stone-200 p-2.5 text-stone-400 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
                         >
-                          <Trash2 size={15} />
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </div>

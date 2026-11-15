@@ -28,7 +28,7 @@ export default function AffiliateCommissionTable({ items }: { items: CommissionT
       </div>
       {items.length === 0 ? (
         <div className="flex flex-col items-center justify-center px-5 py-12 text-center">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-3xl bg-orange-50 text-[#FF6A00]"><Inbox size={26} /></div>
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-3xl bg-orange-50 text-[#FF6A00]"><Inbox size={24} /></div>
           <p className="text-base font-black text-slate-900">Belum ada komisi</p>
           <p className="mt-1 max-w-sm text-sm font-medium text-slate-500">Bagikan link affiliate untuk mulai mendapatkan komisi.</p>
         </div>
@@ -42,7 +42,7 @@ export default function AffiliateCommissionTable({ items }: { items: CommissionT
               {items.map((item) => (
                 <tr key={item.id} className="hover:bg-orange-50/30">
                   <td className="px-5 py-4"><p className="font-black text-slate-800">{item.referred_user?.name || item.referred_name || 'Customer KaffePOS'}</p><p className="text-xs font-semibold text-slate-400">{item.referred_user?.email || item.referred_email || 'Email disamarkan'}</p></td>
-                  <td className="px-5 py-4 text-slate-600"><span className="inline-flex items-center gap-1 font-semibold"><CalendarDays size={14} />{item.first_payment_at || item.created_at ? fDate(item.first_payment_at ?? item.created_at) : '-'}</span></td>
+                  <td className="px-5 py-4 text-slate-600"><span className="inline-flex items-center gap-1 font-semibold"><CalendarDays size={16} />{item.first_payment_at || item.created_at ? fDate(item.first_payment_at ?? item.created_at) : '-'}</span></td>
                   <td className="px-5 py-4 text-slate-600">{typeLabel(item.type)}</td>
                   <td className="px-5 py-4 font-black text-slate-900">{fRp(amount(item))}</td>
                   <td className="px-5 py-4"><span className={`inline-flex rounded-full border px-3 py-1 text-xs font-black ${statusBadge(item.status)}`}>{statusLabel(item.status)}</span></td>

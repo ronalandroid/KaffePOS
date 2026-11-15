@@ -1,4 +1,4 @@
-import { ShieldCheck } from 'lucide-react';
+import { ScrollText } from 'lucide-react';
 
 const rules = [
   'Affiliate mendapat komisi 20% dari pembayaran pertama customer.',
@@ -12,11 +12,9 @@ export default function AffiliateRulesCard() {
   return (
     <section className="rounded-3xl border border-orange-100 bg-white p-5 shadow-sm sm:p-6">
       <div className="flex items-start gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-orange-50 text-[#FF6A00]">
-          <ShieldCheck size={22} />
-        </div>
+        <ScrollText size={24} className="mt-0.5 shrink-0 text-slate-500" aria-hidden="true" />
         <div>
-          <h2 className="text-lg font-black text-slate-900">Aturan Affiliate</h2>
+          <h2 className="text-lg font-black text-slate-900">Aturan afiliasi</h2>
           <div className="mt-3 grid gap-2 text-sm font-semibold leading-relaxed text-slate-500 sm:grid-cols-2">
             {rules.map((rule) => <p key={rule}>• {rule}</p>)}
           </div>

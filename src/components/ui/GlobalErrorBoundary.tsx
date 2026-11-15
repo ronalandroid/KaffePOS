@@ -42,12 +42,12 @@ export class GlobalErrorBoundary extends Component<Props, State> {
         <div role="alert" className="fixed inset-0 z-[200] flex min-h-[100dvh] items-center justify-center overflow-y-auto bg-[#FAFAF9] px-5 py-10">
           <div className="w-full max-w-md">
             <div className="flex items-center gap-2 text-zinc-500">
-              <Coffee size={16} strokeWidth={2} className="text-[#FF6A00]" />
+              <Coffee size={16} className="text-[#FF6A00]" />
               <span className="text-sm font-semibold tracking-tight text-zinc-700">KaffePOS</span>
             </div>
 
             <div className="mt-8 grid h-12 w-12 place-items-center rounded-2xl bg-amber-50 text-amber-600 ring-1 ring-amber-100">
-              <AlertTriangle size={22} strokeWidth={2} />
+              <AlertTriangle size={20} />
             </div>
 
             <h2 className="mt-5 text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl">
@@ -68,7 +68,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
               onClick={this.handleReload}
               className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-900 px-5 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-zinc-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/60 sm:w-auto"
             >
-              <RefreshCw size={16} strokeWidth={2} />
+              <RefreshCw size={16} />
               Muat ulang halaman
             </button>
           </div>
