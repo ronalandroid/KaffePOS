@@ -41,9 +41,10 @@
     "coolify:staging:deploy": "node scripts/coolify-staging-deploy.mjs",
     "verify:payment-staging": "node scripts/verify-staging-env.mjs --profile=payment",
     "smoke:staging:mayar": "node scripts/smoke-mayar-staging.mjs",
-    "smoke:staging:doku": "node scripts/smoke-doku-staging.mjs",
+    "mayar:connect": "node backend/scripts/mayar-connect.mjs",
     "smoke:insforge": "npm --prefix backend run build && node scripts/smoke-insforge-backend.mjs",
     "smoke:local:fresh-db": "npm --prefix backend run build && node scripts/smoke-local-fresh-db.mjs",
+    "smoke:local:mayar": "npm --prefix backend run build && node scripts/smoke-local-mayar.mjs",
     "test:e2e:local": "npm --prefix backend run build && node scripts/e2e-local.mjs",
     "test:e2e:offline": "npm --prefix backend run build && node scripts/e2e-offline-local.mjs"
   },

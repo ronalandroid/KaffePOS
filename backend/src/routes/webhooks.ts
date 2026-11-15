@@ -1,5 +1,15 @@
 /**
- * Pre-authentication payment webhook (DOKU).
+ * Pre-authentication payment webhook (Mayar).
+ *
+ * POST /api/webhooks/mayar
+ *   1. Authenticate: `X-Callback-Token` header or `?token=` must equal MAYAR_WEBHOOK_TOKEN.
+ *   2. Acknowledge (200) events that are not a payment: membership, shipping, reminders,
+ *      dashboard "Test URL" calls and payments that do not belong to KaffePOS.
+ *   3. Find the KaffePOS record — a POS payment order or a subscription session.
+ *   4. Re-read the payment request from the Mayar API with the reference KaffePOS stored
+ *      and settle only when Mayar itself reports it paid (Mayar does not sign webhooks).
+ *   5. Settle idempotently: POS → transaction + kitchen order, subscription → activation.
+ * Non-2xx answers make Mayar retry, so transient failures recover on their own.
  */
 import { randomUUID } from 'node:crypto';
 import { Router } from 'express';
@@ -12,13 +22,15 @@ import {
   log,
   serializeError,
   insertNotification,
+  pool,
+  isMayarWebhookTokenConfigured,
 } from '../core';
 import { PaymentService } from '../services/PaymentService';
 import { CommissionService } from '../services/CommissionService';
 import { isReferralCommissionCreationEnabled } from '../lib/config/feature-flags';
 import { alertOnPaymentWebhookFailure } from '../lib/alerting';
 import { createPaymentProvider } from '../payments/payment-provider.factory';
-import type { PaymentStatusResult } from '../payments/payment-provider.types';
+import type { PaymentProvider, PaymentStatusResult } from '../payments/payment-provider.types';
 
 const router = Router();
 
@@ -242,48 +254,214 @@ async function applyPosPaymentResult(result: PaymentStatusResult, eventType: str
   return true;
 }
 
-function buildPaymentWebhookHandler(providerName: 'mayar' | 'doku') {
-  const label = providerName === 'mayar' ? 'Mayar' : 'DOKU';
-  return async (
-    req: Parameters<Parameters<typeof router.post>[1]>[0],
-    res: Parameters<Parameters<typeof router.post>[1]>[1],
-    next: Parameters<Parameters<typeof router.post>[1]>[2],
-  ) => {
-    try {
-      const provider = createPaymentProvider(providerName);
-      const result = await provider.verifyCallback({
-        body: req.body as Record<string, unknown>,
-        headers: req.headers,
-        rawBody: req.rawBody,
-      });
-      if (!result.signatureValid) {
-        log('warn', `${providerName}_webhook_signature_failed`, {
-          merchantOrderId: result.merchantOrderId,
-          rawStatus: result.rawStatus,
-        });
-        throw new ApiError(401, `Signature ${label} tidak valid.`);
-      }
-      const settledPosOrder = await applyPosPaymentResult(result, 'callback');
-      if (!settledPosOrder) {
-        await applySubscriptionPaymentResult(result, 'callback');
-      }
-      res.status(200).json({
-        received: true,
-        provider: providerName,
-        status: result.internalStatus,
-        kind: settledPosOrder ? 'pos' : 'subscription',
-      });
-    } catch (error) {
-      alertOnPaymentWebhookFailure(`${label} webhook processing failed`, { error: String(error) });
-      next(error);
-    }
+type MayarPaymentRecord = {
+  kind: 'pos' | 'subscription';
+  id: string;
+  merchantOrderId: string;
+  providerReference: string | null;
+  amount: number;
+  settled: boolean;
+};
+
+function uniqueIds(values: Array<string | null | undefined>): string[] {
+  return Array.from(new Set(values.filter((value): value is string => typeof value === 'string' && value.trim().length > 0)));
+}
+
+/** Finds the POS payment order or subscription session a Mayar webhook refers to. */
+async function findMayarPaymentRecord(result: PaymentStatusResult): Promise<MayarPaymentRecord | null> {
+  const orderIds = uniqueIds([...(result.orderIdCandidates ?? []), result.merchantOrderId]);
+  const references = uniqueIds([
+    ...(result.referenceCandidates ?? []),
+    result.providerReference,
+    result.providerTransactionId,
+  ]);
+  if (orderIds.length === 0 && references.length === 0) return null;
+
+  const posResult = await pool.query(
+    `
+      select id, coalesce(merchant_order_id, midtrans_order_id) as merchant_order_id, provider_reference,
+             gross_amount as amount, status
+      from public.payment_orders
+      where coalesce(provider, 'mayar') = 'mayar'
+        and (
+          merchant_order_id = any($1::text[])
+          or midtrans_order_id = any($1::text[])
+          or provider_reference = any($2::text[])
+          or metadata->>'providerTransactionId' = any($2::text[])
+        )
+      order by created_at desc
+      limit 1
+    `,
+    [orderIds, references],
+  );
+  const posOrder = posResult.rows[0];
+  if (posOrder) {
+    return {
+      kind: 'pos',
+      id: String(posOrder.id),
+      merchantOrderId: String(posOrder.merchant_order_id),
+      providerReference: posOrder.provider_reference ? String(posOrder.provider_reference) : null,
+      amount: Math.round(Number(posOrder.amount ?? 0)),
+      settled: posOrder.status === 'paid' || posOrder.status === 'completed',
+    };
+  }
+
+  const sessionResult = await pool.query(
+    `
+      select id, coalesce(merchant_order_id, midtrans_order_id) as merchant_order_id, provider_reference,
+             amount, coalesce(internal_status, transaction_status) as status, subscription_id
+      from public.subscription_payment_sessions
+      where coalesce(provider, 'mayar') = 'mayar'
+        and (
+          merchant_order_id = any($1::text[])
+          or midtrans_order_id = any($1::text[])
+          or provider_reference = any($2::text[])
+          or metadata->>'providerTransactionId' = any($2::text[])
+        )
+      order by created_at desc
+      limit 1
+    `,
+    [orderIds, references],
+  );
+  const session = sessionResult.rows[0];
+  if (!session) return null;
+  return {
+    kind: 'subscription',
+    id: String(session.id),
+    merchantOrderId: String(session.merchant_order_id),
+    providerReference: session.provider_reference ? String(session.provider_reference) : null,
+    amount: Math.round(Number(session.amount ?? 0)),
+    settled: Boolean(session.subscription_id),
   };
 }
 
+/**
+ * Asks Mayar whether the payment behind this record is really paid. Uses the reference
+ * KaffePOS stored when it created the payment; only rows without one fall back to the
+ * reference in the webhook, and then Mayar's record must point back at the same order.
+ */
+async function confirmWithMayarApi(provider: PaymentProvider, record: MayarPaymentRecord, result: PaymentStatusResult) {
+  const reference = record.providerReference ?? result.providerReference;
+  if (!reference) {
+    throw new ApiError(409, 'Referensi pembayaran Mayar tidak ditemukan untuk order ini.');
+  }
+  const confirmed = await provider.checkTransactionStatus({
+    merchantOrderId: record.merchantOrderId,
+    providerReference: reference,
+    amount: record.amount,
+  });
+  if (!record.providerReference && !(confirmed.orderIdCandidates ?? []).includes(record.merchantOrderId)) {
+    throw new ApiError(409, 'Referensi Mayar tidak cocok dengan order KaffePOS.');
+  }
+  return confirmed;
+}
+
+async function handleMayarWebhook(
+  req: Parameters<Parameters<typeof router.post>[1]>[0],
+  res: Parameters<Parameters<typeof router.post>[1]>[1],
+  next: Parameters<Parameters<typeof router.post>[1]>[2],
+) {
+  try {
+    if (!isMayarWebhookTokenConfigured()) {
+      log('error', 'mayar_webhook.token_not_configured', {});
+      throw new ApiError(503, 'Webhook Mayar belum dikonfigurasi.');
+    }
+
+    const provider = createPaymentProvider('mayar');
+    const result = await provider.verifyCallback({
+      body: (req.body ?? {}) as Record<string, unknown>,
+      headers: req.headers,
+      rawBody: req.rawBody,
+      query: req.query as Record<string, unknown>,
+    });
+
+    if (!result.signatureValid) {
+      log('warn', 'mayar_webhook.token_rejected', {
+        eventType: result.eventType ?? null,
+        hasHeaderToken: Boolean(req.headers['x-callback-token']),
+        hasQueryToken: typeof req.query?.token === 'string',
+      });
+      throw new ApiError(401, 'Token webhook Mayar tidak valid.');
+    }
+
+    if (result.internalStatus !== 'paid') {
+      log('info', 'mayar_webhook.ignored', {
+        eventType: result.eventType ?? null,
+        rawStatus: result.rawStatus,
+        internalStatus: result.internalStatus,
+        merchantOrderId: result.merchantOrderId,
+      });
+      res.status(200).json({
+        received: true,
+        provider: 'mayar',
+        ignored: true,
+        reason: 'not_a_paid_event',
+        event: result.eventType ?? null,
+        status: result.internalStatus,
+      });
+      return;
+    }
+
+    const record = await findMayarPaymentRecord(result);
+    if (!record) {
+      log('warn', 'mayar_webhook.order_not_found', {
+        eventType: result.eventType ?? null,
+        merchantOrderId: result.merchantOrderId,
+        providerReference: result.providerReference,
+      });
+      res.status(200).json({ received: true, provider: 'mayar', ignored: true, reason: 'order_not_found', event: result.eventType ?? null });
+      return;
+    }
+
+    if (record.settled) {
+      res.status(200).json({ received: true, provider: 'mayar', status: 'paid', kind: record.kind, duplicate: true });
+      return;
+    }
+
+    const confirmed = await confirmWithMayarApi(provider, record, result);
+    if (confirmed.internalStatus !== 'paid') {
+      log('warn', 'mayar_webhook.not_confirmed', {
+        kind: record.kind,
+        merchantOrderId: record.merchantOrderId,
+        apiStatus: confirmed.rawStatus,
+      });
+      throw new ApiError(409, 'Pembayaran belum terkonfirmasi di Mayar.');
+    }
+
+    const settlement: PaymentStatusResult = {
+      ...result,
+      signatureValid: true,
+      merchantOrderId: record.merchantOrderId,
+      providerReference: record.providerReference ?? confirmed.providerReference ?? result.providerReference,
+      amount: confirmed.amount ?? result.amount,
+      paymentMethod: result.paymentMethod && result.paymentMethod !== 'MAYAR' ? result.paymentMethod : confirmed.paymentMethod,
+      rawStatus: confirmed.rawStatus ?? result.rawStatus,
+      internalStatus: 'paid',
+      paidAt: result.paidAt ?? confirmed.paidAt,
+      raw: { webhook: result.raw, confirmation: confirmed.raw },
+    };
+
+    if (record.kind === 'pos') {
+      await applyPosPaymentResult(settlement, 'callback');
+    } else {
+      await applySubscriptionPaymentResult(settlement, 'callback');
+    }
+
+    res.status(200).json({ received: true, provider: 'mayar', status: 'paid', kind: record.kind });
+  } catch (error) {
+    alertOnPaymentWebhookFailure('Mayar webhook processing failed', { error: String(error) });
+    next(error);
+  }
+}
+
 router.get('/api/webhooks/mayar', (_req, res) => {
-  res.status(200).json({ ok: true, provider: 'mayar', message: 'Mayar webhook endpoint active.' });
+  res.status(200).json({
+    ok: true,
+    provider: 'mayar',
+    message: 'Mayar webhook endpoint active.',
+    webhookTokenConfigured: isMayarWebhookTokenConfigured(),
+  });
 });
-router.post('/api/webhooks/mayar', buildPaymentWebhookHandler('mayar'));
-router.post('/api/webhooks/doku', buildPaymentWebhookHandler('doku'));
+router.post('/api/webhooks/mayar', handleMayarWebhook);
 
 export default router;

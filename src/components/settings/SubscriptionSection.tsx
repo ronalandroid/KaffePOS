@@ -123,7 +123,7 @@ export default function SubscriptionSection({ isPro, profile, toast, onRefreshSt
     if (!billing) return;
 
     billingNoticeShown.current = true;
-    if (billing === 'success' || billing === 'mayar-return' || billing === 'doku-return') {
+    if (billing === 'success' || billing === 'mayar-return') {
       toast.showToast('Menunggu konfirmasi pembayaran. Lisensi aktif setelah callback terverifikasi.', 'info');
       trackAnalyticsEvent('payment_returned', { source: 'subscription_return', payment_provider: params.get('provider') || 'mayar' });
       void trackOpsEvent({

@@ -1,6 +1,6 @@
 /**
  * PaymentService unit tests
- * Tests: transaction creation, Midtrans integration, order status
+ * Tests: transaction creation, Mayar integration, order status
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { randomUUID } from 'node:crypto';
@@ -14,24 +14,24 @@ vi.mock('../../core', async () => {
     assertStoreOwned: vi.fn(),
     log: vi.fn(),
     env: {
-      MIDTRANS_SERVER_KEY: 'SB-Mid-server-test',
-      MIDTRANS_CLIENT_KEY: 'SB-Mid-client-test',
-      MIDTRANS_IS_PRODUCTION: 'false',
-      MIDTRANS_SNAP_ENABLED: 'true',
+      MAYAR_ENVIRONMENT: 'sandbox',
+      MAYAR_API_KEY: 'mayar-test-key',
+      MAYAR_WEBHOOK_TOKEN: 'mayar-webhook-token',
     },
   };
 });
 
 vi.mock('../../payments/payment-provider.factory', () => ({
-  getActivePaymentProviderName: vi.fn(() => 'doku'),
+  getActivePaymentProviderName: vi.fn(() => 'mayar'),
   createPaymentProvider: vi.fn(() => ({
-    providerName: 'doku',
+    providerName: 'mayar',
     createPayment: vi.fn().mockResolvedValue({
-      snap_token: 'snap-token-123',
-      paymentUrl: 'https://checkout-staging.doku.com/link/snap-token-123',
-      gross_amount: 65000,
+      provider: 'mayar',
+      paymentUrl: 'https://kaffepos.myr.id/pl/rqp9x2k7m3a',
       merchantOrderId: `ORDER-${Date.now()}`,
-      providerReference: 'DOKU-REF-123',
+      providerReference: '6f8c19ff-5b97-4792-aa89-d2a12797b356',
+      providerTransactionId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+      paymentMethod: 'MAYAR_CHECKOUT',
     }),
     verifyCallback: vi.fn(),
     checkTransactionStatus: vi.fn(),
@@ -81,7 +81,15 @@ describe('PaymentService', () => {
       });
 
       expect(result.gross_amount).toBe(65000); // (35000 * 2) - 5000
-      expect(result.payment_url).toBe('https://checkout-staging.doku.com/link/snap-token-123');
+      expect(result.payment_url).toBe('https://kaffepos.myr.id/pl/rqp9x2k7m3a');
+      expect(result.provider).toBe('mayar');
+      expect(pool.query).toHaveBeenCalledWith(
+        expect.stringContaining('update public.payment_orders'),
+        expect.arrayContaining([
+          '6f8c19ff-5b97-4792-aa89-d2a12797b356',
+          JSON.stringify({ providerTransactionId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' }),
+        ]),
+      );
       expect(result.status).toBe('pending');
       expect(mockClient.query).toHaveBeenCalledWith(
         expect.stringContaining('insert into public.payment_orders'),

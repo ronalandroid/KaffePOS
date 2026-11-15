@@ -17,7 +17,7 @@ undo the exposure.
 | `SESSION_SECRET` | ❌ no refs | Dead config. No rotation needed. |
 | `ENCRYPTION_KEY` | ❌ no refs | Dead — the code reads `PII_ENCRYPTION_KEY`, not `ENCRYPTION_KEY`. No rotation needed. |
 
-(Duitku/Midtrans have since been removed; the gateway is DOKU. Treat any committed `DOKU_SECRET_KEY` as compromised and rotate it in the DOKU Back Office.)
+(Duitku, Midtrans and DOKU have since been removed; the only gateway is Mayar. Treat any committed `DOKU_SECRET_KEY` as compromised and revoke it in the DOKU Back Office. `MAYAR_API_KEY` and `MAYAR_WEBHOOK_TOKEN` are backend-only secrets: if either leaks, create a new API key / Web Token in the Mayar dashboard, update Coolify, and re-run `node scripts/mayar-connect.mjs` — see `docs/engineering/MAYAR_INTEGRATION_GUIDE.md`.)
 
 > ⚠️ **DB password ↔ PII key coupling.** `lib/encryption.ts` derives the
 > affiliate payout/bank-account (PII) encryption key from `PII_ENCRYPTION_KEY`,

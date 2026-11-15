@@ -10,12 +10,23 @@ describe('release config script guardrails', () => {
     expect(script).toContain("requireContains('CORS_ORIGIN', 'https://localhost')");
   });
 
+  it('requires Mayar production credentials and keeps them out of the frontend bundle', () => {
+    const script = readFileSync(resolve(process.cwd(), 'scripts/verify-release-config.mjs'), 'utf8');
+
+    expect(script).toContain("requireEquals('PAYMENT_GATEWAY_PROVIDER', 'mayar')");
+    expect(script).toContain("requireEquals('MAYAR_ENVIRONMENT', 'production')");
+    expect(script).toContain("requirePresent('MAYAR_API_KEY')");
+    expect(script).toContain("requirePresent('MAYAR_WEBHOOK_TOKEN')");
+    expect(script).toContain("forbidPrefix('VITE_MAYAR_')");
+    expect(script).not.toContain('MIDTRANS_');
+  });
+
   it('smoke production readiness verifies final CORS origins, payment, and monitoring', () => {
     const script = readFileSync(resolve(process.cwd(), 'scripts/smoke-production-readiness.mjs'), 'utf8');
 
     expect(script).toContain("['http://localhost', 'https://localhost', 'capacitor://localhost']");
     expect(script).toContain('CORS preflight allows final APK origin');
-    expect(script).toContain('Midtrans is production and commercially ready');
+    expect(script).toContain('Mayar is production and commercially ready');
     expect(script).toContain('Backend error tracking is configured');
   });
 
@@ -39,7 +50,8 @@ describe('release config script guardrails', () => {
     expect(packageJson).toContain('"smoke:production:billing"');
     expect(script).toContain("KAFFEPOS_BILLING_API_BASE_URL || process.env.API_BASE_URL || 'https://api.kaffepos.my.id'");
     expect(script).toContain('/system-status');
-    expect(script).toContain("payment?.mode === 'doku_production'");
+    expect(script).toContain("payment?.mode === 'mayar_production'");
+    expect(script).not.toContain('doku');
     expect(script).toContain("payment?.commerciallyReady === true");
     expect(script).toContain('subscription_payments');
     expect(script).toContain('KAFFEPOS_BILLING_EMAIL');

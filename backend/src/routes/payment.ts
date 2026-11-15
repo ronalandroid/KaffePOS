@@ -16,6 +16,7 @@ import {
   buildSubscriptionQuoteOrThrow,
   ensureProfile,
   syncProfileSubscriptionState,
+  getMayarWebhookUrl,
 } from '../core';
 import { PaymentService, paymentCreateSchema } from '../services/PaymentService';
 import { createPaymentProvider, getActivePaymentProviderName } from '../payments/payment-provider.factory';
@@ -158,11 +159,8 @@ async function createGenericSubscriptionPayment(req: Parameters<Parameters<typeo
     const store = storeResult.rows[0];
     const orderId = createSubscriptionOrderId(activeProvider, req.authUser!.id, payload.plan, payload.billingCycle);
     const provider = createPaymentProvider(activeProvider);
-    const dueMinutes = activeProvider === 'mayar' ? env.MAYAR_PAYMENT_DUE_MINUTES : env.DOKU_PAYMENT_DUE_MINUTES;
-    const callbackUrl =
-      activeProvider === 'mayar'
-        ? env.MAYAR_CALLBACK_URL ?? `${env.API_BASE_URL}/api/webhooks/mayar`
-        : env.DOKU_CALLBACK_URL;
+    const dueMinutes = env.MAYAR_PAYMENT_DUE_MINUTES;
+    const callbackUrl = getMayarWebhookUrl();
     const payment = await provider.createPayment({
       merchantOrderId: orderId,
       amount,
@@ -172,6 +170,7 @@ async function createGenericSubscriptionPayment(req: Parameters<Parameters<typeo
       paymentMethod: payload.paymentMethod,
       returnUrl: env.MAYAR_REDIRECT_URL ?? `${env.WEB_BASE_URL}/settings?billing=success&provider=${activeProvider}`,
       itemDetails: [{ name: `Langganan ${quote.planName}`, price: amount, quantity: 1 }],
+      metadata: { kind: 'subscription', plan: payload.plan, billingCycle: payload.billingCycle },
     });
     const sessionId = randomUUID();
     const inserted = await pool.query(
@@ -187,12 +186,12 @@ async function createGenericSubscriptionPayment(req: Parameters<Parameters<typeo
         )
         returning id, provider, merchant_order_id, midtrans_order_id, payment_url, redirect_url, internal_status, transaction_status
       `,
-      [sessionId, req.authUser!.id, store?.id ?? null, payload.plan, payload.billingCycle, amount, orderId, payment.paymentUrl, dueMinutes, JSON.stringify({ env: paymentConfig.environment, paymentMode: paymentConfig.mode, callbackUrl, selectedPaymentMethod: payload.paymentMethod, voucherCode, quote, storeName: store?.store_name ?? null, providerRaw: payment.raw }), payment.providerReference, payment.vaNumber, payment.qrString, payment.paymentMethod, payment.providerStatus, activeProvider],
+      [sessionId, req.authUser!.id, store?.id ?? null, payload.plan, payload.billingCycle, amount, orderId, payment.paymentUrl, dueMinutes, JSON.stringify({ env: paymentConfig.environment, paymentMode: paymentConfig.mode, callbackUrl, selectedPaymentMethod: payload.paymentMethod, voucherCode, quote, storeName: store?.store_name ?? null, providerTransactionId: payment.providerTransactionId ?? null, providerRaw: payment.raw }), payment.providerReference, payment.vaNumber, payment.qrString, payment.paymentMethod, payment.providerStatus, activeProvider],
     );
     const row = inserted.rows[0];
     res.status(201).json({ success: true, data: { paymentId: row.id, provider: row.provider, merchantOrderId: row.merchant_order_id, paymentUrl: row.payment_url ?? row.redirect_url ?? null, status: row.internal_status ?? 'pending' } });
   } catch (error) {
-    if (error instanceof ApiError && error.status === 502 && (error.message.startsWith('Mayar ') || error.message.startsWith('DOKU '))) {
+    if (error instanceof ApiError && error.status === 502 && error.message.startsWith('Mayar ')) {
       log('warn', 'subscription_payment.provider_failed', { error: serializeError(error) });
       res.status(502).json({ success: false, message: error.message });
       return;
@@ -246,8 +245,6 @@ router.get('/api/payments/:paymentId/status', requirePermission('can_manage_bill
 
 router.post('/api/payments/:paymentId/check', requirePermission('can_manage_billing'), async (req, res, next) => {
   try {
-    const checkProvider = getActivePaymentProviderName();
-    if (checkProvider !== 'mayar' && checkProvider !== 'doku') throw new ApiError(409, 'Status check manual hanya aktif untuk Mayar atau DOKU.');
     const paymentId = z.string().uuid().parse(req.params.paymentId);
     const sessionResult = await pool.query(
       `select * from public.subscription_payment_sessions where id = $1 and user_id = $2 limit 1`,
@@ -255,7 +252,10 @@ router.post('/api/payments/:paymentId/check', requirePermission('can_manage_bill
     );
     const session = sessionResult.rows[0];
     if (!session) throw new ApiError(404, 'Pembayaran tidak ditemukan.');
-    const provider = createPaymentProvider(checkProvider);
+    // Sessions created by a removed gateway cannot be re-checked automatically.
+    const checkProvider = String(session.provider ?? getActivePaymentProviderName());
+    if (checkProvider !== 'mayar') throw new ApiError(409, 'Cek status otomatis hanya tersedia untuk pembayaran Mayar.');
+    const provider = createPaymentProvider('mayar');
     const checked = await provider.checkTransactionStatus({
       merchantOrderId: String(session.merchant_order_id ?? session.midtrans_order_id),
       providerReference: session.provider_reference ? String(session.provider_reference) : null,

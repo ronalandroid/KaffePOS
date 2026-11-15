@@ -91,10 +91,10 @@ try {
   }
 
   if (payment?.environment === 'production' && payment?.commerciallyReady === true) {
-    pass('Midtrans is production and commercially ready');
+    pass('Mayar is production and commercially ready');
   } else {
     fail(
-      `Midtrans is not production-ready (environment=${payment?.environment ?? 'unknown'}, mode=${
+      `Mayar is not production-ready (environment=${payment?.environment ?? 'unknown'}, mode=${
         payment?.mode ?? 'unknown'
       }, commerciallyReady=${String(payment?.commerciallyReady)})`,
     );

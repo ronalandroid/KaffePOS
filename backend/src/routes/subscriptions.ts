@@ -26,6 +26,7 @@ import {
   sendTrialReminderEmail,
   log,
   serializeError,
+  getMayarWebhookUrl,
 } from '../core';
 import {
   listSubscriptionPaymentMethods,
@@ -466,11 +467,8 @@ router.post('/api/subscriptions/payments/create', requirePermission('can_manage_
     const store = storeResult.rows[0];
     const orderId = createSubscriptionOrderId(activeProvider, req.authUser!.id, payload.plan, payload.billingCycle);
     const provider = createPaymentProvider(activeProvider);
-    const dueMinutes = activeProvider === 'mayar' ? env.MAYAR_PAYMENT_DUE_MINUTES : env.DOKU_PAYMENT_DUE_MINUTES;
-    const callbackUrl =
-      activeProvider === 'mayar'
-        ? env.MAYAR_CALLBACK_URL ?? `${env.API_BASE_URL}/api/webhooks/mayar`
-        : env.DOKU_CALLBACK_URL;
+    const dueMinutes = env.MAYAR_PAYMENT_DUE_MINUTES;
+    const callbackUrl = getMayarWebhookUrl();
     const payment = await provider.createPayment({
       merchantOrderId: orderId,
       amount,
@@ -480,7 +478,7 @@ router.post('/api/subscriptions/payments/create', requirePermission('can_manage_
       paymentMethod: payload.paymentMethod,
       returnUrl: env.MAYAR_REDIRECT_URL ?? `${env.WEB_BASE_URL}/settings?billing=success&provider=${activeProvider}`,
       itemDetails: [{ name: `Langganan ${quote.planName}`, price: amount, quantity: 1 }],
-      metadata: { plan: payload.plan, billingCycle: payload.billingCycle },
+      metadata: { kind: 'subscription', plan: payload.plan, billingCycle: payload.billingCycle },
     });
 
     const sessionId = randomUUID();
@@ -503,7 +501,7 @@ router.post('/api/subscriptions/payments/create', requirePermission('can_manage_
       [
         sessionId, req.authUser!.id, store?.id ?? null, payload.plan, payload.billingCycle, amount,
         orderId, payment.paymentUrl, dueMinutes,
-        JSON.stringify({ env: paymentConfig.environment, paymentMode: paymentConfig.mode, callbackUrl, selectedPaymentMethod: payload.paymentMethod, voucherCode, quote, storeName: store?.store_name ?? null, providerRaw: payment.raw }),
+        JSON.stringify({ env: paymentConfig.environment, paymentMode: paymentConfig.mode, callbackUrl, selectedPaymentMethod: payload.paymentMethod, voucherCode, quote, storeName: store?.store_name ?? null, providerTransactionId: payment.providerTransactionId ?? null, providerRaw: payment.raw }),
         payment.providerReference, payment.vaNumber, payment.qrString, payment.paymentMethod, payment.providerStatus, activeProvider,
       ],
     );

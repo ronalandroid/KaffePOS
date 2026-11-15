@@ -9,13 +9,14 @@ export type BackendDeploymentValidationInput = {
   webBaseUrl: string;
   apiBaseUrl: string;
   corsOrigin?: string | null;
-  paymentProvider?: 'mayar' | 'doku' | 'disabled' | string;
+  paymentProvider?: 'mayar' | 'disabled' | string;
   mayarEnvironment?: 'sandbox' | 'production' | string;
+  /** MAYAR_API_KEY is set. */
   mayarConfigured?: boolean;
-  dokuEnvironment?: 'sandbox' | 'production' | string;
+  /** MAYAR_WEBHOOK_TOKEN is set (webhooks are rejected without it). */
+  mayarWebhookTokenConfigured?: boolean;
   subscriptionPaymentMode?: string | null;
   paymentIntegrationEnabled: boolean;
-  dokuConfigured?: boolean;
   resendApiKey?: string | null;
   resendFromEmail?: string | null;
   sentryDsn?: string | null;
@@ -32,10 +33,7 @@ export function validateBackendDeploymentConfig(input: BackendDeploymentValidati
   const warnings: string[] = [];
   const corsOrigins = new Set(splitCorsOrigins(input.corsOrigin));
   const isProduction = input.nodeEnv === 'production';
-  const activeProvider = input.paymentProvider ?? (input.mayarEnvironment !== undefined ? 'mayar' : 'doku');
-  const activeEnv = activeProvider === 'mayar' ? input.mayarEnvironment : input.dokuEnvironment;
-  const activeConfigured =
-    activeProvider === 'mayar' ? Boolean(input.mayarConfigured) : Boolean(input.dokuConfigured);
+  const paymentActive = input.paymentIntegrationEnabled && input.paymentProvider !== 'disabled';
 
   if (isProduction) {
     if (input.webBaseUrl !== PRODUCTION_WEB_ORIGIN) {
@@ -44,12 +42,8 @@ export function validateBackendDeploymentConfig(input: BackendDeploymentValidati
     if (input.apiBaseUrl !== PRODUCTION_API_ORIGIN) {
       errors.push(`API_BASE_URL harus ${PRODUCTION_API_ORIGIN} untuk production.`);
     }
-    if (input.paymentIntegrationEnabled && activeEnv !== 'production') {
-      errors.push(
-        activeProvider === 'mayar'
-          ? 'MAYAR_ENVIRONMENT harus production saat PAYMENT_INTEGRATION_ENABLED=true di production.'
-          : 'DOKU_ENVIRONMENT harus production saat PAYMENT_INTEGRATION_ENABLED=true di production.',
-      );
+    if (paymentActive && input.mayarEnvironment !== 'production') {
+      errors.push('MAYAR_ENVIRONMENT harus production saat PAYMENT_INTEGRATION_ENABLED=true di production.');
     }
   }
 
@@ -61,12 +55,12 @@ export function validateBackendDeploymentConfig(input: BackendDeploymentValidati
     errors.push('SENTRY_DSN wajib diisi untuk error tracking backend production.');
   }
 
-  if (input.paymentIntegrationEnabled && !activeConfigured) {
-    warnings.push(
-      activeProvider === 'mayar'
-        ? 'Pembayaran online aktif tetapi MAYAR_API_KEY belum lengkap.'
-        : 'Pembayaran online aktif tetapi DOKU client id / secret key / callback url belum lengkap.',
-    );
+  if (paymentActive && !input.mayarConfigured) {
+    warnings.push('Pembayaran online aktif tetapi MAYAR_API_KEY belum diisi.');
+  }
+
+  if (paymentActive && !input.mayarWebhookTokenConfigured) {
+    warnings.push('Pembayaran online aktif tetapi MAYAR_WEBHOOK_TOKEN belum diisi; webhook Mayar akan ditolak.');
   }
 
   if (!corsOrigins.has(PRODUCTION_WEB_ORIGIN)) {
@@ -85,7 +79,7 @@ export function validateBackendDeploymentConfig(input: BackendDeploymentValidati
     warnings.push('CORS_ORIGIN belum memuat https://localhost untuk APK Android final dengan androidScheme=https.');
   }
 
-  if ((input.subscriptionPaymentMode === 'mayar_sandbox' || input.subscriptionPaymentMode === 'doku_sandbox') && isProduction) {
+  if (input.subscriptionPaymentMode === 'mayar_sandbox' && isProduction) {
     errors.push(`SUBSCRIPTION_PAYMENT_MODE tidak boleh ${input.subscriptionPaymentMode} di production.`);
   }
 

@@ -9,6 +9,7 @@ import type { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { ApiError, log, serializeError, getSafeApiErrorMessage } from './errors';
 import { KitchenStatusError } from '../lib/kitchenStatus';
+import { redactUrlSecrets } from '../lib/redactUrl';
 import { captureBackendException } from './errorTracking';
 import {
   createErrorResponse,
@@ -38,7 +39,7 @@ export function errorHandler(error: unknown, req: Request, res: Response, _next:
     log('warn', 'request.validation_error', {
       requestId: req.requestId ?? null,
       method: req.method,
-      path: req.originalUrl,
+      path: redactUrlSecrets(req.originalUrl),
       issues: error.issues,
     });
 
@@ -58,7 +59,7 @@ export function errorHandler(error: unknown, req: Request, res: Response, _next:
     log('warn', 'request.api_error_with_code', {
       requestId: req.requestId ?? null,
       method: req.method,
-      path: req.originalUrl,
+      path: redactUrlSecrets(req.originalUrl),
       statusCode: error.status,
       errorCode: error.code,
       message: error.message,
@@ -77,7 +78,7 @@ export function errorHandler(error: unknown, req: Request, res: Response, _next:
     log('warn', 'request.api_error', {
       requestId: req.requestId ?? null,
       method: req.method,
-      path: req.originalUrl,
+      path: redactUrlSecrets(req.originalUrl),
       statusCode: error.status,
       errorCode,
       message: error.message,
@@ -94,7 +95,7 @@ export function errorHandler(error: unknown, req: Request, res: Response, _next:
     log('warn', 'request.kitchen_status_error', {
       requestId: req.requestId ?? null,
       method: req.method,
-      path: req.originalUrl,
+      path: redactUrlSecrets(req.originalUrl),
       statusCode: error.status,
       errorCode,
       message: error.message,
@@ -110,7 +111,7 @@ export function errorHandler(error: unknown, req: Request, res: Response, _next:
     log('warn', 'request.cors_rejected', {
       requestId: req.requestId ?? null,
       method: req.method,
-      path: req.originalUrl,
+      path: redactUrlSecrets(req.originalUrl),
       message: error.message,
     });
 
@@ -123,14 +124,14 @@ export function errorHandler(error: unknown, req: Request, res: Response, _next:
   log('error', 'request.unhandled_error', {
     requestId: req.requestId ?? null,
     method: req.method,
-    path: req.originalUrl,
+    path: redactUrlSecrets(req.originalUrl),
     error: serializeError(error),
   });
 
   captureBackendException(error, {
     source: 'global_error_handler',
     method: req.method,
-    path: req.originalUrl,
+    path: redactUrlSecrets(req.originalUrl),
     statusCode: 500,
     metadata: {
       requestId: req.requestId ?? null,

@@ -25,10 +25,9 @@ const BACKEND_REQUIRED = [
   'SESSION_SECRET',
   'ENCRYPTION_KEY',
   'PAYMENT_GATEWAY_PROVIDER',
-  'DOKU_ENVIRONMENT',
-  'DOKU_CLIENT_ID',
-  'DOKU_SECRET_KEY',
-  'DOKU_CALLBACK_URL',
+  'MAYAR_ENVIRONMENT',
+  'MAYAR_API_KEY',
+  'MAYAR_WEBHOOK_TOKEN',
   'RESEND_API_KEY',
   'RESEND_FROM_EMAIL',
   'EMAIL_REPLY_TO',
@@ -88,10 +87,9 @@ const PAYMENT_BACKEND_REQUIRED = [
   'ENCRYPTION_KEY',
   'PAYMENT_INTEGRATION_ENABLED',
   'PAYMENT_GATEWAY_PROVIDER',
-  'DOKU_ENVIRONMENT',
-  'DOKU_CLIENT_ID',
-  'DOKU_SECRET_KEY',
-  'DOKU_CALLBACK_URL',
+  'MAYAR_ENVIRONMENT',
+  'MAYAR_API_KEY',
+  'MAYAR_WEBHOOK_TOKEN',
   'SUBSCRIPTION_PAYMENT_MODE',
 ];
 
@@ -114,8 +112,8 @@ const MINIMAL_OPTIONAL_SKIPPED = [
   'VITE_GA4_MEASUREMENT_ID',
   'VITE_CLARITY_PROJECT_ID',
   'VITE_PUBLIC_ASSET_BASE_URL',
-  'DOKU_CLIENT_ID',
-  'DOKU_SECRET_KEY',
+  'MAYAR_API_KEY',
+  'MAYAR_WEBHOOK_TOKEN',
   'RESEND_API_KEY',
   'RESEND_FROM_EMAIL',
   'EMAIL_REPLY_TO',
@@ -144,8 +142,8 @@ const FORBIDDEN_FRONTEND_PATTERNS = [
   /SESSION_SECRET/i,
   /ENCRYPTION_KEY/i,
   /MIDTRANS_SERVER_KEY/i,
-  /DOKU_SECRET_KEY/i,
-  /DOKU_CLIENT_ID/i,
+  /MAYAR_API_KEY/i,
+  /MAYAR_WEBHOOK_TOKEN/i,
   /RESEND_API_KEY/i,
   /CLOUDFLARE_R2_(ACCESS_KEY_ID|SECRET_ACCESS_KEY)/i,
   /GA4_API_SECRET/i,
@@ -197,7 +195,6 @@ const PAYMENT_URL_REQUIRED_KEYS = [
   'VITE_API_BASE_URL',
   'WEB_BASE_URL',
   'API_BASE_URL',
-  'DOKU_CALLBACK_URL',
 ];
 
 const DEFAULT_ENV_FILES = [
@@ -324,7 +321,7 @@ function main() {
   if (stagingProfile === 'payment' && env.STAGING_PROFILE !== 'payment') invalidStagingValues.push('STAGING_PROFILE must be payment');
   if (stagingProfile === 'payment' && env.VITE_STAGING_PROFILE !== 'payment') invalidStagingValues.push('VITE_STAGING_PROFILE must be payment');
   if (env.MIDTRANS_IS_PRODUCTION && env.MIDTRANS_IS_PRODUCTION !== 'false') invalidStagingValues.push('MIDTRANS_IS_PRODUCTION must be false');
-  if (env.DOKU_ENVIRONMENT && env.DOKU_ENVIRONMENT !== 'sandbox') invalidStagingValues.push('DOKU_ENVIRONMENT must be sandbox in staging');
+  if (env.MAYAR_ENVIRONMENT && env.MAYAR_ENVIRONMENT !== 'sandbox') invalidStagingValues.push('MAYAR_ENVIRONMENT must be sandbox in staging');
   if (stagingProfile === 'minimal') {
     for (const key of ['PAYMENT_INTEGRATION_ENABLED', 'EMAIL_INTEGRATION_ENABLED', 'R2_STORAGE_ENABLED', 'ANALYTICS_SERVER_ENABLED']) {
       if (env[key] !== 'false') invalidStagingValues.push(`${key} must be false in minimal staging`);
@@ -334,11 +331,11 @@ function main() {
   }
   if (stagingProfile === 'payment') {
     const expected = {
-      PAYMENT_GATEWAY_PROVIDER: 'doku',
+      PAYMENT_GATEWAY_PROVIDER: 'mayar',
       PAYMENT_INTEGRATION_ENABLED: 'true',
-      DOKU_ENVIRONMENT: 'sandbox',
-      SUBSCRIPTION_PAYMENT_MODE: 'doku_sandbox',
-      VITE_PAYMENT_GATEWAY_PROVIDER: 'doku',
+      MAYAR_ENVIRONMENT: 'sandbox',
+      SUBSCRIPTION_PAYMENT_MODE: 'mayar_sandbox',
+      VITE_PAYMENT_GATEWAY_PROVIDER: 'mayar',
     };
     for (const [key, value] of Object.entries(expected)) {
       if (env[key] !== value) invalidStagingValues.push(`${key} must be ${value} in payment staging`);

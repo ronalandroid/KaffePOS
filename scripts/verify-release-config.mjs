@@ -71,11 +71,10 @@ function forbidEnvFilePrefix(prefix, files) {
 if (isProduction) {
   requireEquals('WEB_BASE_URL', 'https://kaffepos.my.id');
   requireEquals('API_BASE_URL', 'https://api.kaffepos.my.id');
-  requireEquals('MIDTRANS_ENVIRONMENT', 'production');
-  requireEquals('MIDTRANS_IS_PRODUCTION', 'true');
-  requirePresent('MIDTRANS_SERVER_KEY');
-  requirePresent('MIDTRANS_CLIENT_KEY');
-  requirePresent('MIDTRANS_MERCHANT_ID');
+  requireEquals('PAYMENT_GATEWAY_PROVIDER', 'mayar');
+  requireEquals('MAYAR_ENVIRONMENT', 'production');
+  requirePresent('MAYAR_API_KEY');
+  requirePresent('MAYAR_WEBHOOK_TOKEN');
   requirePresent('VITE_CLARITY_PROJECT_ID');
   requirePresent('SENTRY_DSN');
   requirePresent('VITE_SENTRY_DSN');
@@ -87,6 +86,9 @@ if (isProduction) {
 
 forbidPrefix('SUPABASE_');
 forbidPrefix('VITE_SUPABASE_');
+// Mayar API key / webhook token are backend-only secrets.
+forbidPrefix('VITE_MAYAR_');
+forbidEnvFilePrefix('VITE_MAYAR_', ['.env', '.env.local', '.env.production', '.env.production.local', '.env.release.local', 'android/.env']);
 forbidEnvFilePrefix('SUPABASE_', ['.env', '.env.local', '.env.production', '.env.production.local', '.env.release.local', 'android/.env', 'backend/.env']);
 forbidEnvFilePrefix('VITE_SUPABASE_', ['.env', '.env.local', '.env.production', '.env.production.local', '.env.release.local', 'android/.env', 'backend/.env']);
 
