@@ -154,7 +154,7 @@ The repair command reads ignored local staging env files, requires `STAGING_PROF
 | **Deployment Guide** | [`docs/launch/DEPLOYMENT_GUIDE.md`](docs/launch/DEPLOYMENT_GUIDE.md) | Production deployment procedures |
 | **Validation Checklist** | [`docs/launch/VALIDATION_CHECKLIST.md`](docs/launch/VALIDATION_CHECKLIST.md) | End-to-end validation |
 | **Android Release Signing** | [`docs/launch/ANDROID_RELEASE_SIGNING.md`](docs/launch/ANDROID_RELEASE_SIGNING.md) | Android APK signing guide |
-| **Midtrans Production Switch** | [`docs/launch/MIDTRANS_PRODUCTION_SWITCH.md`](docs/launch/MIDTRANS_PRODUCTION_SWITCH.md) | Payment production setup |
+| **Mayar Integration Guide** | [`docs/engineering/MAYAR_INTEGRATION_GUIDE.md`](docs/engineering/MAYAR_INTEGRATION_GUIDE.md) | Payment gateway setup (API key, webhook token, webhook URL) |
 
 ### Operations Documentation
 
@@ -215,7 +215,7 @@ The repair command reads ignored local staging env files, requires `STAGING_PROF
 
 ### Infrastructure & Cloud Services
 - **Cloud Backend & Database:** InsForge Cloud PostgreSQL (`6x4q2bgn.ap-southeast.insforge.app`, 46 tables with full RLS + 160+ indexes) & InsForge Edge Functions (`@insforge/sdk`)
-- **Payment Gateway:** Mayar Headless API v2 (`https://api.mayar.id/hl/v2` production / `https://api.mayar.club/hl/v2` sandbox)
+- **Payment Gateway:** Mayar Headless API v2 (`https://api.mayar.id/hl/v2` production / `https://api.mayar.io/hl/v2` sandbox)
 - **CDN & Storage:** Cloudflare CDN & R2 / InsForge Storage
 - **Transactional Email:** Resend
 - **Analytics & Observability:** Google Analytics 4, Microsoft Clarity, Sentry Error Tracking & Custom Database APM
@@ -495,15 +495,15 @@ KaffePOS uses PostgreSQL with a custom migration system.
 
 ## 💳 Mayar Payment Gateway (Headless API v2)
 
-- Payment gateway default menggunakan **Mayar (`PAYMENT_GATEWAY_PROVIDER=mayar`)** berbasis REST API v2 resmi (`https://api.mayar.id/hl/v2` untuk production dan `https://api.mayar.club/hl/v2` untuk sandbox).
-- Mendukung baik **Subscription Billing** (`POST /api/payments/start` dan `POST /api/subscriptions/payments/create`) maupun **POS Online Checkout** (`POST /api/payment/create`).
-- Daftarkan URL Webhook Mayar pada **Mayar Dashboard → Integration → Webhook**:
-  - `https://api.kaffepos.my.id/api/webhooks/mayar`
-- Customer redirect URL setelah pembayaran:
-  - `https://kaffepos.my.id/settings?billing=mayar-return`
-- Verifikasi pembayaran dilakukan sepenuhnya di sisi server melalui webhook terautentikasi (`x-callback-token` / `x-mayar-signature` / `HMAC-SHA256`) atau pengecekan status server (`POST /api/payments/:paymentId/check` → `GET /hl/v2/payments/:id`).
-- `MAYAR_API_KEY` dan `MAYAR_WEBHOOK_TOKEN` bersifat **backend-only** dan tidak pernah diekspos ke bundle frontend (`VITE_*`).
-- Smoke test integrasi Mayar & InsForge:
-  - `npm run smoke:insforge`
+- Mayar adalah **satu-satunya** payment gateway (`PAYMENT_GATEWAY_PROVIDER=mayar`; DOKU sudah dihapus). API resmi: `https://api.mayar.id/hl/v2` (production) dan `https://api.mayar.io/hl/v2` (sandbox).
+- Dipakai untuk **Subscription Billing** (`POST /api/payments/start`, `POST /api/subscriptions/payments/create`) dan **POS Online Checkout** (`POST /api/payment/create-transaction`).
+- Tiga hal yang menghubungkan KaffePOS ke Mayar (semuanya backend-only, tidak pernah `VITE_*`):
+  - `MAYAR_API_KEY` — Bearer key untuk membuat payment request & cek status.
+  - `MAYAR_WEBHOOK_TOKEN` — Web Token dari dashboard Mayar; Mayar mengirimnya di header `X-Callback-Token` (`?token=` di URL juga diterima).
+  - URL webhook di **Mayar → Integrasi → Webhook**: `https://api.kaffepos.my.id/api/webhooks/mayar`.
+- Webhook `payment.received` tidak pernah dipercaya begitu saja: backend mengecek ulang `GET /hl/v2/payments/:id` (status `paid` + nominal sama) sebelum melunasi order POS atau mengaktifkan langganan. Cek manual: `POST /api/payments/:paymentId/check`.
+- Hubungkan & uji:
+  - `node scripts/mayar-connect.mjs --register` (di container backend) atau `npm run mayar:connect -- --register`
   - `MAYAR_API_KEY=... MAYAR_ENVIRONMENT=sandbox npm run smoke:staging:mayar`
-- Implementasi provider: [`backend/src/payments/providers/mayar.provider.ts`](backend/src/payments/providers/mayar.provider.ts) & skill referensi: [`.agent/skills/mayar/SKILL.md`](.agent/skills/mayar/SKILL.md).
+  - `npm run smoke:local:mayar` (end-to-end dengan Mayar palsu + Postgres lokal)
+- Panduan lengkap: [`docs/engineering/MAYAR_INTEGRATION_GUIDE.md`](docs/engineering/MAYAR_INTEGRATION_GUIDE.md) · Implementasi: [`backend/src/payments/providers/mayar.provider.ts`](backend/src/payments/providers/mayar.provider.ts), [`backend/src/routes/webhooks.ts`](backend/src/routes/webhooks.ts).

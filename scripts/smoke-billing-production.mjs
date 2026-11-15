@@ -100,7 +100,7 @@ async function checkCommercialStatus() {
 
   if (
     payment?.environment === 'production' &&
-    (payment?.mode === 'mayar_production' || payment?.mode === 'doku_production') &&
+    payment?.mode === 'mayar_production' &&
     payment?.onlinePaymentAvailable === true &&
     payment?.commerciallyReady === true
   ) {

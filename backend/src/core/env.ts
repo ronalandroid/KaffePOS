@@ -4,6 +4,40 @@
  */
 import { z } from 'zod';
 
+/**
+ * Deprecation notes collected while parsing env (e.g. a deployment that still says
+ * PAYMENT_GATEWAY_PROVIDER=doku). Surfaced in /api/admin/system-status warnings.
+ */
+export const envDeprecations: string[] = [];
+
+/** Payment gateways that were removed; deployments still pointing at them now use Mayar. */
+const LEGACY_GATEWAYS = new Set(['doku', 'duitku', 'midtrans']);
+
+const paymentGatewayProviderSchema = z.preprocess((value) => {
+  const normalized = typeof value === 'string' ? value.trim().toLowerCase() : value;
+  if (typeof normalized === 'string' && LEGACY_GATEWAYS.has(normalized)) {
+    envDeprecations.push(
+      `PAYMENT_GATEWAY_PROVIDER=${normalized} sudah tidak didukung; backend memakai Mayar. Ubah env ke PAYMENT_GATEWAY_PROVIDER=mayar.`,
+    );
+    return 'mayar';
+  }
+  return normalized === '' ? undefined : normalized;
+}, z.enum(['mayar', 'disabled']).default('mayar'));
+
+const subscriptionPaymentModeSchema = z.preprocess((value) => {
+  const normalized = typeof value === 'string' ? value.trim().toLowerCase() : value;
+  if (typeof normalized === 'string') {
+    const legacy = normalized.match(/^(doku|duitku|midtrans)_(sandbox|production)$/);
+    if (legacy) {
+      envDeprecations.push(
+        `SUBSCRIPTION_PAYMENT_MODE=${normalized} sudah tidak didukung; dibaca sebagai mayar_${legacy[2]}.`,
+      );
+      return `mayar_${legacy[2]}`;
+    }
+  }
+  return normalized === '' ? undefined : normalized;
+}, z.enum(['auto', 'manual', 'disabled', 'mayar_sandbox', 'mayar_production']).default('auto'));
+
 export const envSchema = z.object({
   SERVICE_NAME: z.string().trim().default('kaffepos-backend'),
   APP_VERSION: z.string().trim().default('1.0.0'),
@@ -49,42 +83,29 @@ export const envSchema = z.object({
   CLOUDFLARE_IMAGES_DELIVERY_URL: z.string().trim().url().optional(),
   RESEND_API_KEY: z.string().trim().optional(),
   RESEND_FROM_EMAIL: z.string().trim().optional(),
-  PAYMENT_GATEWAY_PROVIDER: z.enum(['mayar', 'doku', 'disabled']).default('mayar'),
+  // Payment gateway: Mayar is the only online gateway. `disabled` turns online payment off.
+  PAYMENT_GATEWAY_PROVIDER: paymentGatewayProviderSchema,
   PAYMENT_INTEGRATION_ENABLED: z.union([z.literal('true'), z.literal('false')]).optional().default('true'),
-  // Mayar Headless API v2 (https://api.mayar.id/hl/v2 for production, https://api.mayar.club/hl/v2 for sandbox).
+  // Mayar Headless API v2 — https://docs.mayar.id/api-reference-v2/introduction
+  //   production: https://api.mayar.id/hl/v2  (key: https://web.mayar.id/api-keys)
+  //   sandbox:    https://api.mayar.io/hl/v2  (key: https://web.mayar.io/api-keys)
+  // Older sandbox accounts created on web.mayar.club use MAYAR_SANDBOX_BASE_URL=https://api.mayar.club.
   MAYAR_ENVIRONMENT: z.enum(['sandbox', 'production']).default('sandbox'),
+  // Bearer API key for create-payment and status-check calls. Backend-only secret.
   MAYAR_API_KEY: z.string().trim().optional(),
+  // "Web Token" from the Mayar dashboard; Mayar sends it as X-Callback-Token (?token= on the URL also works).
   MAYAR_WEBHOOK_TOKEN: z.string().trim().optional(),
-  MAYAR_SANDBOX_BASE_URL: z.string().trim().url().default('https://api.mayar.club'),
+  MAYAR_SANDBOX_BASE_URL: z.string().trim().url().default('https://api.mayar.io'),
   MAYAR_PRODUCTION_BASE_URL: z.string().trim().url().default('https://api.mayar.id'),
   MAYAR_CREATE_PAYMENT_PATH: z.string().trim().default('/hl/v2/payments/create'),
   MAYAR_STATUS_PATH_PREFIX: z.string().trim().default('/hl/v2/payments'),
   MAYAR_WEBHOOK_PATH: z.string().trim().default('/api/webhooks/mayar'),
+  // Where Mayar sends the customer after paying a subscription (optional).
   MAYAR_REDIRECT_URL: z.string().trim().url().optional(),
+  // Public webhook URL registered in Mayar (defaults to API_BASE_URL + MAYAR_WEBHOOK_PATH).
   MAYAR_CALLBACK_URL: z.string().trim().url().optional(),
   MAYAR_PAYMENT_DUE_MINUTES: z.coerce.number().int().positive().default(60),
-  // DOKU Checkout (legacy secondary payment provider).
-  DOKU_ENVIRONMENT: z.enum(['sandbox', 'production']).default('sandbox'),
-  DOKU_CLIENT_ID: z.string().trim().optional(),
-  DOKU_SECRET_KEY: z.string().trim().optional(),
-  DOKU_SANDBOX_BASE_URL: z.string().trim().url().default('https://api-sandbox.doku.com'),
-  DOKU_PRODUCTION_BASE_URL: z.string().trim().url().default('https://api.doku.com'),
-  DOKU_CHECKOUT_PATH: z.string().trim().default('/checkout/v1/payment'),
-  DOKU_STATUS_PATH_PREFIX: z.string().trim().default('/orders/v1/status'),
-  DOKU_NOTIFICATION_PATH: z.string().trim().default('/api/webhooks/doku'),
-  DOKU_CALLBACK_URL: z.string().trim().url().optional(),
-  DOKU_PAYMENT_DUE_MINUTES: z.coerce.number().int().positive().default(60),
-  SUBSCRIPTION_PAYMENT_MODE: z
-    .enum([
-      'auto',
-      'manual',
-      'disabled',
-      'mayar_sandbox',
-      'mayar_production',
-      'doku_sandbox',
-      'doku_production',
-    ])
-    .default('auto'),
+  SUBSCRIPTION_PAYMENT_MODE: subscriptionPaymentModeSchema,
   AUTH_RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(15 * 60 * 1000),
   AUTH_LOGIN_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(10),
   AUTH_EMAIL_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(5),
@@ -107,6 +128,10 @@ export const envSchema = z.object({
 export type Env = z.infer<typeof envSchema>;
 
 export const env = envSchema.parse(process.env);
+
+for (const note of envDeprecations) {
+  console.warn(`[env] ${note}`);
+}
 
 // In production, ADMIN_EMAILS must be set explicitly — a hardcoded fallback would
 // hand admin access to whoever controls that address if the env var is ever missing.

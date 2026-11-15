@@ -21,14 +21,14 @@ const BACKEND_KEYS = [
   'PAYMENT_GATEWAY_PROVIDER',
   'PAYMENT_INTEGRATION_ENABLED',
   'SUBSCRIPTION_PAYMENT_MODE',
-  'DOKU_ENVIRONMENT',
-  'DOKU_CLIENT_ID',
-  'DOKU_SECRET_KEY',
-  'DOKU_SANDBOX_BASE_URL',
-  'DOKU_PRODUCTION_BASE_URL',
-  'DOKU_CALLBACK_URL',
-  'DOKU_NOTIFICATION_PATH',
-  'DOKU_PAYMENT_DUE_MINUTES',
+  'MAYAR_ENVIRONMENT',
+  'MAYAR_API_KEY',
+  'MAYAR_WEBHOOK_TOKEN',
+  'MAYAR_SANDBOX_BASE_URL',
+  'MAYAR_PRODUCTION_BASE_URL',
+  'MAYAR_CALLBACK_URL',
+  'MAYAR_REDIRECT_URL',
+  'MAYAR_PAYMENT_DUE_MINUTES',
   'RESEND_API_KEY',
   'RESEND_FROM_EMAIL',
   'EMAIL_REPLY_TO',
@@ -68,14 +68,14 @@ const PAYMENT_BACKEND_KEYS = [
   'PAYMENT_GATEWAY_PROVIDER',
   'PAYMENT_INTEGRATION_ENABLED',
   'SUBSCRIPTION_PAYMENT_MODE',
-  'DOKU_ENVIRONMENT',
-  'DOKU_CLIENT_ID',
-  'DOKU_SECRET_KEY',
-  'DOKU_SANDBOX_BASE_URL',
-  'DOKU_PRODUCTION_BASE_URL',
-  'DOKU_CALLBACK_URL',
-  'DOKU_NOTIFICATION_PATH',
-  'DOKU_PAYMENT_DUE_MINUTES',
+  'MAYAR_ENVIRONMENT',
+  'MAYAR_API_KEY',
+  'MAYAR_WEBHOOK_TOKEN',
+  'MAYAR_SANDBOX_BASE_URL',
+  'MAYAR_PRODUCTION_BASE_URL',
+  'MAYAR_CALLBACK_URL',
+  'MAYAR_REDIRECT_URL',
+  'MAYAR_PAYMENT_DUE_MINUTES',
 ];
 
 const FRONTEND_KEYS = [
@@ -175,11 +175,11 @@ const SMOKE_COMMANDS = [
 ];
 
 const PAYMENT_SMOKE_COMMANDS = [
-  ['npm', ['run', 'smoke:staging:doku']],
+  ['npm', ['run', 'smoke:staging:mayar']],
 ];
 
 const EXTERNAL_CHECKS = [
-  { name: 'DOKU sandbox', candidates: ['scripts/smoke-doku-staging.mjs'] },
+  { name: 'Mayar sandbox', candidates: ['scripts/smoke-mayar-staging.mjs'] },
   { name: 'Resend staging', candidates: ['scripts/smoke-resend-staging.mjs', 'scripts/smoke-staging-resend.mjs'] },
   { name: 'Cloudflare/R2 staging', candidates: ['scripts/smoke-r2-staging.mjs', 'scripts/smoke-staging-r2.mjs'] },
   { name: 'GA4/Clarity staging', candidates: ['scripts/smoke-analytics-staging.mjs', 'scripts/smoke-staging-analytics.mjs'] },

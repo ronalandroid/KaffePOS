@@ -17,6 +17,7 @@ import {
   sanitizeError,
   trackBusinessMetric,
 } from '../lib/monitoring';
+import { redactUrlSecrets } from '../lib/redactUrl';
 
 type QueryablePool = Pool & { __kaffeposApmPatched?: boolean };
 
@@ -73,7 +74,7 @@ export function requestLoggingMiddleware(): RequestHandler {
       logEvent(isError ? 'error' : 'info', 'request.completed', {
         requestId: req.requestId ?? null,
         method: req.method,
-        path: req.originalUrl,
+        path: redactUrlSecrets(req.originalUrl),
         route,
         statusCode: res.statusCode,
         durationMs,
@@ -94,10 +95,10 @@ export function requestLoggingMiddleware(): RequestHandler {
         requestWindow.errors = 0;
         requestWindow.startedAt = Date.now();
       }
-      if (/webhook|payment|mayar|doku/i.test(req.originalUrl) && res.statusCode >= 400) {
+      if (/webhook|payment|mayar/i.test(req.originalUrl) && res.statusCode >= 400) {
         alertOnPaymentWebhookFailure('Payment webhook request failed', {
           requestId: req.requestId ?? null,
-          path: req.originalUrl,
+          path: redactUrlSecrets(req.originalUrl),
           statusCode: res.statusCode,
         });
       }
@@ -111,7 +112,7 @@ export function errorLoggingMiddleware(error: unknown, req: Request, _res: Respo
   logError('request.error', error, {
     requestId: req.requestId ?? null,
     method: req.method,
-    path: req.originalUrl,
+    path: redactUrlSecrets(req.originalUrl),
   });
   next(error);
 }

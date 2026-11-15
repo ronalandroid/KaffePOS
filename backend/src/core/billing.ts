@@ -11,67 +11,71 @@ export type SubscriptionPaymentMode =
   | 'manual'
   | 'disabled'
   | 'mayar_sandbox'
-  | 'mayar_production'
-  | 'doku_sandbox'
-  | 'doku_production';
+  | 'mayar_production';
 
-export function isMayarConfigured() {
-  return Boolean(env.MAYAR_API_KEY);
+/** API key present — enough to create payments and run status checks. */
+export function isMayarApiKeyConfigured() {
+  return Boolean(env.MAYAR_API_KEY?.trim());
 }
 
-export function isDokuConfigured() {
-  return Boolean(env.DOKU_CLIENT_ID && env.DOKU_SECRET_KEY && env.DOKU_CALLBACK_URL);
+/** Webhook token present — required to accept Mayar webhooks. */
+export function isMayarWebhookTokenConfigured() {
+  return Boolean(env.MAYAR_WEBHOOK_TOKEN?.trim());
+}
+
+/**
+ * Mayar is only "configured" when both the API key and the webhook token are set:
+ * without the token every webhook is rejected and paid orders would never settle.
+ */
+export function isMayarConfigured() {
+  return isMayarApiKeyConfigured() && isMayarWebhookTokenConfigured();
+}
+
+/** Public webhook URL to register in Mayar → Integrasi → Webhook (without the token). */
+export function getMayarWebhookUrl() {
+  if (env.MAYAR_CALLBACK_URL) return env.MAYAR_CALLBACK_URL;
+  const path = env.MAYAR_WEBHOOK_PATH.startsWith('/') ? env.MAYAR_WEBHOOK_PATH : `/${env.MAYAR_WEBHOOK_PATH}`;
+  return `${env.API_BASE_URL.replace(/\/+$/, '')}${path}`;
 }
 
 export function isActivePaymentGatewayConfigured() {
   const provider = env.PAYMENT_INTEGRATION_ENABLED === 'false' ? 'disabled' : env.PAYMENT_GATEWAY_PROVIDER;
-  if (provider === 'mayar') return isMayarConfigured();
-  if (provider === 'doku') return isDokuConfigured();
-  return false;
+  return provider === 'mayar' && isMayarConfigured();
 }
 
 export function resolveSubscriptionPaymentConfig() {
   const provider = env.PAYMENT_INTEGRATION_ENABLED === 'false' ? 'disabled' : env.PAYMENT_GATEWAY_PROVIDER;
-  const mayarConfigured = provider === 'mayar' && isMayarConfigured();
-  const dokuConfigured = provider === 'doku' && isDokuConfigured();
-  const gatewayConfigured = mayarConfigured || dokuConfigured;
+  const gatewayConfigured = provider === 'mayar' && isMayarConfigured();
   const requestedMode = env.SUBSCRIPTION_PAYMENT_MODE;
-  const gatewayEnvironment = provider === 'doku' ? env.DOKU_ENVIRONMENT : env.MAYAR_ENVIRONMENT;
+  const gatewayEnvironment = env.MAYAR_ENVIRONMENT;
   const isProductionGateway = gatewayEnvironment === 'production';
-  const prodMode: SubscriptionPaymentMode = provider === 'doku' ? 'doku_production' : 'mayar_production';
-  const sandboxMode: SubscriptionPaymentMode = provider === 'doku' ? 'doku_sandbox' : 'mayar_sandbox';
   let mode: SubscriptionPaymentMode;
 
   if (provider === 'disabled' || requestedMode === 'disabled') {
     mode = 'disabled';
   } else if (requestedMode === 'auto') {
-    mode = gatewayConfigured ? (isProductionGateway ? prodMode : sandboxMode) : 'manual';
-  } else if ((requestedMode === 'mayar_production' || requestedMode === 'doku_production') && !isProductionGateway) {
+    mode = gatewayConfigured ? (isProductionGateway ? 'mayar_production' : 'mayar_sandbox') : 'manual';
+  } else if (requestedMode === 'mayar_production' && !isProductionGateway) {
     mode = 'manual';
-  } else if ((requestedMode === 'mayar_sandbox' || requestedMode === 'doku_sandbox') && isProductionGateway) {
+  } else if (requestedMode === 'mayar_sandbox' && isProductionGateway) {
     mode = 'manual';
-  } else if (provider === 'mayar' && requestedMode === 'doku_sandbox') {
-    mode = gatewayConfigured && !isProductionGateway ? 'mayar_sandbox' : 'manual';
-  } else if (provider === 'mayar' && requestedMode === 'doku_production') {
-    mode = gatewayConfigured && isProductionGateway ? 'mayar_production' : 'manual';
   } else {
-    mode = requestedMode as SubscriptionPaymentMode;
+    mode = requestedMode;
   }
 
-  const isProdMode = mode === 'mayar_production' || mode === 'doku_production';
-  const isSandboxMode = mode === 'mayar_sandbox' || mode === 'doku_sandbox';
+  const isProdMode = mode === 'mayar_production';
+  const isSandboxMode = mode === 'mayar_sandbox';
   const onlinePaymentAvailable =
     gatewayConfigured && ((isProdMode && isProductionGateway) || (isSandboxMode && !isProductionGateway));
   const commerciallyReady = onlinePaymentAvailable && isProdMode && isProductionGateway;
   const manualActivationAvailable = mode === 'manual' || !onlinePaymentAvailable;
-  const providerLabel = provider === 'doku' ? 'DOKU' : 'Mayar';
+  const providerLabel = 'Mayar';
 
   return {
     mode,
     provider,
     environment: gatewayEnvironment,
     mayarEnvironment: env.MAYAR_ENVIRONMENT,
-    dokuEnvironment: gatewayEnvironment,
     onlinePaymentAvailable,
     manualActivationAvailable,
     commerciallyReady,

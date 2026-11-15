@@ -12,12 +12,14 @@ import {
   requireAdmin,
   getDatabaseProviderSummary,
 } from '../core';
+import { envDeprecations } from '../core/env';
 import { validateBackendDeploymentConfig } from '../lib/deploymentReadiness';
 import {
   isActivePaymentGatewayConfigured,
   isCommercialPaymentReady,
-  isDokuConfigured,
+  isMayarApiKeyConfigured,
   isMayarConfigured,
+  isMayarWebhookTokenConfigured,
   resolveSubscriptionPaymentConfig,
 } from '../core/billing';
 import { getServiceTopologySnapshot } from '../architecture/serviceRegistry';
@@ -63,17 +65,16 @@ function getOperationalWarnings() {
     corsOrigin: env.CORS_ORIGIN,
     paymentProvider: paymentConfig.provider,
     mayarEnvironment: env.MAYAR_ENVIRONMENT,
-    mayarConfigured: isMayarConfigured(),
-    dokuEnvironment: env.DOKU_ENVIRONMENT,
+    mayarConfigured: isMayarApiKeyConfigured(),
+    mayarWebhookTokenConfigured: isMayarWebhookTokenConfigured(),
     subscriptionPaymentMode: env.SUBSCRIPTION_PAYMENT_MODE,
     paymentIntegrationEnabled: env.PAYMENT_INTEGRATION_ENABLED !== 'false',
-    dokuConfigured: isDokuConfigured(),
     resendApiKey: env.RESEND_API_KEY,
     resendFromEmail: env.RESEND_FROM_EMAIL,
     sentryDsn: env.SENTRY_DSN,
   });
 
-  warnings.push(...deploymentValidation.errors, ...deploymentValidation.warnings);
+  warnings.push(...envDeprecations, ...deploymentValidation.errors, ...deploymentValidation.warnings);
 
   if (!env.RESEND_API_KEY || !env.RESEND_FROM_EMAIL) {
     warnings.push('Email delivery belum dikonfigurasi penuh.');
@@ -198,12 +199,7 @@ function buildSystemStatusPayload(params: {
         manualActivationAvailable: paymentConfig.manualActivationAvailable,
         provider: paymentConfig.provider,
         environment: getPaymentEnvironment(),
-        merchantId:
-          paymentConfig.provider === 'mayar'
-            ? env.MAYAR_API_KEY
-              ? 'mayar-configured'
-              : null
-            : env.DOKU_CLIENT_ID ?? null,
+        merchantId: paymentConfig.provider === 'mayar' && isMayarConfigured() ? 'mayar-configured' : null,
       },
       monitoring: {
         backendErrorTracking: Boolean(env.SENTRY_DSN),
@@ -378,6 +374,6 @@ router.get('/api/admin/system-status', authenticate, requireAdmin, async (_req, 
   res.status(result.statusCode).json(result.payload);
 });
 
-export { isMayarConfigured, isDokuConfigured, isActivePaymentGatewayConfigured, resolveSubscriptionPaymentConfig, isCommercialPaymentReady };
+export { isMayarConfigured, isActivePaymentGatewayConfigured, resolveSubscriptionPaymentConfig, isCommercialPaymentReady };
 
 export default router;

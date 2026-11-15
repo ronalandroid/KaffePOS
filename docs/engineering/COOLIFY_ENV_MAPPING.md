@@ -1,12 +1,11 @@
-> ⚠️ **Legacy naming notice (updated 2026-06-29).** This document predates the switch to
-> **DOKU** and still references the old `DUITKU_*` / `MIDTRANS_*` keys below. The **active**
-> payment gateway is **DOKU**. The authoritative env contract is `backend/src/core/env.ts`
-> and the working template `backend/.env.staging.example`.
+> ⚠️ **Legacy naming notice (updated 2026-11-16).** Parts of this document predate the switch to
+> **Mayar** and still mention old `DOKU_*` / `DUITKU_*` / `MIDTRANS_*` keys. The **only** payment
+> gateway is **Mayar** (Headless API v2). The authoritative env contract is `backend/src/core/env.ts`;
+> setup steps live in `docs/engineering/MAYAR_INTEGRATION_GUIDE.md`.
 >
-> Correct values: `PAYMENT_GATEWAY_PROVIDER=doku` (NOT `duitku` — that value fails the env
-> schema and prevents boot), `SUBSCRIPTION_PAYMENT_MODE=doku_sandbox|doku_production`, and the
-> keys `DOKU_CLIENT_ID`, `DOKU_SECRET_KEY`, `DOKU_CALLBACK_URL`, `DOKU_ENVIRONMENT`. The code
-> does **not** read `DUITKU_*` / `MIDTRANS_*` — treat any such references below as superseded.
+> Correct values: `PAYMENT_GATEWAY_PROVIDER=mayar`, `SUBSCRIPTION_PAYMENT_MODE=auto|mayar_sandbox|mayar_production`,
+> and the keys `MAYAR_ENVIRONMENT`, `MAYAR_API_KEY`, `MAYAR_WEBHOOK_TOKEN`, `MAYAR_CALLBACK_URL`. Legacy
+> `doku` / `doku_*` values are read as Mayar with a warning; no `DOKU_*` / `DUITKU_*` / `MIDTRANS_*` key is read.
 
 # KaffePOS Coolify Env Mapping
 

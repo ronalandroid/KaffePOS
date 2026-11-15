@@ -188,6 +188,7 @@ export class PaymentService {
         customerEmail: input.payload.customer?.email ?? input.user.email ?? null,
         customerPhone: input.payload.customer?.phone ?? null,
         itemDetails: prepared.itemDetails.map((item) => ({ name: item.name, price: item.price, quantity: item.quantity })),
+        metadata: { kind: 'pos', storeId: input.payload.store_id },
       });
       if (!payment.paymentUrl) {
         throw new ApiError(502, 'Respons gateway pembayaran tidak berisi link pembayaran.');
@@ -201,10 +202,19 @@ export class PaymentService {
               merchant_order_id = coalesce(merchant_order_id, $4),
               payment_url = $5,
               payment_method = $6,
+              metadata = coalesce(metadata, '{}'::jsonb) || $7::jsonb,
               updated_at = now()
           where id = $1
         `,
-        [prepared.paymentOrderId, providerName, payment.providerReference, prepared.orderId, payment.paymentUrl, payment.paymentMethod],
+        [
+          prepared.paymentOrderId,
+          providerName,
+          payment.providerReference,
+          prepared.orderId,
+          payment.paymentUrl,
+          payment.paymentMethod,
+          JSON.stringify({ providerTransactionId: payment.providerTransactionId ?? null }),
+        ],
       );
 
       await insertPaymentAttempt({

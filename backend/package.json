@@ -11,6 +11,7 @@
     "start:coolify": "node scripts/run-migrations.mjs && node dist/index.js",
     "check": "npm run typecheck && npm run build",
     "migrate": "node scripts/run-migrations.mjs",
+    "mayar:connect": "node scripts/mayar-connect.mjs",
     "backup:critical": "node scripts/backup-critical-data.mjs",
     "deploy:kds": "cd .. && bash scripts/deploy-kds-one-command.sh"
   },

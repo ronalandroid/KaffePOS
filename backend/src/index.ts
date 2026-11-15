@@ -107,8 +107,7 @@ app.set('trust proxy', 1);
 app.disable('x-powered-by');
 app.use(express.json({
   limit: '1mb',
-  // Preserve the raw payload so header-signature webhooks (DOKU) can verify the
-  // exact bytes the provider hashed into its Digest.
+  // Preserve the raw payload for payment webhooks (kept for auditing/debugging).
   verify: (req, _res, buf) => {
     (req as Request & { rawBody?: string }).rawBody = buf.toString('utf8');
   },

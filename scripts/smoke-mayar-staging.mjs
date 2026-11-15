@@ -37,7 +37,7 @@ const environment = process.env.MAYAR_ENVIRONMENT === 'production' ? 'production
 const baseUrl = (
   environment === 'production'
     ? process.env.MAYAR_PRODUCTION_BASE_URL || 'https://api.mayar.id'
-    : process.env.MAYAR_SANDBOX_BASE_URL || 'https://api.mayar.club'
+    : process.env.MAYAR_SANDBOX_BASE_URL || 'https://api.mayar.io'
 ).replace(/\/$/, '');
 const createPath = process.env.MAYAR_CREATE_PAYMENT_PATH || '/hl/v2/payments/create';
 const dueMinutes = Number(process.env.MAYAR_PAYMENT_DUE_MINUTES || 60);
