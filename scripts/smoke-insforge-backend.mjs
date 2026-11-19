@@ -39,7 +39,7 @@ const insforgeUrl =
   process.env.INSFORGE_URL ||
   backendEnv.INSFORGE_URL ||
   rootEnv.VITE_INSFORGE_URL ||
-  'https://6x4q2bgn.ap-southeast.insforge.app';
+  'https://849uckhn.ap-southeast.insforge.app';
 const insforgeAnonKey =
   process.env.INSFORGE_ANON_KEY ||
   backendEnv.INSFORGE_ANON_KEY ||

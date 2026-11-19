@@ -23,7 +23,7 @@ export default async function (req: Request): Promise<Response> {
   }
 
   const startedAt = Date.now();
-  const baseUrl = Deno.env.get('INSFORGE_URL') || 'https://6x4q2bgn.ap-southeast.insforge.app';
+  const baseUrl = Deno.env.get('INSFORGE_URL') || 'https://849uckhn.ap-southeast.insforge.app';
   const anonKey = Deno.env.get('INSFORGE_ANON_KEY') || Deno.env.get('ANON_KEY') || '';
 
   try {

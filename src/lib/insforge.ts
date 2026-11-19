@@ -1,6 +1,6 @@
 import { createClient } from '@insforge/sdk';
 
-export const INSFORGE_DEFAULT_HOST = 'https://6x4q2bgn.ap-southeast.insforge.app';
+export const INSFORGE_DEFAULT_HOST = 'https://849uckhn.ap-southeast.insforge.app';
 
 const rawBaseUrl = (import.meta.env.VITE_INSFORGE_URL as string | undefined)?.trim();
 const rawAnonKey = (import.meta.env.VITE_INSFORGE_ANON_KEY as string | undefined)?.trim();

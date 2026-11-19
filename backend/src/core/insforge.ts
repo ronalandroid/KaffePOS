@@ -6,8 +6,8 @@ import type { createAdminClient, createClient } from '@insforge/sdk';
 import { env } from './env';
 import { isManagedTlsDatabaseUrl } from './db';
 
-export const INSFORGE_DEFAULT_PROJECT_ID = '0246a183-d8b0-4de6-8d41-9240e2380d50';
-export const INSFORGE_DEFAULT_HOST = 'https://6x4q2bgn.ap-southeast.insforge.app';
+export const INSFORGE_DEFAULT_PROJECT_ID = '9be3a9b0-568c-4a0c-bd32-f655dcfcdc79';
+export const INSFORGE_DEFAULT_HOST = 'https://849uckhn.ap-southeast.insforge.app';
 
 export function isInsforgeDatabaseTarget(databaseUrl = env.DATABASE_URL): boolean {
   if (!databaseUrl) return false;
