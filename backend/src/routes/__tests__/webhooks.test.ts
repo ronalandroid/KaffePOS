@@ -284,11 +284,11 @@ describe('Mayar webhook route', () => {
   it('lets Mayar retry when the confirmation call fails', async () => {
     mocks.verifyCallback.mockResolvedValue(webhookResult());
     mocks.poolQuery.mockResolvedValueOnce({ rows: [posOrderRow] });
-    mocks.checkTransactionStatus.mockRejectedValue(Object.assign(new Error('Mayar check status gagal (502).'), { status: 502 }));
+    mocks.checkTransactionStatus.mockRejectedValue(Object.assign(new Error('Mayar check status gagal (502).'), { status: 503 }));
 
     const next = vi.fn();
     await handler(makeReq(), makeRes(), next);
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 502 }));
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 503 }));
     expect(PaymentService.finalizePaidOrder).not.toHaveBeenCalled();
   });
 });

@@ -191,9 +191,11 @@ async function createGenericSubscriptionPayment(req: Parameters<Parameters<typeo
     const row = inserted.rows[0];
     res.status(201).json({ success: true, data: { paymentId: row.id, provider: row.provider, merchantOrderId: row.merchant_order_id, paymentUrl: row.payment_url ?? row.redirect_url ?? null, status: row.internal_status ?? 'pending' } });
   } catch (error) {
-    if (error instanceof ApiError && error.status === 502 && error.message.startsWith('Mayar ')) {
+    // 503, not 502: Cloudflare replaces 502/504 origin responses with its own HTML page, so the
+    // app would lose this JSON message. 503 passes through unchanged.
+    if (error instanceof ApiError && error.status === 503 && error.message.startsWith('Mayar ')) {
       log('warn', 'subscription_payment.provider_failed', { error: serializeError(error) });
-      res.status(502).json({ success: false, message: error.message });
+      res.status(503).json({ success: false, message: error.message });
       return;
     }
     next(error);

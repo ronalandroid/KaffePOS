@@ -142,7 +142,7 @@ router.post('/api/ops/events', async (req, res, next) => {
 router.post('/api/ai-insight', requirePermission('can_view_reports'), async (req, res, next) => {
   try {
     if (!env.GEMINI_API_KEY) {
-      throw new ApiError(502, 'GEMINI_API_KEY belum dikonfigurasi di backend.');
+      throw new ApiError(503, 'GEMINI_API_KEY belum dikonfigurasi di backend.');
     }
 
     const payload = aiInsightRequestSchema.parse(req.body);
@@ -207,10 +207,10 @@ router.post('/api/ai-insight', requirePermission('can_view_reports'), async (req
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       if (message.toLowerCase().includes('abort')) {
-        throw new ApiError(502, 'Layanan AI timeout. Sistem akan memakai analisis cadangan.');
+        throw new ApiError(503, 'Layanan AI timeout. Sistem akan memakai analisis cadangan.');
       }
 
-      throw new ApiError(502, 'Layanan AI sedang tidak tersedia. Sistem akan memakai analisis cadangan.');
+      throw new ApiError(503, 'Layanan AI sedang tidak tersedia. Sistem akan memakai analisis cadangan.');
     } finally {
       clearTimeout(timeoutId);
     }
@@ -218,7 +218,7 @@ router.post('/api/ai-insight', requirePermission('can_view_reports'), async (req
     if (!geminiResponse.ok) {
       const errorPayload = (await geminiResponse.json().catch(() => ({}))) as { error?: { message?: string } };
       const message = errorPayload.error?.message ?? `Gemini error ${geminiResponse.status}`;
-      throw new ApiError(502, mapGeminiError(geminiResponse.status, message));
+      throw new ApiError(503, mapGeminiError(geminiResponse.status, message));
     }
 
     const geminiPayload = await geminiResponse.json();
@@ -226,7 +226,7 @@ router.post('/api/ai-insight', requirePermission('can_view_reports'), async (req
     try {
       insight = parseGeminiText(geminiPayload);
     } catch {
-      throw new ApiError(502, 'Respons AI tidak valid. Coba lagi.');
+      throw new ApiError(503, 'Respons AI tidak valid. Coba lagi.');
     }
 
     await pool.query(
