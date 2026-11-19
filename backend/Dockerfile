@@ -20,6 +20,7 @@ RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=build /app/dist ./dist
 COPY migrations ./migrations
 COPY scripts ./scripts
+COPY bootstrap ./bootstrap
 
 USER node
 EXPOSE 8787

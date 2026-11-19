@@ -11,6 +11,23 @@ import { buildPoolConfig } from './db-config.mjs';
 const { Pool } = pg;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const migrationsDir = join(__dirname, '..', 'migrations');
+// Foundation schema for a brand-new database. Copies of database/*.sql (kept identical by
+// backend/src/core/bootstrapSql.test.ts) because the Docker build context is backend/ only.
+const bootstrapDir = join(__dirname, '..', 'bootstrap');
+
+// Versioned migrations assume public.stores, public.inventory, etc. already exist. On an empty
+// database apply the foundation SQL first so a fresh deploy (new project, disaster recovery) works
+// without a manual psql step. Every statement in these files is idempotent (IF NOT EXISTS).
+async function bootstrapFreshDatabase(client) {
+  const { rows } = await client.query("select to_regclass('public.stores') is not null as ready");
+  if (rows[0]?.ready) return;
+
+  const files = (await readdir(bootstrapDir)).filter((file) => file.endsWith('.sql')).sort();
+  for (const file of files) {
+    console.log(`Fresh database: applying bootstrap ${file}...`);
+    await client.query(await readFile(join(bootstrapDir, file), 'utf8'));
+  }
+}
 
 async function ensureMigrationTable(client) {
   await client.query(`
@@ -43,6 +60,7 @@ async function main() {
 
   try {
     await client.query('BEGIN');
+    await bootstrapFreshDatabase(client);
     await ensureMigrationTable(client);
 
     for (const file of files) {

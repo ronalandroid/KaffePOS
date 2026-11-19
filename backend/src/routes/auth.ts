@@ -678,7 +678,10 @@ async function handleLogin(req: Request, res: any, next: any) {
 
 router.post('/api/auth/login', authLoginRateLimiter, handleLogin);
 
-router.post('/api/auth/demo-login', async (req, res, next) => {
+// Same limiter as /api/auth/login: each call bcrypt-hashes and reseeds the demo accounts, so an
+// unthrottled public endpoint is an easy way to exhaust CPU and DB connections. The body has no
+// email yet when the limiter runs, so it keys on the client IP.
+router.post('/api/auth/demo-login', authLoginRateLimiter, async (req, res, next) => {
   const role = req.body?.role === 'cashier' ? 'cashier' : 'owner';
   req.body = {
     email: role === 'cashier' ? DEMO_CASHIER_EMAIL : DEMO_OWNER_EMAIL,
