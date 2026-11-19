@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import './instrument';
 
 import healthRouter, { setHealthRuntimeState } from './routes/health';
 import authRouter from './routes/auth';
@@ -42,7 +42,6 @@ import { withTransaction, type PoolClient } from './core';
 import { bootstrapAllSchemas } from './schema-bootstrap';
 import { ensureDemoAccountsSeeded } from './services/DemoAccountService';
 import { ApiError, log, serializeError } from './core/errors';
-import { initBackendErrorTracking } from './core/errorTracking';
 import {
   getPermissionsForRole,
   normalizeUserRole,
@@ -99,7 +98,6 @@ const allowedOrigins = buildAllowedCorsOrigins(env.CORS_ORIGIN);
 
 const app = express();
 app.use(securityHeaders);
-initBackendErrorTracking();
 initEmailJobs();
 installDatabaseApm(pool);
 startApmMonitoring();
