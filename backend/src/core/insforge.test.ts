@@ -10,7 +10,7 @@ describe('InsForge backend integration helpers', () => {
   it('identifies InsForge managed PostgreSQL hostnames', () => {
     expect(
       isInsforgeDatabaseTarget(
-        'postgresql://postgres:secret@6x4q2bgn.ap-southeast.database.insforge.app:5432/insforge?sslmode=require',
+        'postgresql://postgres:secret@849uckhn.ap-southeast.database.insforge.app:5432/insforge?sslmode=require',
       ),
     ).toBe(true);
     expect(isInsforgeDatabaseTarget('postgresql://kaffepos:secret@localhost:5432/kaffepos')).toBe(
