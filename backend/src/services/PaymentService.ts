@@ -191,7 +191,7 @@ export class PaymentService {
         metadata: { kind: 'pos', storeId: input.payload.store_id },
       });
       if (!payment.paymentUrl) {
-        throw new ApiError(502, 'Respons gateway pembayaran tidak berisi link pembayaran.');
+        throw new ApiError(503, 'Respons gateway pembayaran tidak berisi link pembayaran.');
       }
 
       await pool.query(
@@ -248,7 +248,7 @@ export class PaymentService {
         userAgent: input.userAgent,
         metadata: { error: serializeError(error) },
       });
-      throw error instanceof ApiError ? error : new ApiError(502, 'Gateway pembayaran belum bisa membuat pembayaran.');
+      throw error instanceof ApiError ? error : new ApiError(503, 'Gateway pembayaran belum bisa membuat pembayaran.');
     }
   }
 

@@ -186,14 +186,14 @@ describe('MayarPaymentProvider', () => {
 
       await expect(
         new MayarPaymentProvider().createPayment({ merchantOrderId: 'KAF-4', amount: 15000, productDetails: 'POS' }),
-      ).rejects.toMatchObject({ status: 502, message: expect.stringContaining('Mayar menolak permintaan ganda') });
+      ).rejects.toMatchObject({ status: 503, message: expect.stringContaining('Mayar menolak permintaan ganda') });
     });
 
-    it('fails with 502 when the API key is rejected', async () => {
+    it('fails with 503 when the API key is rejected', async () => {
       vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({ statusCode: 401, messages: 'Unauthorized' }, 401)));
       await expect(
         new MayarPaymentProvider().createPayment({ merchantOrderId: 'KAF-5', amount: 15000, productDetails: 'POS' }),
-      ).rejects.toMatchObject({ status: 502, message: 'Mayar create payment gagal (401).' });
+      ).rejects.toMatchObject({ status: 503, message: 'Mayar create payment gagal (401).' });
     });
 
     it('refuses to call Mayar without an API key', async () => {
@@ -421,7 +421,7 @@ describe('MayarPaymentProvider', () => {
       vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({ statusCode: 503, messages: 'down' }, 503)));
       await expect(
         new MayarPaymentProvider().checkTransactionStatus({ merchantOrderId: 'KAF-1', providerReference: PAYMENT_REQUEST_ID }),
-      ).rejects.toMatchObject({ status: 502 });
+      ).rejects.toMatchObject({ status: 503 });
     });
   });
 

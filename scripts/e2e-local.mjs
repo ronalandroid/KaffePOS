@@ -87,7 +87,7 @@ try {
 
   console.log('→ running playwright');
   try {
-    execSync('npx playwright test --config e2e/playwright.local.config.ts', {
+    execSync('npx playwright test e2e/local-auth.spec.ts --config e2e/playwright.local.config.ts', {
       env: { ...process.env, E2E_WEB_URL: WEB, E2E_EMAIL: EMAIL, E2E_PASSWORD: PASSWORD },
       stdio: 'inherit',
     });

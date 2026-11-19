@@ -220,7 +220,7 @@ export class MayarPaymentProvider implements PaymentProvider {
       });
       const body = asRecord(await response.json().catch(() => ({})));
       if (response.status >= 500) {
-        throw new ApiError(502, `Mayar sedang tidak bisa dihubungi (${response.status}).`);
+        throw new ApiError(503, `Mayar sedang tidak bisa dihubungi (${response.status}).`);
       }
       return { status: response.status, ok: response.ok, body };
     });
@@ -368,13 +368,13 @@ export class MayarPaymentProvider implements PaymentProvider {
       });
 
       if (status === 429) {
-        throw new ApiError(502, 'Mayar menolak permintaan ganda. Tunggu 1 menit lalu coba lagi.');
+        throw new ApiError(503, 'Mayar menolak permintaan ganda. Tunggu 1 menit lalu coba lagi.');
       }
       if (!ok) {
-        throw new ApiError(502, `Mayar create payment gagal (${status}).`);
+        throw new ApiError(503, `Mayar create payment gagal (${status}).`);
       }
       if (!paymentUrl) {
-        throw new ApiError(502, 'Mayar create payment tidak mengembalikan link pembayaran.');
+        throw new ApiError(503, 'Mayar create payment tidak mengembalikan link pembayaran.');
       }
 
       return {
@@ -395,7 +395,7 @@ export class MayarPaymentProvider implements PaymentProvider {
         merchantOrderId: input.merchantOrderId,
         error: serializeError(error),
       });
-      throw error instanceof ApiError ? error : new ApiError(502, 'Gagal menghubungi gateway pembayaran Mayar.');
+      throw error instanceof ApiError ? error : new ApiError(503, 'Gagal menghubungi gateway pembayaran Mayar.');
     }
   }
 
@@ -493,7 +493,7 @@ export class MayarPaymentProvider implements PaymentProvider {
       response = await this.request('GET', `${prefix}/${encodeURIComponent(lookupId)}`);
     } catch (error) {
       log('warn', 'mayar.check_status_unreachable', { merchantOrderId: input.merchantOrderId, error: serializeError(error) });
-      throw error instanceof ApiError ? error : new ApiError(502, 'Gagal menghubungi Mayar untuk cek status pembayaran.');
+      throw error instanceof ApiError ? error : new ApiError(503, 'Gagal menghubungi Mayar untuk cek status pembayaran.');
     }
     const { status, ok, body } = response;
     if (status === 404) {
@@ -501,7 +501,7 @@ export class MayarPaymentProvider implements PaymentProvider {
     }
     if (!ok) {
       log('warn', 'mayar.check_status_failed', { status, merchantOrderId: input.merchantOrderId, message: extractMayarMessage(body) });
-      throw new ApiError(502, `Mayar check status gagal (${status}).`);
+      throw new ApiError(503, `Mayar check status gagal (${status}).`);
     }
 
     const data = asRecord(body.data ?? body);

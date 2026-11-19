@@ -141,7 +141,8 @@ try {
     `status=${imp.status} committed=${JSON.stringify(committed)}`,
   );
 
-  const invCount = Number(psql('select count(*) from public.inventory'));
+  // Exclude the demo store seeded at startup (DemoAccountService) so only the imported rows count.
+  const invCount = Number(psql("select count(*) from public.inventory where store_id <> '00000000-0000-4000-8000-00000000de03'"));
   const recipeLen = Number(psql(`select jsonb_array_length(recipe) from public.menu_items where name='Smoke Produk 1'`));
   check('inventory rows persisted', invCount === 10, `count=${invCount}`);
   check('recipe persisted on product', recipeLen === 1, `len=${recipeLen}`);
