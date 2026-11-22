@@ -5,6 +5,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import { env, adminEmails } from './env';
+import { getClientIp } from '../lib/clientIp';
 import { pool } from './db';
 import { ApiError, log, serializeError } from './errors';
 import { writeAuditLog } from '../lib/auditLog';
@@ -239,7 +240,7 @@ function normalizeRateLimitPart(value: unknown) {
 }
 
 export function getRateLimitIp(req: Request) {
-  return req.ip || req.header('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  return getClientIp(req) ?? 'unknown';
 }
 
 export function createRateLimiter(options: RateLimitOptions): RequestHandler {

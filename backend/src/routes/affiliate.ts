@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { getClientIp } from '../lib/clientIp';
 import { z } from 'zod';
 import {
   authenticate,
@@ -43,12 +44,6 @@ const markPaidSchema = z.object({
   payoutReference: z.string().trim().max(120).optional().nullable(),
 });
 
-function getRequestIp(req: Parameters<Parameters<typeof router.post>[1]>[0]) {
-  const forwarded = req.headers['x-forwarded-for'];
-  if (typeof forwarded === 'string' && forwarded.trim()) return forwarded.split(',')[0]?.trim() ?? null;
-  return req.ip || req.socket.remoteAddress || null;
-}
-
 function readString(query: Record<string, unknown>, key: string) {
   const value = query[key];
   if (Array.isArray(value)) return typeof value[0] === 'string' && value[0].trim() ? value[0].trim() : undefined;
@@ -84,7 +79,7 @@ router.post('/api/affiliate/apply', authenticate, async (req, res, next) => {
       payoutAccountHolder: payload.payoutAccountHolder,
       acceptedTerms: payload.acceptedTerms,
       termsVersion: payload.termsVersion,
-      ip: getRequestIp(req),
+      ip: getClientIp(req),
     }));
     res.status(201).json({ affiliate_profile: affiliateProfile });
   } catch (error) {

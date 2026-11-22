@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { getClientIp } from '../lib/clientIp';
 import { z } from 'zod';
 import {
   authenticate,
@@ -30,12 +31,6 @@ function firstQueryValue(value: unknown) {
   return typeof value === 'string' && value.trim() ? value.trim() : null;
 }
 
-function getRequestIp(req: Parameters<Parameters<typeof router.get>[1]>[0]) {
-  const forwarded = req.headers['x-forwarded-for'];
-  if (typeof forwarded === 'string' && forwarded.trim()) return forwarded.split(',')[0]?.trim() ?? null;
-  return req.ip || req.socket.remoteAddress || null;
-}
-
 router.get('/api/ref/:code', publicReferralRateLimiter, async (req, res, next) => {
   try {
     if (!isReferralEnabled()) {
@@ -54,7 +49,7 @@ router.get('/api/ref/:code', publicReferralRateLimiter, async (req, res, next) =
 
     await trackingService.trackClick({
       referralCodeId: referralCode.id as string,
-      ip: getRequestIp(req),
+      ip: getClientIp(req),
       userAgent: req.headers['user-agent'] ?? null,
       landingPage: firstQueryValue(req.query.landing_page) ?? firstQueryValue(req.query.landingPage),
       utmSource: firstQueryValue(req.query.utm_source),
