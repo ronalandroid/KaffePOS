@@ -2,6 +2,7 @@
  * Centralized rate limiter configurations for all endpoints.
  * Extracted from index.ts for better organization.
  */
+import { getClientIp } from './clientIp';
 import type { Request, RequestHandler } from 'express';
 import { env } from '../core/env';
 
@@ -26,7 +27,7 @@ function normalizeRateLimitPart(value: unknown) {
 }
 
 export function getRateLimitIp(req: Request) {
-  return req.ip || req.header('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  return getClientIp(req) ?? 'unknown';
 }
 
 export function createRateLimiter(options: RateLimitOptions): RequestHandler {

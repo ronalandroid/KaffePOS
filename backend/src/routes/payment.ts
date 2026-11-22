@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { getClientIp } from '../lib/clientIp';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import {
@@ -57,12 +58,6 @@ function ensureSubscriptionPaymentSchema() {
   return subscriptionSchemaReady;
 }
 
-function getRequestIp(req: Parameters<Parameters<typeof router.post>[1]>[0]) {
-  const forwarded = req.headers['x-forwarded-for'];
-  if (typeof forwarded === 'string' && forwarded.trim()) return forwarded.split(',')[0].trim();
-  return req.ip || req.socket.remoteAddress || null;
-}
-
 function createSubscriptionOrderId(providerName: string, userId: string, plan: string, billingCycle: string) {
   const prefix = providerName.toUpperCase();
   const planCode = plan.replace(/[^a-z0-9]/gi, '').slice(0, 3).toUpperCase() || 'SUB';
@@ -71,7 +66,7 @@ function createSubscriptionOrderId(providerName: string, userId: string, plan: s
 }
 
 async function createTransaction(req: Parameters<Parameters<typeof router.post>[1]>[0], res: Parameters<Parameters<typeof router.post>[1]>[1], next: Parameters<Parameters<typeof router.post>[1]>[2]) {
-  const ip = getRequestIp(req);
+  const ip = getClientIp(req);
   const userAgent = req.headers['user-agent'] ?? null;
   let payload: z.infer<typeof paymentCreateSchema> | null = null;
 
