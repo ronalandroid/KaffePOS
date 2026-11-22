@@ -54,11 +54,21 @@ export function getCurrentFrontendErrorTrackingConfig() {
 export function initFrontendErrorTracking(config = getCurrentFrontendErrorTrackingConfig()) {
   if (!config.enabled || initialized) return;
 
+  const tracingEnabled = config.tracesSampleRate > 0;
   Sentry.init({
     dsn: config.dsn,
     environment: config.environment,
     release: config.release,
-    tracesSampleRate: config.tracesSampleRate,
+    // Page loads, navigations and fetches become traces only when a sample rate is set.
+    ...(tracingEnabled
+      ? {
+          integrations: [Sentry.browserTracingIntegration()],
+          tracesSampleRate: config.tracesSampleRate,
+          // Continue the trace into the API so one request shows up across web and backend. The
+          // backend's CORS reflects requested headers, so sentry-trace and baggage are allowed.
+          tracePropagationTargets: ['localhost', /^https:\/\/api\.kaffepos\.my\.id\//],
+        }
+      : {}),
   });
   initialized = true;
 }
